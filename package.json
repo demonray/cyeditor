@@ -27,6 +27,7 @@
     "dependencies": {
         "cytoscape": "^3.5.0",
         "cytoscape-edgehandles": "^3.5.1",
+        "dragula": "^3.7.2",
         "vue": "^2.6.9"
     },
     "devDependencies": {
@@ -42,5 +43,6 @@
         "stylus-loader": "^3.0.2",
         "vue-template-compiler": "^2.6.9",
         "webpack": ">=4 < 4.29"
-    }
+    },
+    "eslintIgnore": ["/src"]
 }

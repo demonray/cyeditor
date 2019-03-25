@@ -5,10 +5,6 @@
 ;(function () {
     'use strict'
 
-    var arr = []
-
-    var slice = arr.slice
-
     var class2type = {}
 
     var getProto = Object.getPrototypeOf;
@@ -31,33 +27,6 @@
 
     var $ = {
         query: document.querySelectorAll.bind(document),
-        guid: 1,
-        proxy: function ( fn, context ) {
-            var tmp, args, proxy
-
-            if (typeof context === 'string') {
-                tmp = fn[ context ]
-                context = fn
-                fn = tmp
-            }
-
-            // Quick check to determine if target is callable, in the spec
-            // this throws a TypeError, but we will just return undefined.
-            if (!isFunction(fn)) {
-                return undefined
-            }
-
-            // Simulated bind
-            args = slice.call(arguments, 2)
-            proxy = function () {
-                return fn.apply(context || this, args.concat(slice.call(arguments)))
-            }
-
-            // Set the guid of unique handler to the same of original handler, so it can be removed
-            proxy.guid = fn.guid = fn.guid || $.guid++
-
-            return proxy
-        },
         isPlainObject: function ( obj ) {
             var proto, Ctor
 
@@ -172,7 +141,7 @@
     }
 
     var defaults = {
-        container: false, // can be a HTML or jQuery element or jQuery selector
+        container: false, // can be a selector
         viewLiveFramerate: 0, // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
         dblClickDelay: 200,// milliseconds
         removeCustomContainer: true, // destroy the container specified by user on plugin destroy
@@ -410,7 +379,8 @@
                     this.$panel = $.query(options.container)[ 0 ]
                 } else if ($.isNode(options.container)) {
                     this.$panel = options.container
-                } else {
+                }
+                if(!this.$panel) {
                     console.error('There is no any element matching your container')
                     return
                 }
@@ -422,7 +392,7 @@
             this.$panel.classList.add('cytoscape-navigator')
 
             this._setupPanel()
-            this._addCyListener('resize', $.proxy(this.resize, this))
+            this._addCyListener('resize', this.resize.bind(this))
         },
         _setupPanel: function () {
             var panelRect = this.$panel.getBoundingClientRect()
@@ -497,7 +467,7 @@
             this._setupView()
 
             // Hook graph zoom and pan
-            this._addCyListener('zoom pan', $.proxy(this._setupView, this))
+            this._addCyListener('zoom pan', this._setupView.bind(this))
         },
         _setupView: function () {
             if (this.viewLocked)

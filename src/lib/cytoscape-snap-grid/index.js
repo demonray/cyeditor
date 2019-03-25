@@ -134,12 +134,12 @@
     var register = function ( cytoscape ) {
 
         if (!cytoscape) { return } // can't register if cytoscape unspecified
-
+        var dataCache = {}
         cytoscape('core', 'snapToGrid', function ( params ) {
             var cy = this
             var fn = params
             var container = cy.container()
-            var defaultParams = {
+            var defaults = {
                 stackOrder: -1,
                 gridSpacing: 40,
                 strokeStyle: '#CCCCCC',
@@ -150,7 +150,6 @@
                 snapToGrid: true,
                 drawGrid: true
             }
-            var dataCache = {}
 
             var functions = {
                 //Enables snap-to-grid:
@@ -182,16 +181,14 @@
                 option: function ( name, value ) {
                     var data = dataCache.snapToGrid
 
-                    if (data == null) {
-                        return
-                    }
+                    if (!data) return
 
                     var options = data.options
 
                     if (value === undefined) {
                         if (typeof name == typeof {}) {
                             var newOpts = name
-                            options = $.extend(true, {}, defaultParams, newOpts)
+                            options = $.extend(true, {}, defaults, newOpts)
                             data.options = options
                         } else {
                             return options[ name ]
@@ -212,7 +209,7 @@
                     var $canvas = document.createElement('canvas')
                     var ctx
 
-                    var opts = $.extend(true, {}, defaultParams, params)
+                    var opts = $.extend(true, {}, defaults, params)
                     dataCache.snapToGrid = opts
 
                     var optionsCache
@@ -353,13 +350,13 @@
                         drawGrid()
                     }
 
-                    this.append($canvas)
+                    container.append($canvas)
                     window.addEventListener('resize', resizeCanvas)
-                    // this.on('snaptogrid.snapon', snapOn)
-                    // this.on('snaptogrid.snapoff', snapOff)
-                    // this.on('snaptogrid.gridon', gridOn)
-                    // this.on('snaptogrid.gridoff', gridOff)
-                    // this.on('snaptogrid.refresh', resizeCanvas)
+                    this.on('snaptogrid.snapon', snapOn)
+                    this.on('snaptogrid.snapoff', snapOff)
+                    this.on('snaptogrid.gridon', gridOn)
+                    this.on('snaptogrid.gridoff', gridOff)
+                    this.on('snaptogrid.refresh', resizeCanvas)
                     ctx = $canvas.getContext('2d')
 
                     cy.ready(function () {
@@ -374,18 +371,19 @@
                         cy.on('free', nodeFreed)
                         cy.on('add', nodeAdded)
                     })
+                    return cy
                 }
             }
 
             if (functions[ fn ]) {
-                return functions[ fn ].apply(container, Array.prototype.slice.call(arguments, 1))
+                return functions[ fn ].apply(this, Array.prototype.slice.call(arguments, 1))
             } else if (typeof fn == 'object' || !fn) {
-                return functions.init.apply(container, arguments)
+                return functions.init.apply(this, arguments)
             } else {
                 console.error('No such function `' + fn + '` for snapToGrid')
             }
 
-            return this // chainability
+            return cy
         })
 
     }

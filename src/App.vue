@@ -1,12 +1,44 @@
 <template>
     <div id="page">
-        <div id="toolbar"><div @click="del">删除</div></div>
+        <div id="toolbar">
+            <div @click="del">删除</div>
+        </div>
         <div id="editor">
-            <div class="left"></div>
+            <div class="left">
+                <div class="shapes">
+                    <div class="shape-item">
+                    ddd
+                    </div>
+                    <div class="shape-item">
+                        dff
+                    </div>
+                </div>
+            </div>
             <div id="cy"></div>
             <div class="right">
                 <div class="pannel-title">导航器</div>
-                <div class="thumb-view"></div>
+                <div id="thumb"></div>
+                <div class="pannel-title">画布</div>
+                <div class="pannel-body">
+                    <div class="p">网格对齐：
+                        <input v-model="showGrid" @change="toggleGrid" class="checkbox" name="grid" id="grid" type="checkbox" />
+                    </div>
+                </div>
+                <div class="pannel-title">节点</div>
+                <div id="info" class="pannel-body">
+                    <div class="p">名称：
+                        <input class="input info-item" type="text" value="常规节点">
+                    </div>
+                    <div class="p">尺寸：
+                        <div class="info-item">
+                            <input class="input width" autocomplete="off" type="number" step="1" value="80">
+                            <input class="input height" autocomplete="off" type="number" step="1" value="80">
+                        </div>
+                    </div>
+                    <div class="p">颜色：
+                        <input class="input info-item color-input" autocomplete="off" type="color">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -15,18 +47,22 @@
 <script>
 import cytoscape from 'cytoscape'
 import edgehandles from 'cytoscape-edgehandles'
-import '../lib/cytoscape-navigator/style.css'
+import dragAddNodes from './lib/cytoscape-drag-add-nodes/index'
+import './lib/cytoscape-navigator/style.css'
 
 cytoscape.use(edgehandles)
-cytoscape.use(require('../lib/cytoscape-navigator/index'))
-cytoscape.use(require('../lib/cytoscape-snap-grid/index'))
-cytoscape.use(require('../lib/cytoscape-node-resize/index'))
+cytoscape.use(require('./lib/cytoscape-navigator/index'))
+cytoscape.use(require('./lib/cytoscape-snap-grid/index'))
+cytoscape.use(require('./lib/cytoscape-node-resize/index'))
+cytoscape.use(dragAddNodes)
 
 export default {
   name: 'App',
   components: {},
   data () {
-    return {}
+    return {
+        showGrid: true
+    }
   },
   mounted () {
     this.cy = cytoscape({
@@ -39,6 +75,25 @@ export default {
         minNodeSpacing: 100
       },
       style: [
+        {
+          'selector': 'node[type]',
+          'style': {
+            'shape': 'data(type)',
+            'label': 'data(type)',
+            'height': 40,
+            'width': 40,
+            'text-valign': 'center',
+            'text-halign': 'center'
+
+          }
+        }, {
+          'selector': 'node[points]',
+          'style': {
+            'shape-polygon-points': 'data(points)',
+            'label': 'polygon\n(custom points)',
+            'text-wrap': 'wrap'
+          }
+        },
         {
           selector: 'node[name]',
           style: {
@@ -103,10 +158,10 @@ export default {
       ],
       elements: {
         nodes: [
-          { data: { id: 'j', name: 'Jerry' } },
-          { data: { id: 'e', name: 'Elaine' } },
-          { data: { id: 'k', name: 'Kramer' } },
-          { data: { id: 'g', name: 'George' } }
+          { data: { id: 'j', name: 'Jerry', resize: true } },
+          { data: { id: 'e', name: 'Elaine', resize: true } },
+          { data: { id: 'k', name: 'Kramer', resize: true } },
+          { data: { id: 'g', name: 'George', type: 'vee' }}
         ],
         edges: [
           { data: { source: 'j', target: 'e' } },
@@ -122,27 +177,28 @@ export default {
       }
     })
 
-    //            // edge
-    //            this.cy.edgehandles({
-    //                snap: true
-    //            });
+    // edge
+    this.cy.edgehandles({
+      snap: true
+    })
 
     // 导航器
     this.cy.navigator({
-      container: '.thumb-view'
+      container: '#thumb'
     })
 
     // snap-grid
     this.cy.snapToGrid()
 
+
     // node resize
     let defaults = {
       handleColor: '#000000', // the colour of the handle and the line drawn from it
-      hoverDelay: 150, // time spend over a target node before it is considered a target selection
       enabled: true, // whether to start the plugin in the enabled state
       minNodeWidth: 30,
       minNodeHeight: 30,
       triangleSize: 10,
+      selector: 'node[resize]',
       lines: 3,
       padding: 5,
 
@@ -158,17 +214,15 @@ export default {
     }
 
     this.cy.noderesize(defaults)
+    //this.cy.noderesize('drawon')
 
-    this.cy.nodes().on('click', function (e) {
-      let clickedNode = e.target
-      console.log(clickedNode)
-      console.log(clickedNode.data())
-    })
-    this.cy.edges().on('click', function (e) {
-      let clickedNode = e.target
-      console.log(clickedNode)
-      // clickedNode.remove();
-    })
+    // drag node add to cy
+    this.cy.dragAddNodes({
+        container: '.shapes'
+    });
+
+    this.initShapes()
+    this.initEvents()
   },
   computed: {},
   methods: {
@@ -176,21 +230,24 @@ export default {
       if (this.cy) {
         this.cy.$(':selected').remove()
       }
+    },
+    initShapes() {
+    },
+    initEvents() {
+        this.cy.on('dragAddNodes.add',(node) => {
+            this.cy.noderesize('reInit')
+        })
+
+    },
+    toggleGrid(){
+        this.cy.snapToGrid(this.showGrid ? 'gridOn' : 'gridOff')
+        this.cy.snapToGrid(this.showGrid ? 'snapOn' : 'snapOff')
     }
   }
 }
 </script>
 
 <style scoped lang="stylus">
-    *, *::before, *::after {
-        box-sizing: border-box;
-    }
-    html,body {
-       width 100%
-       height 100%
-       margin 0px
-       overflow hidden
-    }
     #page {
         position: absolute;
         left: 0;
@@ -199,6 +256,7 @@ export default {
         right: 0;
         user-select: none;
     }
+
     #toolbar {
         padding: 8px 0px;
         width: 100%;
@@ -208,11 +266,12 @@ export default {
         box-shadow: 0px 8px 12px 0px rgba(0, 52, 107, 0.04);
         position: absolute;
     }
+
     #editor {
         position: absolute;
         top: 42px;
         width 100%
-        height calc(100% - 42px)
+        bottom 0;
         display flex
         .left {
             width: 250px;
@@ -220,11 +279,13 @@ export default {
             left: 0px;
             z-index: 2;
             background: #F7F9FB;
-            padding-top: 8px;
             border-right: 1px solid #E6E9ED;
+            .shapes {
+                margin: 16px 8px
+            }
         }
         .right {
-            width: 250px;
+            width: 220px;
             height: 100%;
             right: 0px;
             z-index: 2;
@@ -240,8 +301,60 @@ export default {
                 padding-left: 12px;
 
             }
+            .pannel-body {
+                padding: 16px 8px
+                .p {
+                    padding-bottom: 12px;
+                }
+            }
+            .checkbox {
+                width 16px
+                height 16px
+                box-sizing border-box
+                padding 0
+                margin 0
+                vertical-align text-bottom
+            }
+            .input {
+                box-sizing: border-box;
+                margin: 0;
+                list-style: none;
+                position: relative;
+                display: inline-block;
+                padding: 2px 6px;
+                width: 100%;
+                height: 26px;
+                line-height: 1.5;
+                color: rgba(0, 0, 0, 0.65);
+                background-color: #fff;
+                background-image: none;
+                border: 1px solid #d9d9d9;
+                border-radius: 4px;
+                transition: all .3s;
+                -webkit-appearance: none
+                outline none
+            }
+            .input:hover {
+                border-color: #40a9ff;
+                -webkit-appearance: none
+            }
+            .info-item {
+                display inline-block;
+                width 140px;
+                margin-left 16px;
+            }
+            .input.width {
+                width 60px
+                margin-right 18px
+            }
+            .input.height {
+                width 60px
+            }
+            .color-input {
+                width 24px
+                padding 0
+            }
         }
-
     }
 
     #cy {
@@ -249,10 +362,11 @@ export default {
         z-index 999
     }
 
-    .thumb-view {
+    #thumb {
         position relative
-        width 100%
-        height 220px
+        width 200px
+        margin 10px auto
+        height 160px
         border none
     }
 </style>

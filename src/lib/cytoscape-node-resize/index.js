@@ -322,11 +322,11 @@
 
         var defaults = {
             handleColor: '#000000', // the colour of the handle and the line drawn from it
-            hoverDelay: 150, // time spend over a target node before it is considered a target selection
             enabled: true, // whether to start the plugin in the enabled state
             minNodeWidth: 30,
             minNodeHeight: 30,
             triangleSize: 10,
+            selector: 'node',
             lines: 3,
             padding: 5,
 
@@ -340,6 +340,9 @@
                 // fired when noderesize interaction is stopped (either complete with added edges or incomplete)
             }
         }
+        var optCache = {}
+        var $canvas
+        var ctx
 
         /**
          * Checks if the point p is inside the triangle p0,p1,p2
@@ -354,16 +357,15 @@
             return s > 0 && t > 0 && (s + t) < 2 * A * sign
         }
 
-        var optCache = {}
-
         function cytoscapeNodeResize ( params ) {
             var fn = params
             var cy = this
             var container = cy.container()
-            var optCache = {}
+            var args = arguments
 
             var functions = {
                 destroy: function () {
+
                     var data = optCache.cynoderesize
 
                     if (!data) {
@@ -373,7 +375,6 @@
                     data.unbind()
                     optCache.cynoderesize = {}
 
-                    return container
                 },
 
                 option: function ( name, value ) {
@@ -399,7 +400,7 @@
 
                     optCache.cynoderesize =  data
 
-                    return container
+                    return cy
                 },
 
                 disable: function () {
@@ -422,21 +423,26 @@
                     this.trigger('cynoderesize.drawoff')
                 },
 
+                reInit: function() {
+                    container.removeChild($canvas)
+                    functions.destroy.apply(this)
+                    functions.init.apply(this)
+                },
+
                 init: function () {
                     var opts = $.extend(true, {}, defaults, params)
-                    var $canvas = document.createElement('canvas')
+                    $canvas = document.createElement('canvas')
                     var mdownOnHandle = false
                     var grabbingNode = false
                     var inForceStart = false
                     var hoverTimeout
-                    var drawsClear = true
                     var sourceNode
                     var drawMode = false
+                    var drawsClear = true
 
                     container.append($canvas)
 
                     var rect = container.getBoundingClientRect()
-
                     var _sizeCanvas = debounce(function () {
                         $canvas.width = rect.width
                         $canvas.height = rect.height
@@ -457,9 +463,11 @@
                             })
                         }, 0)
 
-                    }, 250)
+                    },250)
 
                     _sizeCanvas()
+
+                    window.removeEventListener('resize',_sizeCanvas) // todo
 
                     window.addEventListener('resize',_sizeCanvas)
 
@@ -468,30 +476,26 @@
                     var prevUngrabifyState
                     this.on('cynoderesize.drawon', function () {
                         drawMode = true
-
                         prevUngrabifyState = cy.autoungrabify()
-
                         cy.autoungrabify(true)
                     })
 
                     this.on('cynoderesize.drawoff', function () {
-                        console.log('off',cy,this)
                         drawMode = false
-
                         cy.autoungrabify(prevUngrabifyState)
                     })
 
-                    var ctx = $canvas.getContext('2d')
+                    ctx = $canvas.getContext('2d')
 
-                    // write options to data
-                    var data = optCache && optCache.cynoderesize;
+
+                    var data = optCache.cynoderesize;
                     if (!data) {
                         data = {}
                     }
                     data.options = opts
 
                     function options () {
-                        return optCache.cynoderesize ? optCache.cynoderesize.options : {}
+                        return optCache.cynoderesize ? optCache.cynoderesize.options : data.options
                     }
 
                     function enabled () {
@@ -503,7 +507,6 @@
                     }
 
                     function clearDraws () {
-
                         if (drawsClear) {
                             return
                         } // break early to be efficient
@@ -513,7 +516,7 @@
                         var w = containerRect.width
                         var h = containerRect.height
 
-                        ctx.clearRect(0, 0, w, h)
+                        $canvas.getContext('2d').clearRect(0, 0, w, h)
                         drawsClear = true
                     }
 
@@ -538,15 +541,14 @@
                     }
 
                     function resetToDefaultState () {
-
                         clearDraws()
-
                         sourceNode = null
-
                         resetGestures()
                     }
 
                     function drawHandle ( node ) {
+                        console.log(node)
+
                         var cy = node.cy()
                         ctx.fillStyle = options().handleColor
                         ctx.strokeStyle = options().handleColor
@@ -600,19 +602,18 @@
 
                         var lastActiveId
 
-                        var transformHandler
-                        cy.bind('zoom pan', transformHandler = function () {
+                        var transformHandler = function () {
                             clearDraws()
-                        })
+                        }
+                        cy.bind('zoom pan', transformHandler)
 
                         var lastMdownHandler
 
                         var startHandler, hoverHandler, leaveHandler, grabNodeHandler, freeNodeHandler, dragNodeHandler,
                             forceStartHandler, removeHandler, tapToStartHandler, dragHandler, grabHandler
-                        cy.on('mouseover tap', 'node', startHandler = function ( e ) {
+                        cy.filter(options().selector).on('mouseover tap', startHandler = function ( e ) {
 
                             var node = this
-
 
                             if (disabled() || drawMode || mdownOnHandle || grabbingNode || inForceStart || node.isParent()) {
                                 return // don't override existing handle that's being dragged
@@ -692,7 +693,7 @@
                                 }
 
                                 function doneMoving ( dmEvent ) {
-                                    // console.log('doneMoving %s %o', node.id(), node);
+                                     console.log('doneMoving %s %o', node.id(), node);
 
                                     if (!mdownOnHandle || inForceStart) {
                                         return
@@ -729,20 +730,18 @@
                             }
 
                             function moveHandler ( e ) {
-                                // console.log('mousemove moveHandler %s %o', node.id(), node);
+                                 console.log('mousemove moveHandler %s %o', node.id(), node);
 
                                 var pageX = !e.touches ? e.pageX : e.touches[ 0 ].pageX
                                 var pageY = !e.touches ? e.pageY : e.touches[ 0 ].pageY
                                 var x = pageX - $.offset(container).left
                                 var y = pageY - $.offset(container).top
 
-
                                 var dx = x - lastPosition.x
                                 var dy = y - lastPosition.y
 
                                 lastPosition.x = x
                                 lastPosition.y = y
-                                // console.log(dx + " " + dy);
                                 var keepAspectRatio = e.ctrlKey
                                 var w = node.data('width') || node.width();
                                 var h = node.data('height') || node.height();
@@ -759,8 +758,8 @@
                                 dx /= cy.zoom()
                                 dy /= cy.zoom()
 
-                                node.data('width', Math.max(w + dx, options().minNodeWidth));
-                                node.data('height', Math.max(h + dy, options().minNodeHeight));
+                                node.data('width', Math.max(w + dx*2, options().minNodeWidth));
+                                node.data('height', Math.max(h + dy*2, options().minNodeHeight));
 
                                 clearDraws()
                                 drawHandle(node)
@@ -772,7 +771,7 @@
                             container.addEventListener('touchstart', mdownHandler, true)
                             lastMdownHandler = mdownHandler
 
-                        }).on('mouseover tapdragover', 'node', hoverHandler = function () {
+                        }).on('mouseover tapdragover', hoverHandler = function () {
 
                             if (disabled() || drawMode) {
                                 return // ignore preview nodes
@@ -783,7 +782,7 @@
                                 return false
                             }
 
-                        }).on('mouseout tapdragout', 'node', leaveHandler = function () {
+                        }).on('mouseout tapdragout', leaveHandler = function () {
                             if (drawMode) {
                                 return
                             }
@@ -792,23 +791,23 @@
                                 clearTimeout(hoverTimeout)
                             }
 
-                        }).on('drag position', 'node', dragNodeHandler = function () {
+                        }).on('drag position', dragNodeHandler = function () {
                             if (drawMode) {
                                 return
                             }
                             setTimeout(clearDraws, 50)
 
-                        }).on('grab', 'node', grabHandler = function () {
+                        }).on('grab', grabHandler = function () {
 
                             clearDraws()
 
-                        }).on('drag', 'node', dragHandler = function () {
+                        }).on('drag', dragHandler = function () {
                             grabbingNode = true
 
-                        }).on('free', 'node', freeNodeHandler = function () {
+                        }).on('free', freeNodeHandler = function () {
                             grabbingNode = false
 
-                        }).on('cynoderesize.forcestart', 'node', forceStartHandler = function () {
+                        }).on('cynoderesize.forcestart', forceStartHandler = function () {
                             var node = this
 
                             inForceStart = true
@@ -886,7 +885,7 @@
 
                             // case: tap a target node
                             var tapHandler
-                            cy.one('tap', 'node', tapHandler = function () {
+                            cy.filter(options().selector).one('tap', 'node', tapHandler = function () {
                                 var target = this
 
                                 inForceStart = false // now we're done so reset the flag
@@ -900,7 +899,7 @@
                                 resetToDefaultState()
                             })
 
-                        }).on('remove', 'node', removeHandler = function () {
+                        }).on('remove', removeHandler = function () {
                             var id = this.id()
 
                             if (id === lastActiveId) {
@@ -909,7 +908,7 @@
                                 }, 5)
                             }
 
-                        }).on('tap', 'node', tapToStartHandler = function () {
+                        }).on('tap', tapToStartHandler = function () {
                             return
                             var node = this
 
@@ -926,16 +925,16 @@
                         })
 
                         data.unbind = function () {
-                            cy
-                                .off('mouseover', 'node', startHandler)
-                                .off('mouseover', 'node', hoverHandler)
-                                .off('mouseout', 'node', leaveHandler)
-                                .off('drag position', 'node', dragNodeHandler)
-                                .off('grab', 'node', grabNodeHandler)
-                                .off('free', 'node', freeNodeHandler)
-                                .off('cynoderesize.forcestart', 'node', forceStartHandler)
-                                .off('remove', 'node', removeHandler)
-                                .off('tap', 'node', tapToStartHandler)
+                            cy.filter(options().selector)
+                                .off('mouseover',  startHandler)
+                                .off('mouseover',  hoverHandler)
+                                .off('mouseout',  leaveHandler)
+                                .off('drag position',  dragNodeHandler)
+                                .off('grab',  grabNodeHandler)
+                                .off('free',  freeNodeHandler)
+                                .off('cynoderesize.forcestart',  forceStartHandler)
+                                .off('remove',  removeHandler)
+                                .off('tap',  tapToStartHandler)
 
                             cy.unbind('zoom pan', transformHandler)
                         }
@@ -956,9 +955,9 @@
             }
 
             if (functions[ fn ]) {
-                return functions[ fn ].apply(this, Array.prototype.slice.call(arguments, 1))
+                return functions[ fn ].apply(this, Array.prototype.slice.call(args, 1))
             } else if (typeof fn == 'object' || !fn) {
-                return functions.init.apply(this, arguments)
+                return functions.init.apply(this, args)
             } else {
                 console.error('No such function')
             }

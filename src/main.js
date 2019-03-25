@@ -3,6 +3,7 @@
  */
 import Vue from 'vue'
 import App from './App.vue'
+import '../public/main.css'
 
 new Vue({
   // store: {},
