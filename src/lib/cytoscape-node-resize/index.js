@@ -423,12 +423,6 @@
                     this.trigger('cynoderesize.drawoff')
                 },
 
-                reInit: function() {
-                    container.removeChild($canvas)
-                    functions.destroy.apply(this)
-                    functions.init.apply(this)
-                },
-
                 init: function () {
                     var opts = $.extend(true, {}, defaults, params)
                     $canvas = document.createElement('canvas')
@@ -466,8 +460,6 @@
                     },250)
 
                     _sizeCanvas()
-
-                    window.removeEventListener('resize',_sizeCanvas) // todo
 
                     window.addEventListener('resize',_sizeCanvas)
 
@@ -611,7 +603,8 @@
 
                         var startHandler, hoverHandler, leaveHandler, grabNodeHandler, freeNodeHandler, dragNodeHandler,
                             forceStartHandler, removeHandler, tapToStartHandler, dragHandler, grabHandler
-                        cy.filter(options().selector).on('mouseover tap', startHandler = function ( e ) {
+                        var selector = options().selector
+                        cy.on('mouseover tap', selector, startHandler = function ( e ) {
 
                             var node = this
 
@@ -771,7 +764,7 @@
                             container.addEventListener('touchstart', mdownHandler, true)
                             lastMdownHandler = mdownHandler
 
-                        }).on('mouseover tapdragover', hoverHandler = function () {
+                        }).on('mouseover tapdragover', selector, hoverHandler = function () {
 
                             if (disabled() || drawMode) {
                                 return // ignore preview nodes
@@ -782,7 +775,7 @@
                                 return false
                             }
 
-                        }).on('mouseout tapdragout', leaveHandler = function () {
+                        }).on('mouseout tapdragout', selector, leaveHandler = function () {
                             if (drawMode) {
                                 return
                             }
@@ -791,23 +784,23 @@
                                 clearTimeout(hoverTimeout)
                             }
 
-                        }).on('drag position', dragNodeHandler = function () {
+                        }).on('drag position', selector, dragNodeHandler = function () {
                             if (drawMode) {
                                 return
                             }
                             setTimeout(clearDraws, 50)
 
-                        }).on('grab', grabHandler = function () {
+                        }).on('grab', selector, grabHandler = function () {
 
                             clearDraws()
 
-                        }).on('drag', dragHandler = function () {
+                        }).on('drag', selector, dragHandler = function () {
                             grabbingNode = true
 
-                        }).on('free', freeNodeHandler = function () {
+                        }).on('free', selector, freeNodeHandler = function () {
                             grabbingNode = false
 
-                        }).on('cynoderesize.forcestart', forceStartHandler = function () {
+                        }).on('cynoderesize.forcestart', selector, forceStartHandler = function () {
                             var node = this
 
                             inForceStart = true
@@ -899,7 +892,7 @@
                                 resetToDefaultState()
                             })
 
-                        }).on('remove', removeHandler = function () {
+                        }).on('remove', selector, removeHandler = function () {
                             var id = this.id()
 
                             if (id === lastActiveId) {
@@ -925,16 +918,16 @@
                         })
 
                         data.unbind = function () {
-                            cy.filter(options().selector)
-                                .off('mouseover',  startHandler)
-                                .off('mouseover',  hoverHandler)
-                                .off('mouseout',  leaveHandler)
-                                .off('drag position',  dragNodeHandler)
-                                .off('grab',  grabNodeHandler)
-                                .off('free',  freeNodeHandler)
-                                .off('cynoderesize.forcestart',  forceStartHandler)
-                                .off('remove',  removeHandler)
-                                .off('tap',  tapToStartHandler)
+                            window.removeEventListener('resize',_sizeCanvas)
+                            cy.off('mouseover', selector, startHandler)
+                                .off('mouseover', selector, hoverHandler)
+                                .off('mouseout', selector,  leaveHandler)
+                                .off('drag position', selector,  dragNodeHandler)
+                                .off('grab', selector,  grabNodeHandler)
+                                .off('free', selector,  freeNodeHandler)
+                                .off('cynoderesize.forcestart', selector,  forceStartHandler)
+                                .off('remove', selector,  removeHandler)
+                                .off('tap', selector,  tapToStartHandler)
 
                             cy.unbind('zoom pan', transformHandler)
                         }

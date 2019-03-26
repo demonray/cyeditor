@@ -18,6 +18,7 @@ const isFunction = function isFunction ( obj ) {
     return typeof obj === 'function' && typeof obj.nodeType !== 'number'
 }
 
+const RGBToHex = (r, g, b) => ((r << 16) + (g << 8) + b).toString(16).padStart(6, '0');
 
 export default {
     getProto,
@@ -152,5 +153,7 @@ export default {
             dom.removeEventListener(type, handle)
         }
         dom.addEventListener(type, handle)
-    }
+    },
+    $(id){return document.getElementById(id)},
+    RGBToHex
 }

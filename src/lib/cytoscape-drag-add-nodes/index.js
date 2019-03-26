@@ -42,7 +42,6 @@ class DragAddNodes {
                 if(nodeType) {
                     let shape = getNodeConf(nodeType)
                     this.addNodeToCy(shape)
-                    //this.cy.trigger('')
                 }
             }
         })
@@ -51,7 +50,7 @@ class DragAddNodes {
     addNodeToCy({type}) {
         let node = {
             group: 'nodes',
-            data: { id:'jj',type , name:'', resize:true},
+            data: { type , name:'', resize:true},
             //position: { x: 200, y: 200 },
         }
         this.cy.add(node)
