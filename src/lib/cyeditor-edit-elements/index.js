@@ -25,8 +25,7 @@ class EditElements {
                 this.changeElementInfo(e.target.name, e.target.value)
             }
         })
-        this.cy.on('select', () => {
-            this.selected = this.cy.$(':selected')
+        this.cy.on('select click', () => {
             this.showElementsInfo()
         })
     }
@@ -51,7 +50,7 @@ class EditElements {
         this.pannel.style.display = 'none'
     }
 
-    pannelHtml(params = {showName:true,showBgColor:true,showColor:true,showRect:true}) {
+    pannelHtml(params = {showName:true,showBgColor:true,showColor:true,showRect:true, colorTitle:'文字'}) {
         this.pannel.innerHTML = `<div class="pannel-title">元素${params.titile || ''}</div>
                <div class="pannel-body" id="info-items">
                 <div class="info-item-wrap" style="${!params.showName?'display:none':''}">名称：
@@ -63,11 +62,15 @@ class EditElements {
                         <input class="input height" name="height" autocomplete="off" type="number" step="1" value="">
                     </div>
                 </div>
-                <div class="info-item-wrap" style="${!params.showColor?'display:none':''}">颜色：
-                    <input class="input info-item color-input" name="color" autocomplete="off" type="color">
+                <div class="info-item-wrap" style="${!params.showColor?'display:none':''}">${params.colorTitle}：
+                    <div class="info-item">
+                        <input class="input color-input" name="color" autocomplete="off" type="color">
+                    </div>
                 </div>
-                <div class="info-item-wrap" style="${!params.showBgColor?'display:none':''}">背景颜色：
-                    <input class="input info-item color-input" name="background-color" autocomplete="off" type="color">
+                <div class="info-item-wrap" style="${!params.showBgColor?'display:none':''}">背景：
+                    <div class="info-item">
+                        <input class="input color-input" name="background-color" autocomplete="off" type="color">
+                    </div>
                 </div>          
              </div>`
     }
@@ -77,22 +80,27 @@ class EditElements {
             this.selected[0].data({name:value})
             return
         }
-        this.selected.forEach(item=>{
-            item.style({
+        this.selected.forEach(item => {
+            if(item.isEdge() && name === 'color') {
+                name = 'lineColor'
+            }
+            item.data({
                 [name]:value
             })
         })
     }
 
     showElementsInfo () {
-        let allNode = this.selected.every(it=>it.isNode())
-        if (this.selected.length > 1) {
+        let selected = this.cy.$(':selected')
+        let allNode = selected.every(it=>it.isNode())
+        let opt = { showName: allNode,showBgColor:allNode, showColor:true, showRect:allNode, colorTitle: allNode?'文字':'颜色' }
+        if (selected.length > 1) {
             this.infos.name = '';
-            this.pannelHtml({ showName: false,showBgColor:allNode,showColor:true,showRect:allNode })
-        } else if (this.selected.length === 1) {
-            this.pannelHtml()
+            this.pannelHtml(opt)
+        } else if (selected.length === 1) {
+            this.pannelHtml(opt)
             this.pannel.style.display = 'block'
-            let el = this.selected[0]
+            let el = selected[0]
             this.options.attrs.forEach(item => {
                 if(item === 'name') { // from data
                     this.infos[item] = el.data('name')

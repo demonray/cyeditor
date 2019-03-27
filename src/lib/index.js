@@ -17,6 +17,20 @@ cytoscape.use(require('./cytoscape-node-resize/index'))
 cytoscape.use(dragAddNodes)
 cytoscape.use(editElements)
 
+const config = {
+    node: {
+        type: 'rectangle',
+        bg: '#999',
+        resize: true,
+        name: '',
+        width: 80,
+        height: 80,
+    },
+    edge: {
+        lineColor: '#999'
+    }
+}
+
 let defaults = {
     cy: {
         container: '#cy',
@@ -33,8 +47,8 @@ let defaults = {
                 'style': {
                     'shape': 'data(type)',
                     'label': 'data(type)',
-                    'height': 40,
-                    'width': 40,
+                    'height': 'data(height)',
+                    'width': 'data(width)',
                     'text-valign': 'center',
                     'text-halign': 'center'
                 }
@@ -53,17 +67,68 @@ let defaults = {
                 }
             },
             {
-                selector: 'node',
+                selector: 'node[bg]',
                 style: {
-                    'opacity': .74,
+                    'background-opacity': 0.56,
                     'background-color': 'data(bg)',
+                    'border-width': 2,
+                    'border-opacity': 0.8,
+                    'border-color': 'data(bg)'
                 }
             },
             {
-                selector: 'edge',
+                selector: 'edge[lineColor]',
                 style: {
                     'curve-style': 'bezier',
                     'target-arrow-shape': 'triangle',
+                    'width': 2,
+                    'line-color': 'data(lineColor)',
+                    'source-arrow-color': 'data(lineColor)',
+                    'target-arrow-color': 'data(lineColor)',
+                    'mid-source-arrow-color': 'data(lineColor)',
+                    'mid-target-arrow-color': 'data(lineColor)',
+                }
+            },
+            {
+                selector: 'node:active',
+                style: {
+                    'overlay-color': '#0169D9',
+                    'overlay-padding': 12,
+                    'overlay-opacity': 0.25
+                }
+            },
+            {
+                selector: 'node:selected',
+                style: {
+                    'overlay-color': '#0169D9',
+                    'overlay-padding': 12,
+                    'overlay-opacity': 0.25
+                }
+            },
+            {
+                selector: 'edge:active',
+                style: {
+                    'overlay-color': '#0169D9',
+                    'overlay-padding': 3,
+                    'overlay-opacity': 0.25,
+                    'line-color': 'data(lineColor)',
+                    'source-arrow-color': 'data(lineColor)',
+                    'target-arrow-color': 'data(lineColor)',
+                    'mid-source-arrow-color': 'data(lineColor)',
+                    'mid-target-arrow-color': 'data(lineColor)',
+                }
+            },
+            {
+                selector: 'edge:selected',
+                style: {
+                    'overlay-color': '#0169D9',
+                    'overlay-padding': 3,
+                    'overlay-opacity': 0.25,
+                    'line-color': 'data(lineColor)',
+                    'source-arrow-color': 'data(lineColor)',
+                    'target-arrow-color': 'data(lineColor)',
+                    'mid-source-arrow-color': 'data(lineColor)',
+                    'mid-target-arrow-color': 'data(lineColor)',
                 }
             },
             // some style for the extension
@@ -77,21 +142,6 @@ let defaults = {
                     'overlay-opacity': 0,
                     'border-width': 12, // makes the handle easier to hit
                     'border-opacity': 0
-                }
-            },
-            {
-                selector: ':active',
-                style: {
-                    'overlay-color': '#0169D9',
-                    'overlay-padding': 5,
-                    'overlay-opacity': 0.25
-                }
-            },{
-                selector: ':selected',
-                style: {
-                    'overlay-color': '#0169D9',
-                    'overlay-padding': 5,
-                    'overlay-opacity': 0.25
                 }
             },
             {
@@ -138,13 +188,13 @@ let defaults = {
         ],
         elements: {
             nodes: [
-                {data: {id: 'j', name: 'Jerry', resize: true, bg:'#90235d'}},
-                {data: {id: 'e', name: 'Elaine', resize: true, bg:'#f0545d'}},
-                {data: {id: 'k', name: 'Kramer', resize: true, bg:'#9954fd'}},
-                {data: {id: 'g', name: 'George', type: 'vee', bg:'#00888d'}}
+                {data: {id: 'j', name: 'Jerry', resize: true, bg: '#90235d'}},
+                {data: {id: 'e', name: 'Elaine', resize: true, bg: '#f0545d'}},
+                {data: {id: 'k', name: 'Kramer', resize: true, bg: '#9954fd'}},
+                {data: {id: 'g', name: 'George', type: 'vee', bg: '#00888d'}}
             ],
             edges: [
-                {data: {source: 'j', target: 'e'}},
+                {data: {source: 'j', target: 'e', lineColor: '#999'}},
                 {data: {source: 'j', target: 'k'}},
                 {data: {source: 'j', target: 'g'}},
                 {data: {source: 'e', target: 'j'}},
@@ -163,12 +213,12 @@ let defaults = {
 
 export default class CyEditor {
     constructor ( params = defaults ) {
-        this.editorOptions = params.editor   //
-        this.cyOptions = params.cy // cy options merge ?
+        this.plugins = {}
+        this.initOptions(params)
         this.init()
     }
 
-    init() {
+    init () {
         this.initEditor()
         this.initConf()
         this.initCy()
@@ -176,8 +226,25 @@ export default class CyEditor {
         this.initEvents()
     }
 
+    initOptions ( params ) {
+        this.editorOptions = Object.assign(defaults.editor, params.editor)
+        this.cyOptions = Object.assign(defaults.cy, params.cy)
+        if (this.cyOptions.elements) {
+            if (Array.isArray(this.cyOptions.elements.nodes)) {
+                this.cyOptions.elements.nodes.forEach(node => {
+                    node.data = Object.assign({}, config.node, node.data)
+                })
+            }
+            if (Array.isArray(this.cyOptions.elements.edges)) {
+                this.cyOptions.elements.edges.forEach(edge => {
+                    edge.data = Object.assign({}, config.edge, edge.data)
+                })
+            }
+        }
+    }
+
     initCy () {
-        if(typeof this.cyOptions.container === 'string') {
+        if (typeof this.cyOptions.container === 'string') {
             this.cyOptions.container = utils.query(this.cyOptions.container)[ 0 ]
         }
         if (!this.cyOptions.container) {
@@ -185,7 +252,7 @@ export default class CyEditor {
             return
         }
         this.cy = cytoscape(this.cyOptions)
-        this.cy.on('click',function ( e ) {
+        this.cy.on('click', function ( e ) {
             console.log(e.target.style())
         })
     }
@@ -230,18 +297,20 @@ export default class CyEditor {
         editorContianer.innerHTML = domHtml
     }
 
-    initConf() {
+    initConf () {
         utils.$('cyeditor_showgrid').checked = this.editorOptions.snapGrid
     }
 
     initEvents () {
-        utils.$('cyeditor_showgrid').addEventListener('change',(e)=>{
+        utils.$('cyeditor_showgrid').addEventListener('change', ( e ) => {
             this.toggleGrid(e.target.checked)
         })
-
+        this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing',()=>{
+            this.plugins.editElements.showElementsInfo()
+        })
     }
 
-    initPlugin() {
+    initPlugin () {
         // edge
         this.cy.edgehandles({
             snap: true
@@ -262,17 +331,7 @@ export default class CyEditor {
             triangleSize: 10,
             selector: 'node[resize]',
             lines: 3,
-            padding: 5,
-
-            start: function ( sourceNode ) {
-                // fired when noderesize interaction starts (drag on handle)
-            },
-            complete: function ( sourceNode, targetNodes, addedEntities ) {
-                // fired when noderesize is done and entities are added
-            },
-            stop: function ( sourceNode ) {
-                // fired when noderesize interaction is stopped (either complete with added edges or incomplete)
-            }
+            padding: 5
         }
 
         this.cy.noderesize(defaults)
@@ -283,18 +342,12 @@ export default class CyEditor {
         })
 
         // edit panel
-        this.cy.editElements({
+        this.plugins.editElements =  this.cy.editElements({
             container: '#info'
         })
     }
 
-    del () {
-//      if (this.cy) {
-//        this.cy.$(':selected').remove()
-//      }
-    }
-
-    toggleGrid (on) {
+    toggleGrid ( on ) {
         this.cy.snapToGrid(on ? 'gridOn' : 'gridOff')
         this.cy.snapToGrid(on ? 'snapOn' : 'snapOff')
     }

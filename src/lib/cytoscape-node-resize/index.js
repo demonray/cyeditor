@@ -412,15 +412,15 @@
                 },
 
                 resize: function () {
-                    this.trigger('cynoderesize.resize')
+                    this.trigger('cyeditor.noderesize-resize')
                 },
 
                 drawon: function () {
-                    this.trigger('cynoderesize.drawon')
+                    this.trigger('cyeditor.noderesize-drawon')
                 },
 
                 drawoff: function () {
-                    this.trigger('cynoderesize.drawoff')
+                    this.trigger('cyeditor.noderesize-drawoff')
                 },
 
                 init: function () {
@@ -463,16 +463,16 @@
 
                     window.addEventListener('resize',_sizeCanvas)
 
-                    this.on('cynoderesize.resize', _sizeCanvas)
+                    this.on('cyeditor.noderesize-resize', _sizeCanvas)
 
                     var prevUngrabifyState
-                    this.on('cynoderesize.drawon', function () {
+                    this.on('cyeditor.noderesize-drawon', function () {
                         drawMode = true
                         prevUngrabifyState = cy.autoungrabify()
                         cy.autoungrabify(true)
                     })
 
-                    this.on('cynoderesize.drawoff', function () {
+                    this.on('cyeditor.noderesize-drawoff', function () {
                         drawMode = false
                         cy.autoungrabify(prevUngrabifyState)
                     })
@@ -539,8 +539,6 @@
                     }
 
                     function drawHandle ( node ) {
-                        console.log(node)
-
                         var cy = node.cy()
                         ctx.fillStyle = options().handleColor
                         ctx.strokeStyle = options().handleColor
@@ -626,7 +624,7 @@
                             // add new handle
                             drawHandle(node)
 
-                            node.trigger('cynoderesize.showhandle')
+                            node.trigger('cyeditor.noderesize-showhandle')
                             var lastPosition = {}
 
                             function mdownHandler ( e ) {
@@ -679,14 +677,13 @@
 
                                 sourceNode = node
 
-                                node.trigger('cynoderesize.start')
+                                node.trigger('cyeditor.noderesize-start')
                                 var originalSize = {
                                     width: node.width(),
                                     height: node.height()
                                 }
 
                                 function doneMoving ( dmEvent ) {
-                                     console.log('doneMoving %s %o', node.id(), node);
 
                                     if (!mdownOnHandle || inForceStart) {
                                         return
@@ -698,8 +695,8 @@
                                     resetToDefaultState()
 
                                     options().stop(node)
-                                    node.trigger('cynoderesize.stop')
-                                    cy.trigger('cynoderesize.noderesized',
+                                    node.trigger('cyeditor.noderesize-stop')
+                                    cy.trigger('cyeditor.noderesize-resized',
                                         [
                                             node,
                                             originalSize,
@@ -723,7 +720,6 @@
                             }
 
                             function moveHandler ( e ) {
-                                 console.log('mousemove moveHandler %s %o', node.id(), node);
 
                                 var pageX = !e.touches ? e.pageX : e.touches[ 0 ].pageX
                                 var pageY = !e.touches ? e.pageY : e.touches[ 0 ].pageY
@@ -753,6 +749,11 @@
 
                                 node.data('width', Math.max(w + dx*2, options().minNodeWidth));
                                 node.data('height', Math.max(h + dy*2, options().minNodeHeight));
+
+                                cy.trigger('cyeditor.noderesize-resizing',[node,{
+                                    width: node.width(),
+                                    height: node.height()
+                                }])
 
                                 clearDraws()
                                 drawHandle(node)
@@ -800,7 +801,7 @@
                         }).on('free', selector, freeNodeHandler = function () {
                             grabbingNode = false
 
-                        }).on('cynoderesize.forcestart', selector, forceStartHandler = function () {
+                        }).on('cyeditor.noderesize-forcestart', selector, forceStartHandler = function () {
                             var node = this
 
                             inForceStart = true
@@ -810,11 +811,11 @@
 
                             lastActiveId = node.id()
 
-                            node.trigger('cynoderesize.start')
+                            node.trigger('cyeditor.noderesize-start')
 
                             drawHandle(node)
 
-                            node.trigger('cynoderesize.showhandle')
+                            node.trigger('cyeditor.noderesize-showhandle')
 
                             function reset () {
                                 container.removeEventListener('mousemove', moveHandler, true)
@@ -824,7 +825,7 @@
                                 mdownOnHandle = false // we're also no longer down on the node
 
                                 options().stop(node)
-                                node.trigger('cynoderesize.stop')
+                                node.trigger('cyeditor.noderesize-stop')
 
                                 cy.off('tap', 'node', tapHandler)
                                 node.off('remove', removeBeforeHandler)
@@ -878,13 +879,12 @@
 
                             // case: tap a target node
                             var tapHandler
-                            cy.filter(options().selector).one('tap', 'node', tapHandler = function () {
-                                var target = this
+                            cy.one('tap', selector, tapHandler = function () {
 
                                 inForceStart = false // now we're done so reset the flag
 
                                 options().stop(node)
-                                node.trigger('cynoderesize.stop')
+                                node.trigger('cyeditor.noderesize-stop')
 
                                 container.removeEventListener('mousedown', downHandler, true)
                                 container.removeEventListener('touchstart', downHandler, true)
@@ -911,7 +911,7 @@
 
                                     drawHandle(node)
 
-                                    node.trigger('cynoderesize.showhandle')
+                                    node.trigger('cyeditor.noderesize-showhandle')
                                 }, 16)
                             }
 
@@ -925,7 +925,7 @@
                                 .off('drag position', selector,  dragNodeHandler)
                                 .off('grab', selector,  grabNodeHandler)
                                 .off('free', selector,  freeNodeHandler)
-                                .off('cynoderesize.forcestart', selector,  forceStartHandler)
+                                .off('cyeditor.noderesize-forcestart', selector,  forceStartHandler)
                                 .off('remove', selector,  removeHandler)
                                 .off('tap', selector,  tapToStartHandler)
 
@@ -943,7 +943,7 @@
                 },
 
                 start: function ( id ) {
-                    cy.$('#' + id).trigger('cynoderesize.forcestart')
+                    cy.$('#' + id).trigger('cyeditor.noderesize-forcestart')
                 }
             }
 

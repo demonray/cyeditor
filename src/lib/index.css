@@ -89,17 +89,18 @@
 
 #editor .right .info-item {
     display: inline-block;
-    width: 140px;
-    margin-left: 16px;
+    width: 150px;
+    float: right;
 }
 
+
 #editor .right .input.width {
-    width: 60px;
-    margin-right: 18px
+    width: 65px;
+    margin-right: 16px
 }
 
 #editor .right .input.height {
-    width: 60px
+    width: 65px
 }
 
 #editor .right .color-input {
@@ -109,7 +110,10 @@
 }
 
 #info .info-item-wrap {
-    padding-bottom: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    height: 26px;
+    line-height:26px;
 }
 
 #cy {

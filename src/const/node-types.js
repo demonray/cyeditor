@@ -25,7 +25,7 @@ const nodeTypes = [
     // {type: 'rectangle', src: rectangle},
     // {type: 'ellipse', src: ellipse},
     // {type: 'triangle', src: triangle},
-    {type: 'round-rectangle', src: roundRectangle},
+    {type: 'round-rectangle', src: roundRectangle, bg:'#90235d',resize:true, width:100, height: 60},
     // {type: 'bottom-round-rectangle', src: bottomRoundRectangle},
     // {type: 'cut-rectangle', src: cutRectangle},
     // {type: 'barrel', src: barrel},

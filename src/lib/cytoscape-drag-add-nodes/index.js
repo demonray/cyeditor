@@ -1,19 +1,19 @@
 /**
  * Created by DemonRay on 2019/3/22.
  */
-import dragula from 'dragula'
 import utils from '../../utils'
 import 'dragula/dragula.styl'
 import { nodeTypes, getNodeConf }  from '../../const'
 
 const defaults = {
     container: false,
+    addWhenDrop: true,
 }
 
 class DragAddNodes {
     constructor ( cy, params = defaults ) {
         this.cy = cy
-        this.options = params
+        this.options = Object.assign(defaults, params)
         this.initShapePanel()
         this.initShapeItems()
         this.initEvents()
@@ -21,40 +21,51 @@ class DragAddNodes {
 
     initShapeItems () {
         let shapes = nodeTypes.filter(item => item.type && item.src).map(item => {
-            return `<img src="${item.src}" class="shape-item" data-type="${item.type}" />`
+            return `<img src="${item.src}"  class="shape-item" draggable="true" data-type="${item.type}" />`
         }).join('')
         this.shapePanel.innerHTML = shapes
     }
 
     initEvents () {
-        let leftContainers = this.shapePanel
+
         let rightContainers = this.cy.container()
-        dragula([ leftContainers, rightContainers ], {
-            copy: true,
-            direction: 'horizontal',
-            accepts: ( el, target )=> {
-                return target === rightContainers
-            }
-        }).on('drop', ( el, target ) => {
-            if (target === rightContainers) {
-                target.removeChild(el)
-                let nodeType = el.getAttribute('data-type')
-                if(nodeType) {
+        let handler = ( e ) => {
+            e.preventDefault()
+        }
+
+        utils.query('.shape-item').forEach(item => {
+            item.addEventListener('dragstart', ( e ) => {
+                e.dataTransfer.setData('shapeType', e.target.getAttribute('data-type'))
+            })
+        })
+
+        rightContainers.addEventListener('drop', ( e ) => {
+            let nodeType = e.dataTransfer.getData('shapeType')
+            let pos = e.target.compareDocumentPosition(rightContainers)
+            if (pos === 10) {
+                let rect = {x: e.offsetX, y: e.offsetY}
+                if (nodeType) {
                     let shape = getNodeConf(nodeType)
-                    this.addNodeToCy(shape)
+                    this.addNodeToCy(shape, rect)
                 }
             }
         })
+
+        rightContainers.addEventListener('dragenter', handler)
+        rightContainers.addEventListener('dragover', handler)
+
     }
 
-    addNodeToCy({type}) {
+    addNodeToCy ( {type, width, height, bg, resize, name = ''}, rect ) {
         let node = {
             group: 'nodes',
-            data: { type , name:'', resize:true},
-            //position: { x: 200, y: 200 },
+            data: {type, name, resize, bg, width, height},
+            position: rect
         }
-        this.cy.add(node)
-        this.cy.trigger('dragAddNodes.add',node)
+        if (this.options.addWhenDrop) {
+            this.cy.add(node)
+        }
+        this.cy.trigger('cyeditor.add', node)
     }
 
     initShapePanel () {
