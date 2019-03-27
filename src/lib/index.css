@@ -17,7 +17,7 @@
 }
 
 #editor .left {
-    width: 250px;
+    width: 200px;
     height: 100%;
     left: 0px;
     z-index: 2;
@@ -26,7 +26,20 @@
 }
 
 #editor .left .shapes {
-    margin: 16px 8px
+    margin: 16px 8px;
+    text-align: center;
+}
+
+#editor .shapes img.shape-item {
+    width: 80px;
+    height: 80px;
+    padding: 4px;
+    border-radius: 2px;
+    border: 1px solid rgba(0,0,0,0);
+}
+#editor .shapes img.shape-item:hover {
+    cursor: move;
+    border: 1px solid #ccc;
 }
 
 #editor .right {

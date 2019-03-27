@@ -14,15 +14,15 @@ class EditElements {
         this.options = Object.assign(defaults,params)
         this.infos = {}
         this.selected = []
-        this.initPanel()
-        this.initEvents()
+        this._initPanel()
+        this._initEvents()
     }
 
-    initEvents () {
+    _initEvents () {
         this.pannel.addEventListener('input', ( e ) => { // debounce todo
             if (this.options.attrs.indexOf(e.target.name) > -1) {
                 this.infos[e.target.name] = e.target.value
-                this.changeElementInfo(e.target.name, e.target.value)
+                this._changeElementInfo(e.target.name, e.target.value)
             }
         })
         this.cy.on('select click', () => {
@@ -30,7 +30,7 @@ class EditElements {
         })
     }
 
-    initPanel () {
+    _initPanel () {
         let {options} = this
         if (options.container) {
             if (typeof options.container === 'string') {
@@ -46,11 +46,11 @@ class EditElements {
             this.pannel = document.createElement('div')
             document.body.appendChild(this.pannel)
         }
-        this.pannelHtml()
+        this._pannelHtml()
         this.pannel.style.display = 'none'
     }
 
-    pannelHtml(params = {showName:true,showBgColor:true,showColor:true,showRect:true, colorTitle:'文字'}) {
+    _pannelHtml(params = {showName:true,showBgColor:true,showColor:true,showRect:true, colorTitle:'文字'}) {
         this.pannel.innerHTML = `<div class="pannel-title">元素${params.titile || ''}</div>
                <div class="pannel-body" id="info-items">
                 <div class="info-item-wrap" style="${!params.showName?'display:none':''}">名称：
@@ -75,7 +75,7 @@ class EditElements {
              </div>`
     }
 
-    changeElementInfo(name,value) {
+    _changeElementInfo(name,value) {
         if(name === 'name') {
             this.selected[0].data({name:value})
             return
@@ -92,13 +92,14 @@ class EditElements {
 
     showElementsInfo () {
         let selected = this.cy.$(':selected')
+        this.selected = selected
         let allNode = selected.every(it=>it.isNode())
         let opt = { showName: allNode,showBgColor:allNode, showColor:true, showRect:allNode, colorTitle: allNode?'文字':'颜色' }
         if (selected.length > 1) {
             this.infos.name = '';
-            this.pannelHtml(opt)
+            this._pannelHtml(opt)
         } else if (selected.length === 1) {
-            this.pannelHtml(opt)
+            this._pannelHtml(opt)
             this.pannel.style.display = 'block'
             let el = selected[0]
             this.options.attrs.forEach(item => {
@@ -123,18 +124,11 @@ class EditElements {
     }
 }
 
-// registers the extension on a cytoscape lib ref
-function register ( cytoscape ) {
-    if (!cytoscape) { return } // can't register if cytoscape unspecified
+export default  ( cytoscape ) => {
+    if (!cytoscape) { return }
 
     cytoscape('core', 'editElements', function ( params ) {
-        let cy = this
-        return new EditElements(cy, params)
-    }) // register with cytoscape.js
+        return new EditElements(this, params)
+    })
 }
 
-if (typeof cytoscape !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
-    register(cytoscape)
-}
-
-export default  register

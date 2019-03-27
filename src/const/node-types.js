@@ -3,7 +3,7 @@
  */
 
 // import rectangle from './node-svgs/rectangle.svg'
-// import ellipse  from './node-svgs/ellipse.svg'
+import ellipse  from './node-svgs/ellipse.svg'
 // import triangle  from './node-svgs/triangle.svg'
 import roundRectangle  from './node-svgs/round-rectangle.svg'
 // import bottomRoundRectangle  from './node-svgs/bottom-round-rectangle.svg'
@@ -21,11 +21,11 @@ import roundRectangle  from './node-svgs/round-rectangle.svg'
 // import vee  from './node-svgs/vee.svg'
 // import polygon  from './node-svgs/polygon.svg'
 
-const nodeTypes = [
+const defaultNodeTypes = [
     // {type: 'rectangle', src: rectangle},
-    // {type: 'ellipse', src: ellipse},
+    {type: 'ellipse', src: ellipse, bg: '#1890FF', resize: true, width: 76, height: 76},
     // {type: 'triangle', src: triangle},
-    {type: 'round-rectangle', src: roundRectangle, bg:'#90235d',resize:true, width:100, height: 60},
+    {type: 'round-rectangle', src: roundRectangle, bg: '#1890FF', resize: true, width: 76, height: 56},
     // {type: 'bottom-round-rectangle', src: bottomRoundRectangle},
     // {type: 'cut-rectangle', src: cutRectangle},
     // {type: 'barrel', src: barrel},
@@ -59,25 +59,43 @@ const nodeTypes = [
     // }
 ]
 
-const nodeStyles = [ {
-    'selector': 'node',
-    'style': {
-        'shape': 'data(type)',
-        'label': 'data(type)',
-        'height': 40,
-        'width': 40
+const defaultNodeStyles = [
+    {
+        'selector': 'node[type]',
+        'style': {
+            'shape': 'data(type)',
+            'label': 'data(type)',
+            'height': 'data(height)',
+            'width': 'data(width)',
+            'text-valign': 'center',
+            'text-halign': 'center'
+        }
+    }, {
+        'selector': 'node[points]',
+        'style': {
+            'shape-polygon-points': 'data(points)',
+            'label': 'polygon\n(custom points)',
+            'text-wrap': 'wrap'
+        }
+    }, {
+        'selector': 'node[name]',
+        'style': {
+            'content': 'data(name)'
+        }
+    }, {
+        'selector': 'node[bg]',
+        'style': {
+            'background-opacity': 0.46,
+            'background-color': 'data(bg)',
+            'border-width': 2,
+            'border-opacity': 0.8,
+            'border-color': 'data(bg)'
+        }
     }
-}, {
-    'selector': 'node[points]',
-    'style': {
-        'shape-polygon-points': 'data(points)',
-        'label': 'data(type)',
-        'text-wrap': 'wrap'
-    }
-} ]
+]
 
-function getNodeConf(type) {
-    return nodeTypes.find(item=>item.type === type)
+function getNodeConf ( type ) {
+    return defaultNodeTypes.find(item => item.type === type)
 }
 
-export { nodeTypes, nodeStyles , getNodeConf}
+export { defaultNodeTypes, defaultNodeStyles, getNodeConf }
