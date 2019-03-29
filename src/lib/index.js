@@ -4,14 +4,17 @@
 
 import cytoscape from 'cytoscape'
 import edgehandles from 'cytoscape-edgehandles'
-import dragAddNodes from './cyeditor-drag-add-nodes'
-import cynavigator from './cyeditor-navigator'
-import editElements from './cyeditor-edit-elements'
-import noderesize from '././cyeditor-node-resize'
-import snapGrid from '././cyeditor-snap-grid'
+
 import utils from '../utils'
-import {defaultConfData,defaultEdgeStyles,defaultNodeStyles} from '../const'
-import './cyeditor-navigator/style.css'
+import toolbar from './cyeditor-toolbar'
+import snapGrid from './cyeditor-snap-grid'
+import cynavigator from './cyeditor-navigator'
+import noderesize from './cyeditor-node-resize'
+import editElements from './cyeditor-edit-elements'
+import dragAddNodes from './cyeditor-drag-add-nodes'
+import { defaultConfData, defaultEdgeStyles, defaultNodeStyles } from '../const'
+
+import '../assets/css/fontello.css'
 import './index.css'
 
 cytoscape.use(edgehandles)
@@ -20,8 +23,7 @@ cytoscape.use(snapGrid)
 cytoscape.use(noderesize)
 cytoscape.use(dragAddNodes)
 cytoscape.use(editElements)
-
-
+cytoscape.use(toolbar)
 
 let defaults = {
     cy: {
@@ -30,13 +32,15 @@ let defaults = {
             name: 'concentric',
             fit: false,
             concentric: function ( n ) { return n.id() === 'j' ? 200 : 0 },
-            levelWidth: function ( nodes ) { return 100 },
+            //levelWidth: function ( nodes ) { return 100 },
             minNodeSpacing: 100
         },
         style: [
             ...defaultEdgeStyles,
             ...defaultNodeStyles
         ],
+        minZoom: 0.1,
+        maxZoom: 10,
         elements: {
             nodes: [
                 {data: {id: 'j', name: 'Jerry', resize: true, bg: '#90235d'}},
@@ -58,26 +62,30 @@ let defaults = {
         }
     },
     editor: {
-        snapGrid: false
+        snapGrid: false,
+        zoomRate: 0.2
     }
 }
 
 export default class CyEditor {
     constructor ( params = defaults ) {
-        this.plugins = {}
-        this.initOptions(params)
-        this.init()
+        if(params.editor.zoomRate<=0 || params.editor.zoomRate>=1){
+            console.error('zoomRate must be float number, greater than 0 and less than 1')
+        }
+        this._plugins = {}
+        this._listeners = {}
+        this._initOptions(params)
+        this._init()
     }
 
-    init () {
-        this.initEditor()
-        this.initConf()
-        this.initCy()
-        this.initPlugin()
-        this.initEvents()
+    _init () {
+        this._initEditor()
+        this._initCy()
+        this._initPlugin()
+        this._initEvents()
     }
 
-    initOptions ( params ) {
+    _initOptions ( params ) {
         this.editorOptions = Object.assign(defaults.editor, params.editor)
         this.cyOptions = Object.assign(defaults.cy, params.cy)
         if (this.cyOptions.elements) {
@@ -94,7 +102,7 @@ export default class CyEditor {
         }
     }
 
-    initCy () {
+    _initCy () {
         if (typeof this.cyOptions.container === 'string') {
             this.cyOptions.container = utils.query(this.cyOptions.container)[ 0 ]
         }
@@ -103,12 +111,9 @@ export default class CyEditor {
             return
         }
         this.cy = cytoscape(this.cyOptions)
-        this.cy.on('click', function ( e ) {
-            console.log(e.target.style())
-        })
     }
 
-    initEditor () {
+    _initEditor () {
         let domHtml = `<div id="toolbar">
                         </div>
                         <div id="editor">
@@ -117,14 +122,8 @@ export default class CyEditor {
                             </div>
                         <div id="cy"></div>
                         <div class="right">
-                            <div class="pannel-title">导航器</div>
+                            <div class="panel-title">导航器</div>
                             <div id="thumb"></div>
-                            <div class="pannel-title">画布</div>
-                            <div class="pannel-body">
-                                <div class="p">网格对齐：
-                                    <input class="checkbox" name="cyeditor_showgrid" id="cyeditor_showgrid" value="" type="checkbox" />
-                                </div>
-                            </div>
                             <div id="info"></div>
                         </div>
                        </div>`
@@ -148,20 +147,17 @@ export default class CyEditor {
         editorContianer.innerHTML = domHtml
     }
 
-    initConf () {
-        utils.$('cyeditor_showgrid').checked = this.editorOptions.snapGrid
+    _initEvents () {
+        this._listeners.showElementInfo = () => {
+            this._plugins.editElements.showElementsInfo()
+        }
+        this._listeners.handleCommand = this._handleCommand.bind(this)
+
+        this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
+            .on('cyeditor.toolbar-command', this._listeners.handleCommand)
     }
 
-    initEvents () {
-        utils.$('cyeditor_showgrid').addEventListener('change', ( e ) => {
-            this.toggleGrid(e.target.checked)
-        })
-        this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing',()=>{
-            this.plugins.editElements.showElementsInfo()
-        })
-    }
-
-    initPlugin () {
+    _initPlugin () {
         // edge
         this.cy.edgehandles({
             snap: true
@@ -171,7 +167,7 @@ export default class CyEditor {
             container: '#thumb'
         })
 
-        if(this.editorOptions.snapGrid) {
+        if (this.editorOptions.snapGrid) {
             // snap-grid
             this.cySnapToGrid = this.cy.snapToGrid()
         }
@@ -186,23 +182,113 @@ export default class CyEditor {
         })
 
         // edit panel
-        this.plugins.editElements =  this.cy.editElements({
+        this._plugins.editElements = this.cy.editElements({
             container: '#info'
+        })
+
+        this._plugins.toolbar = this.cy.toolbar({
+            container: '#toolbar'
         })
     }
 
-    toggleGrid ( on ) {
-        if(this.cySnapToGrid) {
-            if(on ) {
+    _handleCommand ( evt, action ) {
+        if (typeof action === 'string') {
+            switch (action) {
+                case 'gridon' :
+                    this.toggleGrid()
+                    break
+                case 'zoomin' :
+                    this.zoom(1)
+                    break
+                case 'zoomout' :
+                    this.zoom(-1)
+                    break
+                case 'fit' :
+                    this.fit()
+                    break
+                case 'save' :
+                    this.save()
+                case 'delete' :
+                    this.deleteEl()
+                    break
+                default:
+                    break
+            }
+        }
+    }
+
+    deleteEl() {
+        let selected = this.cy.$(':selected')
+        if(selected.length) {
+            this.cy.remove(selected)
+        }
+    }
+
+    async save() {
+        try {
+            let blob = await this.cy.png({output:'blob-promise'})
+            if (window.navigator.msSaveBlob) {
+                window.navigator.msSaveBlob(blob, `chart-${Date.now()}.png`);
+            } else {
+                let a = document.createElement("a");
+                a.download = `chart-${Date.now()}.png`;
+                a.href = window.URL.createObjectURL(blob);
+                a.click();
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    fit() {
+        if (!this._initZoomState) {
+            let pan = this.cy.pan()
+            this._initZoomState = {
+                ...pan
+            }
+        }
+        this.cy.fit()
+    }
+
+    zoom ( type = 1, level ) {
+        level = level || this.editorOptions.zoomRate
+        let zoom = this.cy.zoom() * (1 + level * type)
+        let w = this.cy.width()
+        let h = this.cy.height()
+        zoom = zoom.toFixed(4) - 0
+        if (!this._initZoomState) {
+            let pan = this.cy.pan()
+            this._initZoomState = {
+                ...pan
+            }
+        }
+        this.cy.viewport({
+            zoom,
+            pan: {
+                x: -1 * w * (zoom - 1) / 2 + this._initZoomState.x,
+                y: -1 * h * (zoom - 1) / 2 + this._initZoomState.y
+            }
+        })
+    }
+
+    toggleGrid () {
+        this.editorOptions.snapGrid = !this.editorOptions.snapGrid
+        if (this.cySnapToGrid) {
+            if (this.editorOptions.snapGrid) {
                 this.cySnapToGrid.gridOn()
                 this.cySnapToGrid.snapOn()
             } else {
                 this.cySnapToGrid.gridOff()
                 this.cySnapToGrid.snapOff()
             }
-        }   else if(on) {
+        } else if (this.editorOptions.snapGrid) {
             this.cySnapToGrid = this.cy.snapToGrid()
         }
+    }
+
+    destroy() {
+        this.cy.off('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
+            .off('cyeditor.toolbar-command', this._listeners.handleCommand)
     }
 }
 

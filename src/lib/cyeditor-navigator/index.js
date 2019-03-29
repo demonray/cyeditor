@@ -13,24 +13,28 @@ let defaults = {
 
 class Navigator {
     constructor ( cy, options ) {
+        this.cy = cy
+        this._options = utils.extend({}, defaults, options)
         this._init(cy, options)
     }
 
-    bb () {
-        let bb = this.cy.elements().boundingBox()
+    _init ( ) {
+        this._cyListeners = []
+        this._contianer = this.cy.container()
 
-        if (bb.w === 0 || bb.h === 0) {
-            return {
-                x1: 0,
-                x2: Infinity,
-                y1: 0,
-                y2: Infinity,
-                w: Infinity,
-                h: Infinity
-            }
-        }
+        // Cache bounding box
+        this.boundingBox = this.bb()
 
-        return bb
+        let eleRect = this._contianer.getBoundingClientRect()
+        // Cache sizes
+        this.width = eleRect.width
+        this.height = eleRect.height
+
+        // Init components
+        this._initPanel()
+        this._initThumbnail()
+        this._initView()
+        this._initOverlay()
     }
 
     _addCyListener ( events, handler ) {
@@ -52,45 +56,8 @@ class Navigator {
         cy.offRender(this._onRenderHandler)
     }
 
-    _init ( cy, options ) {
-        this._cyListeners = []
-        this.$cyElement = cy.container()
-        this.options = utils.extend({}, defaults, options)
-
-        this.cy = cy
-
-        // Cache bounding box
-        this.boundingBox = this.bb()
-
-        let eleRect = this.$cyElement.getBoundingClientRect()
-        // Cache sizes
-        this.width = eleRect.width
-        this.height = eleRect.height
-
-        // Init components
-        this._initPanel()
-        this._initThumbnail()
-        this._initView()
-        this._initOverlay()
-    }
-
-    destroy () {
-        this._removeCyListeners()
-        this._removeEventsHandling()
-
-        // If container is not created by navigator and its removal is prohibited
-        if (this.options.container && !this.options.removeCustomContainer) {
-            let childs = this.$panel.childNodes
-            for (let i = childs.length - 1; i >= 0; i--) {
-                this.$panel.removeChild(childs[ i ])
-            }
-        } else {
-            this.$panel.parentNode.removeChild(this.$panel)
-        }
-    }
-
     _initPanel () {
-        let options = this.options
+        let options = this._options
 
         if (options.container) {
             if (typeof options.container === 'string') {
@@ -231,16 +198,6 @@ class Navigator {
         this._initEventsHandling()
     }
 
-    resize () {
-        // Cache sizes
-        let panelRect = this.$cyElement.getBoundingClientRect()
-        this.width = panelRect.width
-        this.height = panelRect.height
-        this._setupPanel()
-        this._checkThumbnailSizesAndUpdate()
-        this._setupView()
-    }
-
     _initEventsHandling () {
         let eventsLocal = [
             // Mouse events
@@ -359,7 +316,7 @@ class Navigator {
 
         // Check if it was double click
         if (this.overlayLastMoveStartTime
-            && this.overlayLastMoveStartTime + this.options.dblClickDelay > now) {
+            && this.overlayLastMoveStartTime + this._options.dblClickDelay > now) {
             // Reset lastMoveStartTime
             this.overlayLastMoveStartTime = 0
             // Enable View in order to move it to the center
@@ -370,7 +327,7 @@ class Navigator {
             this.overlayHookPointY = this.viewH / 2
 
             // Move View to start point
-            if (this.options.viewLiveFramerate !== false) {
+            if (this._options.viewLiveFramerate !== false) {
                 this._eventMove({
                     offsetX: this.panelWidth / 2,
                     offsetY: this.panelHeight / 2
@@ -433,9 +390,9 @@ class Navigator {
         this.$view.style.top = this.viewY + 'px'
 
         // Move Cy
-        if (this.options.viewLiveFramerate !== false) {
+        if (this._options.viewLiveFramerate !== false) {
             // trigger instantly
-            if (this.options.viewLiveFramerate == 0) {
+            if (this._options.viewLiveFramerate == 0) {
                 this._moveCy()
             }
             // trigger less often than frame rate
@@ -444,7 +401,7 @@ class Navigator {
                 this.overlayTimeout = setTimeout(()=> {
                     this._moveCy()
                     this.overlayTimeout = false
-                }, 1000 / this.options.viewLiveFramerate)
+                }, 1000 / this._options.viewLiveFramerate)
             }
         }
     }
@@ -474,7 +431,7 @@ class Navigator {
         this._eventMove(ev)
 
         // If mode is not live then move graph on drag end
-        if (this.options.viewLiveFramerate === false) {
+        if (this._options.viewLiveFramerate === false) {
             this._moveCy()
         }
 
@@ -535,7 +492,7 @@ class Navigator {
             img.style.top = translate.y + 'px'
         }
 
-        this._onRenderHandler = utils.throttle(render, this.options.rerenderDelay)
+        this._onRenderHandler = utils.throttle(render, this._options.rerenderDelay)
 
         this.cy.onRender(this._onRenderHandler)
     }
@@ -547,7 +504,7 @@ class Navigator {
         })
     }
 
-    _zoomCy ( zoomRate, zoomCenterRaw ) {
+    _zoomCy ( zoomRate ) {
         let zoomCenter = {
             x: this.width / 2,
             y: this.height / 2
@@ -558,6 +515,49 @@ class Navigator {
             renderedPosition: zoomCenter
         })
     }
+
+    destroy () {
+        this._removeCyListeners()
+        this._removeEventsHandling()
+
+        // If container is not created by navigator and its removal is prohibited
+        if (this._options.container && !this._options.removeCustomContainer) {
+            let childs = this.$panel.childNodes
+            for (let i = childs.length - 1; i >= 0; i--) {
+                this.$panel.removeChild(childs[ i ])
+            }
+        } else {
+            this.$panel.parentNode.removeChild(this.$panel)
+        }
+    }
+
+    resize () {
+        // Cache sizes
+        let panelRect = this._contianer.getBoundingClientRect()
+        this.width = panelRect.width
+        this.height = panelRect.height
+        this._setupPanel()
+        this._checkThumbnailSizesAndUpdate()
+        this._setupView()
+    }
+
+    bb () {
+        let bb = this.cy.elements().boundingBox()
+
+        if (bb.w === 0 || bb.h === 0) {
+            return {
+                x1: 0,
+                x2: Infinity,
+                y1: 0,
+                y2: Infinity,
+                w: Infinity,
+                h: Infinity
+            }
+        }
+
+        return bb
+    }
+
 }
 
 export default ( cytoscape ) => {

@@ -11,9 +11,9 @@ const defaults = {
 }
 
 class DragAddNodes {
-    constructor ( cy, params = defaults ) {
+    constructor ( cy, params ) {
         this.cy = cy
-        this.options = Object.assign(defaults, params)
+        this._options = Object.assign(defaults, params)
         this._initShapePanel()
         this._initShapeItems()
         this._initEvents()
@@ -23,7 +23,7 @@ class DragAddNodes {
         let shapes = defaultNodeTypes.filter(item => item.type && item.src).map(item => {
             return `<img src="${item.src}"  class="shape-item" draggable="true" data-type="${item.type}" />`
         }).join('')
-        this.shapePanel.innerHTML = shapes
+        this._shapePanel.innerHTML = shapes
     }
 
     _initEvents () {
@@ -62,27 +62,27 @@ class DragAddNodes {
             data: {type, name, resize, bg, width, height},
             position: rect
         }
-        if (this.options.addWhenDrop) {
+        if (this._options.addWhenDrop) {
             this.cy.add(node)
         }
         this.cy.trigger('cyeditor.addnode', node)
     }
 
     _initShapePanel () {
-        let {options} = this
-        if (options.container) {
-            if (typeof options.container === 'string') {
-                this.shapePanel = utils.query(options.container)[ 0 ]
-            } else if (utils.isNode(options.container)) {
-                this.shapePanel = options.container
+        let { _options } = this
+        if (_options.container) {
+            if (typeof _options.container === 'string') {
+                this._shapePanel = utils.query(_options.container)[ 0 ]
+            } else if (utils.isNode(_options.container)) {
+                this._shapePanel = _options.container
             }
-            if (!this.shapePanel) {
+            if (!this._shapePanel) {
                 console.error('There is no any element matching your container')
                 return
             }
         } else {
-            this.shapePanel = document.createElement('div')
-            document.body.appendChild(this.shapePanel)
+            this._shapePanel = document.createElement('div')
+            document.body.appendChild(this._shapePanel)
         }
     }
 }

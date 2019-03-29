@@ -1,13 +1,3 @@
-#toolbar {
-    padding: 8px 0px;
-    width: 100%;
-    border: 1px solid #E9E9E9;
-    height: 42px;
-    z-index: 3;
-    box-shadow: 0px 8px 12px 0px rgba(0, 52, 107, 0.04);
-    position: absolute;
-}
-
 #editor {
     position: absolute;
     top: 42px;
@@ -51,7 +41,7 @@
     border-left: 1px solid #E6E9ED;
 }
 
-#editor .right .pannel-title {
+#editor .right .panel-title {
     height: 32px;
     border-top: 1px solid #DCE3E8;
     border-bottom: 1px solid #DCE3E8;
@@ -62,7 +52,7 @@
 
 }
 
-#editor .right .pannel-body {
+#editor .right .panel-body {
     padding: 16px 8px
 }
 
@@ -141,4 +131,83 @@
     margin: 10px auto;
     height: 160px;
     border: none;
+}
+
+#toolbar {
+    padding: 8px 10px;
+    width: 100%;
+    border: 1px solid #E9E9E9;
+    height: 42px;
+    z-index: 3;
+    box-shadow: 0px 8px 12px 0px rgba(0, 52, 107, 0.04);
+    position: absolute;
+}
+
+#toolbar .command {
+    width: 27px;
+    height: 27px;
+    line-height:27px;
+    margin: 0px 6px;
+    border-radius: 2px;
+    display: inline-block;
+    border: 1px solid rgba(2,2,2,0);
+    text-align: center;
+}
+
+#toolbar .disable {
+    color: rgba(0,0,0,0.25);
+}
+
+#toolbar .command:hover {
+    cursor: pointer;
+    border: 1px solid #E9E9E9;
+}
+
+/*
+ *  navigator
+*/
+
+.cytoscape-navigator {
+    position: fixed;
+    border: 1px solid #e4e4e4;
+    background: #fff;
+    z-index: 99999;
+    width: 100%;
+    height: 100%;
+    min-width: 100px;
+    min-height: 100px;
+    bottom: 0;
+    right: 0;
+    overflow: hidden;
+}
+
+.cytoscape-navigator > img{
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.cytoscape-navigator > canvas{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 101;
+}
+
+.cytoscape-navigatorView{
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: move;
+    background: #B7E1ED;
+    opacity: 0.50;
+    z-index: 102;
+}
+
+.cytoscape-navigatorOverlay{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 103;
 }

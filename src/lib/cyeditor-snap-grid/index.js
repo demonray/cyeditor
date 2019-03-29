@@ -23,10 +23,10 @@ class SnapToGrid {
     }
 
     _init () {
-        this.container = this.cy.container()
+        this._container = this.cy.container()
         this.canvas = document.createElement('canvas')
         this.ctx = this.canvas.getContext('2d')
-        this.container.append(this.canvas)
+        this._container.append(this.canvas)
     }
 
     _initEvents () {
@@ -46,7 +46,7 @@ class SnapToGrid {
     }
 
     _resizeCanvas() {
-        let rect = this.container.getBoundingClientRect()
+        let rect = this._container.getBoundingClientRect()
         this.canvas.height = rect.height
         this.canvas.width = rect.width
         this.canvas.style.position = 'absolute'
@@ -56,7 +56,7 @@ class SnapToGrid {
 
         setTimeout(() => {
             let canvasBb = utils.offset(this.canvas)
-            let containerBb = utils.offset(this.container)
+            let containerBb = utils.offset(this._container)
             this.canvas.style.top = -( canvasBb.top - containerBb.top )
             this.canvas.style.left = -( canvasBb.left - containerBb.left )
             this._drawGrid()
@@ -71,7 +71,7 @@ class SnapToGrid {
         }
 
         let zoom = this.cy.zoom()
-        let rect = this.container.getBoundingClientRect()
+        let rect = this._container.getBoundingClientRect()
         let canvasWidth = rect.width
         let canvasHeight = rect.height
         let increment = this._options.gridSpacing * zoom
@@ -177,7 +177,7 @@ class SnapToGrid {
     }
 
     clear() {
-        let rect = this.container.getBoundingClientRect()
+        let rect = this._container.getBoundingClientRect()
         let width = rect.width
         let height = rect.height
 

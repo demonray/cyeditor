@@ -11,17 +11,17 @@ const defaults = {
 class EditElements {
     constructor ( cy, params ) {
         this.cy = cy
-        this.options = Object.assign(defaults,params)
-        this.infos = {}
+        this._options = Object.assign(defaults, params)
+        this._infos = {}
         this.selected = []
         this._initPanel()
         this._initEvents()
     }
 
     _initEvents () {
-        this.pannel.addEventListener('input', ( e ) => { // debounce todo
-            if (this.options.attrs.indexOf(e.target.name) > -1) {
-                this.infos[e.target.name] = e.target.value
+        this._panel.addEventListener('input', ( e ) => { // debounce todo
+            if (this._options.attrs.indexOf(e.target.name) > -1) {
+                this._infos[e.target.name] = e.target.value
                 this._changeElementInfo(e.target.name, e.target.value)
             }
         })
@@ -31,28 +31,28 @@ class EditElements {
     }
 
     _initPanel () {
-        let {options} = this
-        if (options.container) {
-            if (typeof options.container === 'string') {
-                this.pannel = utils.query(options.container)[ 0 ]
-            } else if (utils.isNode(options.container)) {
-                this.pannel = options.container
+        let {_options} = this
+        if (_options.container) {
+            if (typeof _options.container === 'string') {
+                this._panel = utils.query(_options.container)[ 0 ]
+            } else if (utils.isNode(_options.container)) {
+                this._panel = _options.container
             }
-            if (!this.pannel) {
+            if (!this._panel) {
                 console.error('There is no any element matching your container')
                 return
             }
         } else {
-            this.pannel = document.createElement('div')
-            document.body.appendChild(this.pannel)
+            this._panel = document.createElement('div')
+            document.body.appendChild(this._panel)
         }
-        this._pannelHtml()
-        this.pannel.style.display = 'none'
+        this._panelHtml()
+        this._panel.style.display = 'none'
     }
 
-    _pannelHtml(params = {showName:true,showBgColor:true,showColor:true,showRect:true, colorTitle:'文字'}) {
-        this.pannel.innerHTML = `<div class="pannel-title">元素${params.titile || ''}</div>
-               <div class="pannel-body" id="info-items">
+    _panelHtml(params = {showName:true,showBgColor:true,showColor:true,showRect:true, colorTitle:'文字'}) {
+        this._panel.innerHTML = `<div class="panel-title">元素${params.titile || ''}</div>
+               <div class="panel-body" id="info-items">
                 <div class="info-item-wrap" style="${!params.showName?'display:none':''}">名称：
                     <input class="input info-item" name="name" type="text" value="">
                 </div>
@@ -96,29 +96,29 @@ class EditElements {
         let allNode = selected.every(it=>it.isNode())
         let opt = { showName: allNode,showBgColor:allNode, showColor:true, showRect:allNode, colorTitle: allNode?'文字':'颜色' }
         if (selected.length > 1) {
-            this.infos.name = '';
-            this._pannelHtml(opt)
+            this._infos.name = '';
+            this._panelHtml(opt)
         } else if (selected.length === 1) {
-            this._pannelHtml(opt)
-            this.pannel.style.display = 'block'
+            this._panelHtml(opt)
+            this._panel.style.display = 'block'
             let el = selected[0]
-            this.options.attrs.forEach(item => {
+            this._options.attrs.forEach(item => {
                 if(item === 'name') { // from data
-                    this.infos[item] = el.data('name')
+                    this._infos[item] = el.data('name')
                 } else if(item === 'color' || item === 'background-color' ) {
                     let color = el.numericStyle(item)
-                    this.infos[item] = '#' + utils.RGBToHex(...color)
+                    this._infos[item] = '#' + utils.RGBToHex(...color)
                 } else {
-                    this.infos[item] = el.numericStyle(item)
+                    this._infos[item] = el.numericStyle(item)
                 }
             })
         } else {
-            this.pannel.style.display = 'none'
+            this._panel.style.display = 'none'
         }
-        this.options.attrs.filter(item=> this.infos[item] ).forEach(name=> {
+        this._options.attrs.filter(item=> this._infos[item] ).forEach(name=> {
             let item = utils.query(`#info-items input[name=${name}`)
             if(item.length) {
-                item[0].value = this.infos[name];
+                item[0].value = this._infos[name];
             }
         })
     }
