@@ -26,95 +26,95 @@ cytoscape.use(editElements)
 cytoscape.use(toolbar)
 
 let defaults = {
-    cy: {
-        container: '#cy',
-        layout: {
-            name: 'concentric',
-            fit: false,
-            concentric: function ( n ) { return n.id() === 'j' ? 200 : 0 },
-            //levelWidth: function ( nodes ) { return 100 },
-            minNodeSpacing: 100
-        },
-        style: [
-            ...defaultEdgeStyles,
-            ...defaultNodeStyles
-        ],
-        minZoom: 0.1,
-        maxZoom: 10,
-        elements: {
-            nodes: [
-                {data: {id: 'j', name: 'Jerry', resize: true, bg: '#90235d'}},
-                {data: {id: 'e', name: 'Elaine', resize: true, bg: '#f0545d'}},
-                {data: {id: 'k', name: 'Kramer', resize: true, bg: '#9954fd'}},
-                {data: {id: 'g', name: 'George', type: 'vee', bg: '#00888d'}}
-            ],
-            edges: [
-                {data: {source: 'j', target: 'e', lineColor: '#999'}},
-                {data: {source: 'j', target: 'k'}},
-                {data: {source: 'j', target: 'g'}},
-                {data: {source: 'e', target: 'j'}},
-                {data: {source: 'e', target: 'k'}},
-                {data: {source: 'k', target: 'j'}},
-                {data: {source: 'k', target: 'e'}},
-                {data: {source: 'k', target: 'g'}},
-                {data: {source: 'g', target: 'j'}}
-            ]
-        }
+  cy: {
+    container: '#cy',
+    layout: {
+      name: 'concentric',
+      fit: false,
+      concentric: function (n) { return n.id() === 'j' ? 200 : 0 },
+      // levelWidth: function ( nodes ) { return 100 },
+      minNodeSpacing: 100
     },
-    editor: {
-        snapGrid: false,
-        zoomRate: 0.2
+    style: [
+      ...defaultEdgeStyles,
+      ...defaultNodeStyles
+    ],
+    minZoom: 0.1,
+    maxZoom: 10,
+    elements: {
+      nodes: [
+        { data: { id: 'j', name: 'Jerry', resize: true, bg: '#90235d' } },
+        { data: { id: 'e', name: 'Elaine', resize: true, bg: '#f0545d' } },
+        { data: { id: 'k', name: 'Kramer', resize: true, bg: '#9954fd' } },
+        { data: { id: 'g', name: 'George', type: 'vee', bg: '#00888d' } }
+      ],
+      edges: [
+        { data: { source: 'j', target: 'e', lineColor: '#999' } },
+        { data: { source: 'j', target: 'k' } },
+        { data: { source: 'j', target: 'g' } },
+        { data: { source: 'e', target: 'j' } },
+        { data: { source: 'e', target: 'k' } },
+        { data: { source: 'k', target: 'j' } },
+        { data: { source: 'k', target: 'e' } },
+        { data: { source: 'k', target: 'g' } },
+        { data: { source: 'g', target: 'j' } }
+      ]
     }
+  },
+  editor: {
+    snapGrid: false,
+    zoomRate: 0.2
+  }
 }
 
 export default class CyEditor {
-    constructor ( params = defaults ) {
-        if(params.editor.zoomRate<=0 || params.editor.zoomRate>=1){
-            console.error('zoomRate must be float number, greater than 0 and less than 1')
-        }
-        this._plugins = {}
-        this._listeners = {}
-        this._initOptions(params)
-        this._init()
+  constructor (params = defaults) {
+    if (params.editor.zoomRate <= 0 || params.editor.zoomRate >= 1) {
+      console.error('zoomRate must be float number, greater than 0 and less than 1')
     }
+    this._plugins = {}
+    this._listeners = {}
+    this._initOptions(params)
+    this._init()
+  }
 
-    _init () {
-        this._initEditor()
-        this._initCy()
-        this._initPlugin()
-        this._initEvents()
+  _init () {
+    this._initEditor()
+    this._initCy()
+    this._initPlugin()
+    this._initEvents()
+  }
+
+  _initOptions (params) {
+    this.editorOptions = Object.assign(defaults.editor, params.editor)
+    this.cyOptions = Object.assign(defaults.cy, params.cy)
+    if (this.cyOptions.elements) {
+      if (Array.isArray(this.cyOptions.elements.nodes)) {
+        this.cyOptions.elements.nodes.forEach(node => {
+          node.data = Object.assign({}, defaultConfData.node, node.data)
+        })
+      }
+      if (Array.isArray(this.cyOptions.elements.edges)) {
+        this.cyOptions.elements.edges.forEach(edge => {
+          edge.data = Object.assign({}, defaultConfData.edge, edge.data)
+        })
+      }
     }
+  }
 
-    _initOptions ( params ) {
-        this.editorOptions = Object.assign(defaults.editor, params.editor)
-        this.cyOptions = Object.assign(defaults.cy, params.cy)
-        if (this.cyOptions.elements) {
-            if (Array.isArray(this.cyOptions.elements.nodes)) {
-                this.cyOptions.elements.nodes.forEach(node => {
-                    node.data = Object.assign({}, defaultConfData.node, node.data)
-                })
-            }
-            if (Array.isArray(this.cyOptions.elements.edges)) {
-                this.cyOptions.elements.edges.forEach(edge => {
-                    edge.data = Object.assign({}, defaultConfData.edge, edge.data)
-                })
-            }
-        }
+  _initCy () {
+    if (typeof this.cyOptions.container === 'string') {
+      this.cyOptions.container = utils.query(this.cyOptions.container)[ 0 ]
     }
-
-    _initCy () {
-        if (typeof this.cyOptions.container === 'string') {
-            this.cyOptions.container = utils.query(this.cyOptions.container)[ 0 ]
-        }
-        if (!this.cyOptions.container) {
-            console.error('There is no any element matching your container')
-            return
-        }
-        this.cy = cytoscape(this.cyOptions)
+    if (!this.cyOptions.container) {
+      console.error('There is no any element matching your container')
+      return
     }
+    this.cy = cytoscape(this.cyOptions)
+  }
 
-    _initEditor () {
-        let domHtml = `<div id="toolbar">
+  _initEditor () {
+    let domHtml = `<div id="toolbar">
                         </div>
                         <div id="editor">
                             <div class="left">
@@ -128,167 +128,167 @@ export default class CyEditor {
                         </div>
                        </div>`
 
-        let {editorOptions} = this
-        let editorContianer
-        if (editorOptions.container) {
-            if (typeof editorOptions.container === 'string') {
-                editorContianer = utils.query(editorOptions.container)[ 0 ]
-            } else if (utils.isNode(editorOptions.container)) {
-                editorContianer = editorOptions.container
-            }
-            if (!editorContianer) {
-                console.error('There is no any element matching your container')
-                return
-            }
-        } else {
-            editorContianer = document.createElement('div')
-            document.body.appendChild(editorContianer)
-        }
-        editorContianer.innerHTML = domHtml
+    let { editorOptions } = this
+    let editorContianer
+    if (editorOptions.container) {
+      if (typeof editorOptions.container === 'string') {
+        editorContianer = utils.query(editorOptions.container)[ 0 ]
+      } else if (utils.isNode(editorOptions.container)) {
+        editorContianer = editorOptions.container
+      }
+      if (!editorContianer) {
+        console.error('There is no any element matching your container')
+        return
+      }
+    } else {
+      editorContianer = document.createElement('div')
+      document.body.appendChild(editorContianer)
+    }
+    editorContianer.innerHTML = domHtml
+  }
+
+  _initEvents () {
+    this._listeners.showElementInfo = () => {
+      this._plugins.editElements.showElementsInfo()
+    }
+    this._listeners.handleCommand = this._handleCommand.bind(this)
+
+    this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
+      .on('cyeditor.toolbar-command', this._listeners.handleCommand)
+  }
+
+  _initPlugin () {
+    // edge
+    this.cy.edgehandles({
+      snap: true
+    })
+    // navigator
+    this.cy.navigator({
+      container: '#thumb'
+    })
+
+    if (this.editorOptions.snapGrid) {
+      // snap-grid
+      this.cySnapToGrid = this.cy.snapToGrid()
     }
 
-    _initEvents () {
-        this._listeners.showElementInfo = () => {
-            this._plugins.editElements.showElementsInfo()
-        }
-        this._listeners.handleCommand = this._handleCommand.bind(this)
+    this.cy.noderesize({
+      selector: 'node[resize]'
+    })
 
-        this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
-            .on('cyeditor.toolbar-command', this._listeners.handleCommand)
+    // drag node add to cy
+    this.cy.dragAddNodes({
+      container: '.shapes'
+    })
+
+    // edit panel
+    this._plugins.editElements = this.cy.editElements({
+      container: '#info'
+    })
+
+    this._plugins.toolbar = this.cy.toolbar({
+      container: '#toolbar'
+    })
+  }
+
+  _handleCommand (evt, action) {
+    if (typeof action === 'string') {
+      switch (action) {
+        case 'gridon' :
+          this.toggleGrid()
+          break
+        case 'zoomin' :
+          this.zoom(1)
+          break
+        case 'zoomout' :
+          this.zoom(-1)
+          break
+        case 'fit' :
+          this.fit()
+          break
+        case 'save' :
+          this.save()
+          break
+        case 'delete' :
+          this.deleteEl()
+          break
+        default:
+          break
+      }
     }
+  }
 
-    _initPlugin () {
-        // edge
-        this.cy.edgehandles({
-            snap: true
-        })
-        // navigator
-        this.cy.navigator({
-            container: '#thumb'
-        })
-
-        if (this.editorOptions.snapGrid) {
-            // snap-grid
-            this.cySnapToGrid = this.cy.snapToGrid()
-        }
-
-        this.cy.noderesize({
-            selector: 'node[resize]'
-        })
-
-        // drag node add to cy
-        this.cy.dragAddNodes({
-            container: '.shapes'
-        })
-
-        // edit panel
-        this._plugins.editElements = this.cy.editElements({
-            container: '#info'
-        })
-
-        this._plugins.toolbar = this.cy.toolbar({
-            container: '#toolbar'
-        })
+  deleteEl () {
+    let selected = this.cy.$(':selected')
+    if (selected.length) {
+      this.cy.remove(selected)
     }
+  }
 
-    _handleCommand ( evt, action ) {
-        if (typeof action === 'string') {
-            switch (action) {
-                case 'gridon' :
-                    this.toggleGrid()
-                    break
-                case 'zoomin' :
-                    this.zoom(1)
-                    break
-                case 'zoomout' :
-                    this.zoom(-1)
-                    break
-                case 'fit' :
-                    this.fit()
-                    break
-                case 'save' :
-                    this.save()
-                case 'delete' :
-                    this.deleteEl()
-                    break
-                default:
-                    break
-            }
-        }
+  async save () {
+    try {
+      let blob = await this.cy.png({ output: 'blob-promise' })
+      if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob(blob, `chart-${Date.now()}.png`)
+      } else {
+        let a = document.createElement('a')
+        a.download = `chart-${Date.now()}.png`
+        a.href = window.URL.createObjectURL(blob)
+        a.click()
+      }
+    } catch (e) {
+      console.log(e)
     }
+  }
 
-    deleteEl() {
-        let selected = this.cy.$(':selected')
-        if(selected.length) {
-            this.cy.remove(selected)
-        }
+  fit () {
+    if (!this._initZoomState) {
+      let pan = this.cy.pan()
+      this._initZoomState = {
+        ...pan
+      }
     }
+    this.cy.fit()
+  }
 
-    async save() {
-        try {
-            let blob = await this.cy.png({output:'blob-promise'})
-            if (window.navigator.msSaveBlob) {
-                window.navigator.msSaveBlob(blob, `chart-${Date.now()}.png`);
-            } else {
-                let a = document.createElement("a");
-                a.download = `chart-${Date.now()}.png`;
-                a.href = window.URL.createObjectURL(blob);
-                a.click();
-            }
-        } catch (e) {
-            console.log(e)
-        }
+  zoom (type = 1, level) {
+    level = level || this.editorOptions.zoomRate
+    let zoom = this.cy.zoom() * (1 + level * type)
+    let w = this.cy.width()
+    let h = this.cy.height()
+    zoom = zoom.toFixed(4) - 0
+    if (!this._initZoomState) {
+      let pan = this.cy.pan()
+      this._initZoomState = {
+        ...pan
+      }
     }
+    this.cy.viewport({
+      zoom,
+      pan: {
+        x: -1 * w * (zoom - 1) / 2 + this._initZoomState.x,
+        y: -1 * h * (zoom - 1) / 2 + this._initZoomState.y
+      }
+    })
+  }
 
-    fit() {
-        if (!this._initZoomState) {
-            let pan = this.cy.pan()
-            this._initZoomState = {
-                ...pan
-            }
-        }
-        this.cy.fit()
+  toggleGrid () {
+    this.editorOptions.snapGrid = !this.editorOptions.snapGrid
+    if (this.cySnapToGrid) {
+      if (this.editorOptions.snapGrid) {
+        this.cySnapToGrid.gridOn()
+        this.cySnapToGrid.snapOn()
+      } else {
+        this.cySnapToGrid.gridOff()
+        this.cySnapToGrid.snapOff()
+      }
+    } else if (this.editorOptions.snapGrid) {
+      this.cySnapToGrid = this.cy.snapToGrid()
     }
+  }
 
-    zoom ( type = 1, level ) {
-        level = level || this.editorOptions.zoomRate
-        let zoom = this.cy.zoom() * (1 + level * type)
-        let w = this.cy.width()
-        let h = this.cy.height()
-        zoom = zoom.toFixed(4) - 0
-        if (!this._initZoomState) {
-            let pan = this.cy.pan()
-            this._initZoomState = {
-                ...pan
-            }
-        }
-        this.cy.viewport({
-            zoom,
-            pan: {
-                x: -1 * w * (zoom - 1) / 2 + this._initZoomState.x,
-                y: -1 * h * (zoom - 1) / 2 + this._initZoomState.y
-            }
-        })
-    }
-
-    toggleGrid () {
-        this.editorOptions.snapGrid = !this.editorOptions.snapGrid
-        if (this.cySnapToGrid) {
-            if (this.editorOptions.snapGrid) {
-                this.cySnapToGrid.gridOn()
-                this.cySnapToGrid.snapOn()
-            } else {
-                this.cySnapToGrid.gridOff()
-                this.cySnapToGrid.snapOff()
-            }
-        } else if (this.editorOptions.snapGrid) {
-            this.cySnapToGrid = this.cy.snapToGrid()
-        }
-    }
-
-    destroy() {
-        this.cy.off('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
-            .off('cyeditor.toolbar-command', this._listeners.handleCommand)
-    }
+  destroy () {
+    this.cy.off('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
+      .off('cyeditor.toolbar-command', this._listeners.handleCommand)
+  }
 }
-

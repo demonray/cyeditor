@@ -12,7 +12,7 @@ export default {
   components: {},
   data () {
     return {
-        showGrid: true
+      showGrid: true
     }
   },
   mounted () {
@@ -20,9 +20,9 @@ export default {
   },
   computed: {},
   methods: {
-    initEditor() {
-        this.cyEditor = new CyEditor(); // todo params
-    },
+    initEditor () {
+      this.cyEditor = new CyEditor() // todo params
+    }
   }
 }
 </script>

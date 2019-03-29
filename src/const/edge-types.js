@@ -2,7 +2,6 @@
  * Created by DemonRay on 2019/3/27.
  */
 
-
 /*
  const edgeStyle = [{
  "selector": "node",
@@ -236,127 +235,127 @@
 const defaultEdgeTypes = {}
 
 const defaultEdgeStyles = [
-    {
-        selector: 'edge',
-        style: {
-            'curve-style': 'bezier',
-            'target-arrow-shape': 'triangle',
-            'width': 2
-        }
-    },
-    {
-        selector: 'edge[lineColor]',
-        style: {
-            'curve-style': 'bezier',
-            'target-arrow-shape': 'triangle',
-            'width': 2,
-            'line-color': 'data(lineColor)',
-            'source-arrow-color': 'data(lineColor)',
-            'target-arrow-color': 'data(lineColor)',
-            'mid-source-arrow-color': 'data(lineColor)',
-            'mid-target-arrow-color': 'data(lineColor)',
-        }
-    },
-    {
-        selector: 'node:active',
-        style: {
-            'overlay-color': '#0169D9',
-            'overlay-padding': 12,
-            'overlay-opacity': 0.25
-        }
-    },
-    {
-        selector: 'node:selected',
-        style: {
-            'overlay-color': '#0169D9',
-            'overlay-padding': 12,
-            'overlay-opacity': 0.25
-        }
-    },
-    {
-        selector: 'edge:active',
-        style: {
-            'overlay-color': '#0169D9',
-            'overlay-padding': 3,
-            'overlay-opacity': 0.25,
-            'line-color': 'data(lineColor)',
-            'source-arrow-color': 'data(lineColor)',
-            'target-arrow-color': 'data(lineColor)',
-            'mid-source-arrow-color': 'data(lineColor)',
-            'mid-target-arrow-color': 'data(lineColor)',
-        }
-    },
-    {
-        selector: 'edge:selected',
-        style: {
-            'overlay-color': '#0169D9',
-            'overlay-padding': 3,
-            'overlay-opacity': 0.25,
-            'line-color': 'data(lineColor)',
-            'source-arrow-color': 'data(lineColor)',
-            'target-arrow-color': 'data(lineColor)',
-            'mid-source-arrow-color': 'data(lineColor)',
-            'mid-target-arrow-color': 'data(lineColor)',
-        }
-    },
-    // some style for the extension
-    {
-        selector: '.eh-handle',
-        style: {
-            'background-color': 'red',
-            'width': 12,
-            'height': 12,
-            'shape': 'ellipse',
-            'overlay-opacity': 0,
-            'border-width': 12, // makes the handle easier to hit
-            'border-opacity': 0
-        }
-    },
-    {
-        selector: '.eh-hover',
-        style: {
-            'background-color': 'red'
-        }
-    },
-    {
-        selector: '.eh-hover',
-        style: {
-            'background-color': 'red'
-        }
-    },
-    {
-        selector: '.eh-source',
-        style: {
-            'border-width': 2,
-            'border-color': 'red'
-        }
-    },
-    {
-        selector: '.eh-target',
-        style: {
-            'border-width': 2,
-            'border-color': 'red'
-        }
-    },
-    {
-        selector: '.eh-preview, .eh-ghost-edge',
-        style: {
-            'background-color': 'red',
-            'line-color': 'red',
-            'target-arrow-color': 'red',
-            'source-arrow-color': 'red'
-        }
-    },
-    {
-        selector: '.eh-ghost-edge.eh-preview-active',
-        style: {
-            'opacity': 0
-        }
+  {
+    selector: 'edge',
+    style: {
+      'curve-style': 'bezier',
+      'target-arrow-shape': 'triangle',
+      'width': 2
     }
+  },
+  {
+    selector: 'edge[lineColor]',
+    style: {
+      'curve-style': 'bezier',
+      'target-arrow-shape': 'triangle',
+      'width': 2,
+      'line-color': 'data(lineColor)',
+      'source-arrow-color': 'data(lineColor)',
+      'target-arrow-color': 'data(lineColor)',
+      'mid-source-arrow-color': 'data(lineColor)',
+      'mid-target-arrow-color': 'data(lineColor)'
+    }
+  },
+  {
+    selector: 'node:active',
+    style: {
+      'overlay-color': '#0169D9',
+      'overlay-padding': 12,
+      'overlay-opacity': 0.25
+    }
+  },
+  {
+    selector: 'node:selected',
+    style: {
+      'overlay-color': '#0169D9',
+      'overlay-padding': 12,
+      'overlay-opacity': 0.25
+    }
+  },
+  {
+    selector: 'edge:active',
+    style: {
+      'overlay-color': '#0169D9',
+      'overlay-padding': 3,
+      'overlay-opacity': 0.25,
+      'line-color': 'data(lineColor)',
+      'source-arrow-color': 'data(lineColor)',
+      'target-arrow-color': 'data(lineColor)',
+      'mid-source-arrow-color': 'data(lineColor)',
+      'mid-target-arrow-color': 'data(lineColor)'
+    }
+  },
+  {
+    selector: 'edge:selected',
+    style: {
+      'overlay-color': '#0169D9',
+      'overlay-padding': 3,
+      'overlay-opacity': 0.25,
+      'line-color': 'data(lineColor)',
+      'source-arrow-color': 'data(lineColor)',
+      'target-arrow-color': 'data(lineColor)',
+      'mid-source-arrow-color': 'data(lineColor)',
+      'mid-target-arrow-color': 'data(lineColor)'
+    }
+  },
+  // some style for the extension
+  {
+    selector: '.eh-handle',
+    style: {
+      'background-color': 'red',
+      'width': 12,
+      'height': 12,
+      'shape': 'ellipse',
+      'overlay-opacity': 0,
+      'border-width': 12, // makes the handle easier to hit
+      'border-opacity': 0
+    }
+  },
+  {
+    selector: '.eh-hover',
+    style: {
+      'background-color': 'red'
+    }
+  },
+  {
+    selector: '.eh-hover',
+    style: {
+      'background-color': 'red'
+    }
+  },
+  {
+    selector: '.eh-source',
+    style: {
+      'border-width': 2,
+      'border-color': 'red'
+    }
+  },
+  {
+    selector: '.eh-target',
+    style: {
+      'border-width': 2,
+      'border-color': 'red'
+    }
+  },
+  {
+    selector: '.eh-preview, .eh-ghost-edge',
+    style: {
+      'background-color': 'red',
+      'line-color': 'red',
+      'target-arrow-color': 'red',
+      'source-arrow-color': 'red'
+    }
+  },
+  {
+    selector: '.eh-ghost-edge.eh-preview-active',
+    style: {
+      'opacity': 0
+    }
+  }
 ]
 
-function getEdgeConf ( type ) {
-    return defaultEdgeTypes.find(item => item.type === type)
+function getEdgeConf (type) {
+  return defaultEdgeTypes.find(item => item.type === type)
 }
 
 export { defaultEdgeTypes, defaultEdgeStyles, getEdgeConf }
