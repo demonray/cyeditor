@@ -12,9 +12,9 @@ import cynavigator from './cyeditor-navigator'
 import noderesize from './cyeditor-node-resize'
 import editElements from './cyeditor-edit-elements'
 import dragAddNodes from './cyeditor-drag-add-nodes'
-import { defaultConfData, defaultEdgeStyles, defaultNodeStyles } from '../const'
+import { defaultConfData, defaultEdgeStyles, defaultNodeStyles, pluginStyles } from '../const'
 
-import '../assets/css/fontello.css'
+import '../assets/css/flow.css'
 import './index.css'
 
 cytoscape.use(edgehandles)
@@ -31,13 +31,13 @@ let defaults = {
     layout: {
       name: 'concentric',
       fit: false,
-      concentric: function (n) { return n.id() === 'j' ? 200 : 0 },
-      // levelWidth: function ( nodes ) { return 100 },
+      concentric: function (n) { return 0 },
       minNodeSpacing: 100
     },
     style: [
       ...defaultEdgeStyles,
-      ...defaultNodeStyles
+      ...defaultNodeStyles,
+      ...pluginStyles
     ],
     minZoom: 0.1,
     maxZoom: 10,
@@ -63,7 +63,8 @@ let defaults = {
   },
   editor: {
     snapGrid: false,
-    zoomRate: 0.2
+    zoomRate: 0.2,
+    lineType: 'bezier'
   }
 }
 
@@ -79,10 +80,11 @@ export default class CyEditor {
   }
 
   _init () {
-    this._initEditor()
+    this._initEditorDom()
     this._initCy()
     this._initPlugin()
     this._initEvents()
+    this._initEditor()
   }
 
   _initOptions (params) {
@@ -113,7 +115,7 @@ export default class CyEditor {
     this.cy = cytoscape(this.cyOptions)
   }
 
-  _initEditor () {
+  _initEditorDom () {
     let domHtml = `<div id="toolbar">
                         </div>
                         <div id="editor">
@@ -152,15 +154,35 @@ export default class CyEditor {
       this._plugins.editElements.showElementsInfo()
     }
     this._listeners.handleCommand = this._handleCommand.bind(this)
+    this._listeners.hoverout = (e) => {
+      this._plugins.edgehandles.active = true
+      this._plugins.edgehandles.stop(e)
+      this._plugins.noderesize.clearDraws()
+    }
 
     this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
-      .on('cyeditor.toolbar-command', this._listeners.handleCommand)
+      .on('cyeditor.toolbar-command', this._listeners.handleCommand).on('click', this._listeners.hoverout)
+  }
+
+  _initEditor () {
+    if (this.editorOptions.lineType !== defaults.lineType) {
+      this.changeEdgeType(this.editorOptions.lineType)
+    }
   }
 
   _initPlugin () {
     // edge
-    this.cy.edgehandles({
-      snap: true
+    this._plugins.edgehandles = this.cy.edgehandles({
+      snap: false,
+      handlePosition () {
+        return 'middle middle'
+      },
+      edgeParams: () => {
+        return {
+          classes: this.editorOptions.lineType
+        }
+      }
+
     })
     // navigator
     this.cy.navigator({
@@ -172,7 +194,7 @@ export default class CyEditor {
       this.cySnapToGrid = this.cy.snapToGrid()
     }
 
-    this.cy.noderesize({
+    this._plugins.noderesize = this.cy.noderesize({
       selector: 'node[resize]'
     })
 
@@ -191,31 +213,45 @@ export default class CyEditor {
     })
   }
 
-  _handleCommand (evt, action) {
-    if (typeof action === 'string') {
-      switch (action) {
-        case 'gridon' :
-          this.toggleGrid()
-          break
-        case 'zoomin' :
-          this.zoom(1)
-          break
-        case 'zoomout' :
-          this.zoom(-1)
-          break
-        case 'fit' :
-          this.fit()
-          break
-        case 'save' :
-          this.save()
-          break
-        case 'delete' :
-          this.deleteEl()
-          break
-        default:
-          break
-      }
+  _handleCommand (evt, item) {
+    switch (item.command) {
+      case 'gridon' :
+        this.toggleGrid()
+        break
+      case 'zoomin' :
+        this.zoom(1)
+        break
+      case 'zoomout' :
+        this.zoom(-1)
+        break
+      case 'fit' :
+        this.fit()
+        break
+      case 'save' :
+        this.save()
+        break
+      case 'delete' :
+        this.deleteEl()
+        break
+      case 'line-bezier' :
+        this.editorOptions.lineType = 'bezier'
+        break
+      case 'line-taxi' :
+        this.editorOptions.lineType = 'taxi'
+        break
+      case 'line-straight' :
+        this.editorOptions.lineType = 'straight'
+        break
+      case 'boxselect':
+        this.cy.boxSelectionEnabled(item.selected)
+        break
+      default:
+        break
     }
+  }
+
+  changeEdgeType (type) {
+    this.cy.$('edge').addClass(type)
   }
 
   deleteEl () {

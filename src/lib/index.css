@@ -16,8 +16,8 @@
 }
 
 #editor .left .shapes {
-    margin: 16px 8px;
-    text-align: center;
+    margin: 16px;
+    text-align: left;
 }
 
 #editor .shapes img.shape-item {
@@ -156,6 +156,14 @@
 
 #toolbar .disable {
     color: rgba(0,0,0,0.25);
+}
+#toolbar .selected {
+    color: #40a9ff;
+}
+
+#toolbar .separator {
+    margin: 4px;
+    border-left: 1px solid #E9E9E9;
 }
 
 #toolbar .command:hover {

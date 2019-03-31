@@ -1,23 +1,11 @@
 {
-  "name": "",
+  "name": "flow",
   "css_prefix_text": "fa-",
   "css_use_suffix": false,
   "hinting": true,
   "units_per_em": 1000,
   "ascent": 850,
   "glyphs": [
-    {
-      "uid": "bc71f4c6e53394d5ba46b063040014f1",
-      "css": "rotate-right",
-      "code": 59414,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "f9c3205df26e7778abac86183aefdc99",
-      "css": "rotate-left",
-      "code": 59415,
-      "src": "fontawesome"
-    },
     {
       "uid": "f4445feb55521283572ee88bc304f928",
       "css": "floppy",
@@ -83,6 +71,36 @@
       "css": "resize-full",
       "code": 59396,
       "src": "iconic"
+    },
+    {
+      "uid": "c60f50a1729165e3752fa27a16325208",
+      "css": "reply-outline",
+      "code": 59400,
+      "src": "typicons"
+    },
+    {
+      "uid": "ca92083691d138f832d6a9874d7636dc",
+      "css": "forward-outline",
+      "code": 59401,
+      "src": "typicons"
+    },
+    {
+      "uid": "6cea40aa6cc50057083e4f0a5b92410c",
+      "css": "flow-line",
+      "code": 59402,
+      "src": "entypo"
+    },
+    {
+      "uid": "8a1d446e5555e76f82ddb1c8b526f579",
+      "css": "flow-tree",
+      "code": 59403,
+      "src": "entypo"
+    },
+    {
+      "uid": "4bcb3aaa98736be3027bef7c76c55021",
+      "css": "flow-branch",
+      "code": 59404,
+      "src": "entypo"
     }
   ]
 }

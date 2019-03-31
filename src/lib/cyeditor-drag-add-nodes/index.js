@@ -54,11 +54,14 @@ class DragAddNodes {
     rightContainers.addEventListener('dragover', handler)
   }
 
-  _addNodeToCy ({ type, width, height, bg, resize, name = '' }, rect) {
+  _addNodeToCy ({ type, width, height, bg, resize, name = '', points }, rect) {
     let node = {
       group: 'nodes',
       data: { type, name, resize, bg, width, height },
       position: rect
+    }
+    if (points) {
+      node.data.points = points
     }
     if (this._options.addWhenDrop) {
       this.cy.add(node)

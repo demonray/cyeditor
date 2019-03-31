@@ -25,7 +25,7 @@ class EditElements {
         this._changeElementInfo(e.target.name, e.target.value)
       }
     })
-    this.cy.on('select click', () => {
+    this.cy.on('select unselect', () => {
       this.showElementsInfo()
     })
   }
@@ -83,6 +83,9 @@ class EditElements {
     this.selected.forEach(item => {
       if (item.isEdge() && name === 'color') {
         name = 'lineColor'
+      }
+      if (name === 'background-color') {
+        name = 'bg'
       }
       item.data({
         [name]: value

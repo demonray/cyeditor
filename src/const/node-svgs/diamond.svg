@@ -13,15 +13,15 @@
         </filter>
     </defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="基础流程图-01" transform="translate(-7.000000, -184.000000)">
+        <g id="菱形" transform="translate(-7.000000, -184.000000)">
             <g id="Group-3" transform="translate(10.000000, 185.000000)">
                 <g id="Polygon">
                     <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
-                    <use fill-opacity="0.92" fill="#E6FFFB" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    <use fill-opacity="0.32" fill="#5CDBD3" fill-rule="evenodd" xlink:href="#path-1"></use>
                     <path stroke="#5CDBD3" stroke-width="1" d="M42.3365757,2.04222047 C41.0069753,0.850010239 38.9930247,0.850010239 37.6634243,2.04222047 L2.69849396,33.3941577 C2.60391858,33.4789604 2.51403002,33.568849 2.42922729,33.6634243 C1.13877219,35.1025913 1.25932699,37.3153872 2.69849396,38.6058423 L37.6634243,69.9577795 C38.9930247,71.1499898 41.0069753,71.1499898 42.3365757,69.9577795 L77.301506,38.6058423 C77.3960814,38.5210396 77.48597,38.431151 77.5707727,38.3365757 C78.8612278,36.8974087 78.740673,34.6846128 77.301506,33.3941577 L42.3365757,2.04222047 Z"></path>
                 </g>
-                <text id="分叉节点" font-family="PingFangSC-Regular, PingFang SC" font-size="12" font-weight="normal" line-spacing="12" fill="#000000" fill-opacity="0.65">
-                    <tspan x="16" y="42">分叉节点</tspan>
+                <text id="菱形" font-family="PingFangSC-Regular, PingFang SC" font-size="12" font-weight="normal" line-spacing="12" fill="#000000" fill-opacity="0.65">
+                    <tspan x="26" y="42">菱形</tspan>
                 </text>
             </g>
         </g>

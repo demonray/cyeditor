@@ -1,0 +1,13 @@
+<svg width="76" height="76" xmlns="http://www.w3.org/2000/svg">
+    <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+    <defs>
+        <filter id="svg_3_blur">
+            <feGaussianBlur stdDeviation="0" in="SourceGraphic"/>
+        </filter>
+    </defs>
+
+    <g>
+        <title>Layer 1</title>
+        <path filter="url(#svg_3_blur)" id="svg_3" d="m8.59028,27.79098l20.15989,0l0,-20.15989l20.68022,0l0,20.15989l20.15989,0l0,20.68022l-20.15989,0l0,20.15989l-20.68022,0l0,-20.15989l-20.15989,0l0,-20.68022z" fill-opacity="0.32" stroke-opacity="null" stroke="#f7130e" fill="#f7130e"/>
+    </g>
+</svg>

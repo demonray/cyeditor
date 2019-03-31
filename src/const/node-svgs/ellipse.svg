@@ -17,7 +17,7 @@
             <g id="Group-2" transform="translate(110.000000, 95.000000)">
                 <g id="Oval">
                     <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
-                    <use fill-opacity="0.92" fill="#FFF2E8" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    <use fill-opacity="0.32" fill="#FFC069" fill-rule="evenodd" xlink:href="#path-1"></use>
                     <circle stroke="#FFC069" stroke-width="1" cx="36" cy="36" r="35.5"></circle>
                 </g>
                 <text id="圆形" font-family="PingFangSC-Regular, PingFang SC" font-size="12" font-weight="normal" line-spacing="12" fill="#000000" fill-opacity="0.65">
