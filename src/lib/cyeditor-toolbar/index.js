@@ -34,7 +34,7 @@ let defaults = {
 class Toolbar {
   constructor (cy, params) {
     this.cy = cy
-    this._options = Object.assign(defaults, params)
+    this._options = Object.assign({}, defaults, params)
     this._listeners = {}
     this._init()
     this._initEvents()
@@ -58,13 +58,13 @@ class Toolbar {
             if (item.command === command) {
               item.selected = !item.selected
             }
-          } else if ([ 'line-straight', 'line-bezier', 'line-taxi'].indexOf(command) > -1) {
-            if ([ 'line-straight', 'line-bezier', 'line-taxi'].indexOf(item.command) > -1) {
+          } else if ([ 'line-straight', 'line-bezier', 'line-taxi' ].indexOf(command) > -1) {
+            if ([ 'line-straight', 'line-bezier', 'line-taxi' ].indexOf(item.command) > -1) {
               item.selected = item.command === command
             }
           } else {
-            if ([ 'line-straight', 'line-bezier', 'line-taxi', 'gridon'].indexOf(command) < 0) {
-              if ([ 'line-straight', 'line-bezier', 'line-taxi', 'gridon'].indexOf(item.command) < -1) {
+            if ([ 'line-straight', 'line-bezier', 'line-taxi', 'gridon' ].indexOf(command) < 0) {
+              if ([ 'line-straight', 'line-bezier', 'line-taxi', 'gridon' ].indexOf(item.command) < -1) {
                 if (item.selected !== undefined) {
                   item.selected = !item.selected
                 }
@@ -125,6 +125,17 @@ class Toolbar {
       icons += `<i data-command="${command}" class="command ${cls}" title="${title}"></i>`
     })
     this._panel.innerHTML = icons
+  }
+
+  rerender(cmd, optons = {}) {
+    if(cmd) {
+      this._options.commands.forEach(item => {
+        if(item.command === cmd) {
+          Object.assign(item, optons)
+        }
+      })
+      this._panelHtml()
+    }
   }
 }
 

@@ -13,7 +13,7 @@ const defaults = {
 class DragAddNodes {
   constructor (cy, params) {
     this.cy = cy
-    this._options = Object.assign(defaults, params)
+    this._options = Object.assign({}, defaults, params)
     this._initShapePanel()
     this._initShapeItems()
     this._initEvents()

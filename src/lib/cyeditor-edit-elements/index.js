@@ -11,7 +11,7 @@ const defaults = {
 class EditElements {
   constructor (cy, params) {
     this.cy = cy
-    this._options = Object.assign(defaults, params)
+    this._options = Object.assign({}, defaults, params)
     this._infos = {}
     this.selected = []
     this._initPanel()

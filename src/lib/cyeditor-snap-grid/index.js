@@ -8,7 +8,7 @@ class SnapToGrid {
     this.cy = cy
     let defaults = {
       stackOrder: -1,
-      gridSpacing: 40,
+      gridSpacing: 35,
       strokeStyle: '#CCCCCC',
       lineWidth: 1.0,
       lineDash: [ 5, 8 ],

@@ -12,6 +12,7 @@ import cynavigator from './cyeditor-navigator'
 import noderesize from './cyeditor-node-resize'
 import editElements from './cyeditor-edit-elements'
 import dragAddNodes from './cyeditor-drag-add-nodes'
+import clipboard from './cyeditor-clipboard'
 import { defaultConfData, defaultEdgeStyles, defaultNodeStyles, pluginStyles } from '../const'
 
 import '../assets/css/flow.css'
@@ -24,6 +25,7 @@ cytoscape.use(noderesize)
 cytoscape.use(dragAddNodes)
 cytoscape.use(editElements)
 cytoscape.use(toolbar)
+cytoscape.use(clipboard)
 
 let defaults = {
   cy: {
@@ -88,8 +90,8 @@ export default class CyEditor {
   }
 
   _initOptions (params) {
-    this.editorOptions = Object.assign(defaults.editor, params.editor)
-    this.cyOptions = Object.assign(defaults.cy, params.cy)
+    this.editorOptions = Object.assign({}, defaults.editor, params.editor)
+    this.cyOptions = Object.assign({}, defaults.cy, params.cy)
     if (this.cyOptions.elements) {
       if (Array.isArray(this.cyOptions.elements.nodes)) {
         this.cyOptions.elements.nodes.forEach(node => {
@@ -184,6 +186,20 @@ export default class CyEditor {
       }
 
     })
+    // drag node add to cy
+    this.cy.dragAddNodes({
+      container: '.shapes'
+    })
+
+    // edit panel
+    this._plugins.editElements = this.cy.editElements({
+      container: '#info'
+    })
+
+    this._plugins.toolbar = this.cy.toolbar({
+      container: '#toolbar'
+    })
+
     // navigator
     this.cy.navigator({
       container: '#thumb'
@@ -198,19 +214,7 @@ export default class CyEditor {
       selector: 'node[resize]'
     })
 
-    // drag node add to cy
-    this.cy.dragAddNodes({
-      container: '.shapes'
-    })
-
-    // edit panel
-    this._plugins.editElements = this.cy.editElements({
-      container: '#info'
-    })
-
-    this._plugins.toolbar = this.cy.toolbar({
-      container: '#toolbar'
-    })
+    this._plugins.clipboard = this.cy.clipboard()
   }
 
   _handleCommand (evt, item) {
@@ -223,6 +227,18 @@ export default class CyEditor {
         break
       case 'zoomout' :
         this.zoom(-1)
+        break
+      case 'levelup' :
+        this.changeLevel(1)
+        break
+      case 'leveldown' :
+        this.changeLevel(-1)
+        break
+      case 'copy' :
+        this.copy()
+        break
+      case 'paste' :
+        this.paste()
         break
       case 'fit' :
         this.fit()
@@ -247,6 +263,32 @@ export default class CyEditor {
         break
       default:
         break
+    }
+  }
+
+  copy() {
+    let selected = this.cy.$(':selected')
+    if (selected.length) {
+      this._cpids = this._plugins.clipboard.copy(selected)
+      if(this._cpids) {
+        this._plugins.toolbar.rerender('paste', {disabled:false})
+      }
+    }
+  }
+
+  paste() {
+    if(this._cpids) {
+      this._plugins.clipboard.paste(this._cpids)
+    }
+  }
+
+  changeLevel(type) {
+    let selected = this.cy.$(':selected')
+    if (selected.length) {
+      selected.forEach(el=>{
+        let pre = el.style()
+        el.style('z-index',pre.zIndex - 0 + type >-1 ? pre.zIndex - 0 + type : 0)
+      })
     }
   }
 

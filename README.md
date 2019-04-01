@@ -10,9 +10,8 @@
 - [x] Support for editing nodes
 - [x] Support for editing edges
 - [x] Toolbar
-- [ ] Default config for edge, when connect two node
 - [ ] Tootip or Popper
-- [ ] HTML Node
+- [ ] HTML Node Or SVG ?
 - [ ] Keyboard Operation
 
 ### doc  
