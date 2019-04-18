@@ -8,11 +8,12 @@ import edgehandles from 'cytoscape-edgehandles'
 import utils from '../utils'
 import toolbar from './cyeditor-toolbar'
 import snapGrid from './cyeditor-snap-grid'
+import undoRedo from './cyeditor-undo-redo'
+import clipboard from './cyeditor-clipboard'
 import cynavigator from './cyeditor-navigator'
 import noderesize from './cyeditor-node-resize'
 import editElements from './cyeditor-edit-elements'
 import dragAddNodes from './cyeditor-drag-add-nodes'
-import clipboard from './cyeditor-clipboard'
 import { defaultConfData, defaultEdgeStyles, defaultNodeStyles, pluginStyles } from '../const'
 
 import '../assets/css/flow.css'
@@ -26,6 +27,7 @@ cytoscape.use(dragAddNodes)
 cytoscape.use(editElements)
 cytoscape.use(toolbar)
 cytoscape.use(clipboard)
+cytoscape.use(undoRedo)
 
 let defaults = {
   cy: {
@@ -82,7 +84,7 @@ export default class CyEditor {
   }
 
   _init () {
-    this._initEditorDom()
+    this._initDom()
     this._initCy()
     this._initPlugin()
     this._initEvents()
@@ -117,7 +119,7 @@ export default class CyEditor {
     this.cy = cytoscape(this.cyOptions)
   }
 
-  _initEditorDom () {
+  _initDom () {
     let domHtml = `<div id="toolbar">
                         </div>
                         <div id="editor">
@@ -161,9 +163,26 @@ export default class CyEditor {
       this._plugins.edgehandles.stop(e)
       this._plugins.noderesize.clearDraws()
     }
+    this._listeners.select = (e) => {
+      this.doAction('select', e.target)
+    }
+
+    this._listeners.unselect = (e) => {
+      this.doAction('unselect', e.target)
+    }
 
     this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
-      .on('cyeditor.toolbar-command', this._listeners.handleCommand).on('click', this._listeners.hoverout)
+      .on('cyeditor.toolbar-command', this._listeners.handleCommand)
+      .on('click', this._listeners.hoverout)
+      .on('select', this._listeners.select)
+      .on('unselect', this._listeners.unselect)
+
+    // add remove
+    // select unselect
+    // drag
+    // resize unresize
+    // remove restore
+    // fit unfit
   }
 
   _initEditor () {
@@ -196,6 +215,7 @@ export default class CyEditor {
       container: '#info'
     })
 
+    // toolbar
     this._plugins.toolbar = this.cy.toolbar({
       container: '#toolbar'
     })
@@ -205,20 +225,31 @@ export default class CyEditor {
       container: '#thumb'
     })
 
+    // snap-grid
     if (this.editorOptions.snapGrid) {
-      // snap-grid
       this.cySnapToGrid = this.cy.snapToGrid()
     }
 
+    // noderesize
     this._plugins.noderesize = this.cy.noderesize({
       selector: 'node[resize]'
     })
 
+    // clipboard
     this._plugins.clipboard = this.cy.clipboard()
+
+    // undo-redo
+    this._plugins.undoRedo = this.cy.undoRedo()
   }
 
   _handleCommand (evt, item) {
     switch (item.command) {
+      case 'undo' :
+        this.undo()
+        break
+      case 'redo' :
+        this.redo()
+        break
       case 'gridon' :
         this.toggleGrid()
         break
@@ -247,7 +278,7 @@ export default class CyEditor {
         this.save()
         break
       case 'delete' :
-        this.deleteEl()
+        this.deleteSelected()
         break
       case 'line-bezier' :
         this.editorOptions.lineType = 'bezier'
@@ -266,28 +297,54 @@ export default class CyEditor {
     }
   }
 
-  copy() {
+  _changeUndoRedo () {
+    let canRedo = this._plugins.undoRedo.isRedoStackEmpty()
+    let canUndo = this._plugins.undoRedo.isUndoStackEmpty()
+    if (canRedo !== this.lastCanRedo || canUndo !== this.lastCanUndo) {
+      this._plugins.toolbar.rerender('undo', { disabled: canUndo })
+      this._plugins.toolbar.rerender('redo', { disabled: canRedo })
+    }
+    this.lastCanRedo = canRedo
+    this.lastCanUndo = canUndo
+  }
+
+  undo () {
+    this._plugins.undoRedo.undo()
+    this._changeUndoRedo()
+  }
+
+  redo () {
+    this._plugins.undoRedo.redo()
+    this._changeUndoRedo()
+  }
+
+  doAction (cmd, options) {
+    this._plugins.undoRedo.do(cmd, options)
+    this._changeUndoRedo()
+  }
+
+  copy () {
     let selected = this.cy.$(':selected')
     if (selected.length) {
       this._cpids = this._plugins.clipboard.copy(selected)
-      if(this._cpids) {
-        this._plugins.toolbar.rerender('paste', {disabled:false})
+      if (this._cpids) {
+        this._plugins.toolbar.rerender('paste', { disabled: false })
       }
     }
   }
 
-  paste() {
-    if(this._cpids) {
+  paste () {
+    if (this._cpids) {
       this._plugins.clipboard.paste(this._cpids)
     }
   }
 
-  changeLevel(type) {
+  changeLevel (type) {
     let selected = this.cy.$(':selected')
     if (selected.length) {
-      selected.forEach(el=>{
+      selected.forEach(el => {
         let pre = el.style()
-        el.style('z-index',pre.zIndex - 0 + type >-1 ? pre.zIndex - 0 + type : 0)
+        el.style('z-index', pre.zIndex - 0 + type > -1 ? pre.zIndex - 0 + type : 0)
       })
     }
   }
@@ -296,7 +353,7 @@ export default class CyEditor {
     this.cy.$('edge').addClass(type)
   }
 
-  deleteEl () {
+  deleteSelected () {
     let selected = this.cy.$(':selected')
     if (selected.length) {
       this.cy.remove(selected)

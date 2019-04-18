@@ -18,16 +18,9 @@ let defaults = {
     { command: 'levelup', icon: 'fa-upload-1', disabled: true, title: '层级前置' },
     { command: 'gridon', icon: 'fa-grid', disabled: false, title: '表格辅助', selected: false, separator: true },
     { command: 'boxselect', icon: 'fa-marquee', disabled: false, title: '框选', selected: false },
-    {
-      command: 'line-straight',
-      icon: 'fa-flow-line',
-      disabled: false,
-      title: '直线',
-      selected: false,
-      separator: true
-    },
+    { command: 'line-straight', icon: 'fa-flow-line', disabled: false, title: '直线', selected: false, separator: true},
     { command: 'line-taxi', icon: 'fa-flow-tree', disabled: false, title: '折线', selected: false },
-    { command: 'line-bezier', icon: 'fa-flow-branch', disabled: false, title: '曲线', selected: false },
+    { command: 'line-bezier', icon: 'fa-flow-branch', disabled: false, title: '曲线', selected: true },
     { command: 'save', icon: 'fa-floppy', disabled: false, title: '保存', separator: true }
   ]
 }
@@ -48,36 +41,17 @@ class Toolbar {
     this._listeners.command = (e) => {
       let command = e.target.getAttribute('data-command')
       if (!command) { return }
-      this._options.commands.forEach(item => {
-        if (!item.disabled) {
-          if (command === 'boxselect') {
-            if (item.command === command) {
-              item.selected = !item.selected
-            }
-          } else if (command === 'gridon') {
-            if (item.command === command) {
-              item.selected = !item.selected
-            }
-          } else if ([ 'line-straight', 'line-bezier', 'line-taxi' ].indexOf(command) > -1) {
-            if ([ 'line-straight', 'line-bezier', 'line-taxi' ].indexOf(item.command) > -1) {
-              item.selected = item.command === command
-            }
-          } else {
-            if ([ 'line-straight', 'line-bezier', 'line-taxi', 'gridon' ].indexOf(command) < 0) {
-              if ([ 'line-straight', 'line-bezier', 'line-taxi', 'gridon' ].indexOf(item.command) < -1) {
-                if (item.selected !== undefined) {
-                  item.selected = !item.selected
-                }
-              }
-            }
-          }
-
-          if (item.command === command) {
-            this.cy.trigger('cyeditor.toolbar-command', item)
-          }
-        }
-      })
-      this._panelHtml()
+      let commandOpt = this._options.commands.find(it => it.command === command)
+      if (['boxselect', 'gridon'].indexOf(command) > -1) {
+        this.rerender(command, { selected: !commandOpt.selected })
+      } else if (['line-straight', 'line-bezier', 'line-taxi'].indexOf(command) > -1) {
+        this.rerender('line-straight', { selected: command === 'line-straight' })
+        this.rerender('line-bezier', { selected: command === 'line-bezier' })
+        this.rerender('line-taxi', { selected: command === 'line-taxi' })
+      }
+      if (commandOpt) {
+        this.cy.trigger('cyeditor.toolbar-command', commandOpt)
+      }
     }
     this._panel.addEventListener('click', this._listeners.command)
     this._listeners.select = this._selectChange.bind(this)
@@ -127,14 +101,21 @@ class Toolbar {
     this._panel.innerHTML = icons
   }
 
-  rerender(cmd, optons = {}) {
-    if(cmd) {
-      this._options.commands.forEach(item => {
-        if(item.command === cmd) {
-          Object.assign(item, optons)
+  rerender (cmd, options = {}) {
+    let opt
+    this._options.commands.forEach(it => {
+      if (it.command === cmd) {
+        opt = Object.assign(it, options)
+      }
+    })
+    if (opt) {
+      let cls = `command ${opt.icon} ${opt.disabled ? 'disable' : ''} ${opt.selected === true ? 'selected' : ''}`
+      let iconEls = utils.query(`i[data-command=${cmd}]`)
+      iconEls.forEach(item => {
+        if (item.parentNode === this._panel) {
+          item.className = cls
         }
       })
-      this._panelHtml()
     }
   }
 }
