@@ -19,7 +19,7 @@ class DragAddNodes {
     this._initEvents()
   }
 
-  _initShapeItems () { // todo NodeTypes should use editor config,if defaults has been covered
+  _initShapeItems () {
     let shapes = defaultNodeTypes.filter(item => item.type && item.src).map(item => {
       return `<img src="${item.src}"  class="shape-item" draggable="true" data-type="${item.type}" />`
     }).join('')
@@ -64,9 +64,9 @@ class DragAddNodes {
       node.data.points = points
     }
     if (this._options.addWhenDrop) {
-      this.cy.add(node)
+      // this.cy.add(node)
+      this.cy.trigger('cyeditor.addnode', node)
     }
-    this.cy.trigger('cyeditor.addnode', node)
   }
 
   _initShapePanel () {

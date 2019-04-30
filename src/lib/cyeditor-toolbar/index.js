@@ -18,7 +18,7 @@ let defaults = {
     { command: 'levelup', icon: 'fa-upload-1', disabled: true, title: '层级前置' },
     { command: 'gridon', icon: 'fa-grid', disabled: false, title: '表格辅助', selected: false, separator: true },
     { command: 'boxselect', icon: 'fa-marquee', disabled: false, title: '框选', selected: false },
-    { command: 'line-straight', icon: 'fa-flow-line', disabled: false, title: '直线', selected: false, separator: true},
+    { command: 'line-straight', icon: 'fa-flow-line', disabled: false, title: '直线', selected: false, separator: true },
     { command: 'line-taxi', icon: 'fa-flow-tree', disabled: false, title: '折线', selected: false },
     { command: 'line-bezier', icon: 'fa-flow-branch', disabled: false, title: '曲线', selected: true },
     { command: 'save', icon: 'fa-floppy', disabled: false, title: '保存', separator: true }

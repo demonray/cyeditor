@@ -164,25 +164,24 @@ export default class CyEditor {
       this._plugins.noderesize.clearDraws()
     }
     this._listeners.select = (e) => {
-      this.doAction('select', e.target)
+      if (this._doAction === 'select') return
+      this.undoRedoAction('select', e.target)
     }
 
-    this._listeners.unselect = (e) => {
-      this.doAction('unselect', e.target)
+    this._listeners.addEles = (evt, el) => {
+      el.firstTime = true
+      this.undoRedoAction('add', el)
     }
+    this._listeners._changeUndoRedo = this._changeUndoRedo.bind(this)
 
     this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
       .on('cyeditor.toolbar-command', this._listeners.handleCommand)
       .on('click', this._listeners.hoverout)
       .on('select', this._listeners.select)
-      .on('unselect', this._listeners.unselect)
+      .on('cyeditor.addnode', this._listeners.addEles)
+      .on('cyeditor.afterDo cyeditor.afterRedo cyeditor.afterUndo', this._listeners._changeUndoRedo)
 
-    // add remove
-    // select unselect
-    // drag
     // resize unresize
-    // remove restore
-    // fit unfit
   }
 
   _initEditor () {
@@ -309,18 +308,24 @@ export default class CyEditor {
   }
 
   undo () {
+    let stack = this._plugins.undoRedo.getRedoStack()
+    if (stack.length) {
+      this._doAction = stack[stack.length - 1].action
+    }
     this._plugins.undoRedo.undo()
-    this._changeUndoRedo()
   }
 
   redo () {
+    let stack = this._plugins.undoRedo.getUndoStack()
+    if (stack.length) {
+      this._doAction = stack[stack.length - 1].action
+    }
     this._plugins.undoRedo.redo()
-    this._changeUndoRedo()
   }
 
-  doAction (cmd, options) {
+  undoRedoAction (cmd, options) {
+    this._doAction = cmd
     this._plugins.undoRedo.do(cmd, options)
-    this._changeUndoRedo()
   }
 
   copy () {
@@ -356,6 +361,7 @@ export default class CyEditor {
   deleteSelected () {
     let selected = this.cy.$(':selected')
     if (selected.length) {
+      this.undoRedoAction('remove', selected)
       this.cy.remove(selected)
     }
   }

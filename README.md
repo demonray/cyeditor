@@ -13,6 +13,8 @@
 - [ ] Tootip or Popper
 - [ ] HTML Node Or SVG ?
 - [ ] Keyboard Operation
+- [ ] More Language
+- [ ] Client
 
 ### doc  
 - [x] REACME

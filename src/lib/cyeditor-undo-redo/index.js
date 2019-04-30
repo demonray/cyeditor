@@ -29,22 +29,7 @@ function generateInstance (cy) {
     isDebug: false, // Debug mode for console messages
     actions: {}, // actions to be added
     undoableDrag: true, // Whether dragging nodes are undoable can be a function as well
-    stackSizeLimit: undefined, // Size limit of undo stack, note that the size of redo stack cannot exceed size of undo stack
-    beforeUndo: function () { // callback before undo is triggered.
-
-    },
-    afterUndo: function () { // callback after undo is triggered.
-
-    },
-    beforeRedo: function () { // callback before redo is triggered.
-
-    },
-    afterRedo: function () { // callback after redo is triggered.
-
-    },
-    ready: function () {
-
-    }
+    stackSizeLimit: undefined // Size limit of undo stack, note that the size of redo stack cannot exceed size of undo stack
   }
 
   instance.actions = {}
@@ -63,7 +48,7 @@ function generateInstance (cy) {
   instance.undo = function () {
     if (!this.isUndoStackEmpty()) {
       let action = this.undoStack.pop()
-      cy.trigger('beforeUndo', [action.name, action.args])
+      cy.trigger('cyeditor.beforeUndo', [action.name, action.args])
 
       let res = this.actions[action.name]._undo(action.args)
 
@@ -72,7 +57,8 @@ function generateInstance (cy) {
         args: res
       })
 
-      cy.trigger('afterUndo', [action.name, action.args, res])
+      cy.trigger('cyeditor.afterUndo', [action.name, action.args, res])
+      if (this.options.isDebug) console.log(this.redoStack, this.undoStack)
       return res
     } else if (this.options.isDebug) {
       console.log('Undoing cannot be done because undo stack is empty!')
@@ -84,7 +70,7 @@ function generateInstance (cy) {
     if (!this.isRedoStackEmpty()) {
       let action = this.redoStack.pop()
 
-      cy.trigger(action.firstTime ? 'beforeDo' : 'beforeRedo', [action.name, action.args])
+      cy.trigger(action.firstTime ? 'cyeditor.beforeDo' : 'cyeditor.beforeRedo', [action.name, action.args])
 
       if (!action.args) { action.args = {} }
       action.args.firstTime = !!action.firstTime
@@ -100,7 +86,8 @@ function generateInstance (cy) {
         this.undoStack.shift()
       }
 
-      cy.trigger(action.firstTime ? 'afterDo' : 'afterRedo', [action.name, action.args, res])
+      cy.trigger(action.firstTime ? 'cyeditor.afterDo' : 'cyeditor.afterRedo', [action.name, action.args, res])
+      if (this.options.isDebug) console.log(this.redoStack, this.undoStack)
       return res
     } else if (this.options.isDebug) {
       console.log('Redoing cannot be done because redo stack is empty!')
@@ -237,8 +224,8 @@ function defaultActions (cy) {
         ele = i
       }
       let parent = ele.parent()[0]
-      while (parent !== null) {
-        if (nodesMap[parent.id()]) {
+      while (parent !== null && parent) {
+        if (parent && nodesMap[parent.id()]) {
           return false
         }
         parent = parent.parent()[0]
@@ -542,7 +529,6 @@ export default (cytoscape) => {
       setScratch(cy, 'isInitialized', true)
     }
 
-    instance.options.ready()
     return instance
   })
 }
