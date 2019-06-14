@@ -64,7 +64,6 @@ class DragAddNodes {
       node.data.points = points
     }
     if (this._options.addWhenDrop) {
-      // this.cy.add(node)
       this.cy.trigger('cyeditor.addnode', node)
     }
   }

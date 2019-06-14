@@ -14,6 +14,7 @@ import cynavigator from './cyeditor-navigator'
 import noderesize from './cyeditor-node-resize'
 import editElements from './cyeditor-edit-elements'
 import dragAddNodes from './cyeditor-drag-add-nodes'
+import contextMenu from './cyeditor-context-menu'
 import { defaultConfData, defaultEdgeStyles, defaultNodeStyles, pluginStyles } from '../const'
 
 import '../assets/css/flow.css'
@@ -28,6 +29,7 @@ cytoscape.use(editElements)
 cytoscape.use(toolbar)
 cytoscape.use(clipboard)
 cytoscape.use(undoRedo)
+cytoscape.use(contextMenu)
 
 let defaults = {
   cy: {
@@ -38,6 +40,7 @@ let defaults = {
       concentric: function (n) { return 0 },
       minNodeSpacing: 100
     },
+    styleEnabled: true,
     style: [
       ...defaultEdgeStyles,
       ...defaultNodeStyles,
@@ -47,7 +50,7 @@ let defaults = {
     maxZoom: 10,
     elements: {
       nodes: [
-        { data: { id: 'j', name: 'Jerry', resize: true, bg: '#90235d' } },
+        { data: { id: 'j', name: 'Jerry', resize: true, bg: '#90235d', image: 'https://live.staticflickr.com/2660/3715569167_7e978e8319_b.jpg' } },
         { data: { id: 'e', name: 'Elaine', resize: true, bg: '#f0545d' } },
         { data: { id: 'k', name: 'Kramer', resize: true, bg: '#9954fd' } },
         { data: { id: 'g', name: 'George', type: 'vee', bg: '#00888d' } }
@@ -132,7 +135,7 @@ export default class CyEditor {
                             <div id="thumb"></div>
                             <div id="info"></div>
                         </div>
-                       </div>`
+                      </div>`
 
     let { editorOptions } = this
     let editorContianer
@@ -239,6 +242,9 @@ export default class CyEditor {
 
     // undo-redo
     this._plugins.undoRedo = this.cy.undoRedo()
+
+    // context-menu
+    this._plugins.contextMenu = this.cy.contextMenu()
   }
 
   _handleCommand (evt, item) {

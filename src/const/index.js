@@ -11,7 +11,8 @@ const defaultConfData = {
     resize: true,
     name: '',
     width: 80,
-    height: 80
+    height: 80,
+    image: ''
   },
   edge: {
     lineColor: '#999'
