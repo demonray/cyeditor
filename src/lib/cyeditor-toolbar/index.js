@@ -6,22 +6,22 @@ import utils from '../../utils'
 let defaults = {
   container: false,
   commands: [
-    { command: 'undo', icon: 'fa-reply-outline', disabled: true, title: '撤销' },
-    { command: 'redo', icon: 'fa-forward-outline', disabled: true, title: '重做' },
-    { command: 'copy', icon: 'fa-docs', disabled: true, title: '复制', separator: true },
-    { command: 'paste', icon: 'fa-paste', disabled: true, title: '粘贴' },
-    { command: 'delete', icon: 'fa-trash-empty', disabled: true, title: '删除' },
-    { command: 'zoomin', icon: 'fa-zoom-in', disabled: false, title: '放大', separator: true },
-    { command: 'zoomout', icon: 'fa-zoom-out', disabled: false, title: '缩小' },
-    { command: 'fit', icon: 'fa-resize-full', disabled: false, title: '适应画布' },
-    { command: 'leveldown', icon: 'fa-download-1', disabled: true, title: '层级后置' },
-    { command: 'levelup', icon: 'fa-upload-1', disabled: true, title: '层级前置' },
-    { command: 'gridon', icon: 'fa-grid', disabled: false, title: '表格辅助', selected: false, separator: true },
-    { command: 'boxselect', icon: 'fa-marquee', disabled: false, title: '框选', selected: false },
-    { command: 'line-straight', icon: 'fa-flow-line', disabled: false, title: '直线', selected: false, separator: true },
-    { command: 'line-taxi', icon: 'fa-flow-tree', disabled: false, title: '折线', selected: false },
-    { command: 'line-bezier', icon: 'fa-flow-branch', disabled: false, title: '曲线', selected: true },
-    { command: 'save', icon: 'fa-floppy', disabled: false, title: '保存', separator: true }
+    { command: 'undo', icon: 'icon-undo', disabled: true, title: '撤销' },
+    { command: 'redo', icon: 'icon-Redo', disabled: true, title: '重做' },
+    { command: 'copy', icon: 'icon-copy', disabled: true, title: '复制', separator: true },
+    { command: 'paste', icon: 'icon-paste', disabled: true, title: '粘贴' },
+    { command: 'delete', icon: 'icon-delete', disabled: true, title: '删除' },
+    { command: 'zoomin', icon: 'icon-zoomin', disabled: false, title: '放大', separator: true },
+    { command: 'zoomout', icon: 'icon-zoom', disabled: false, title: '缩小' },
+    { command: 'fit', icon: 'icon-fullscreen', disabled: false, title: '适应画布' },
+    { command: 'leveldown', icon: 'icon-arrow-to-bottom', disabled: true, title: '层级后置' },
+    { command: 'levelup', icon: 'icon-top-arrow-from-top', disabled: true, title: '层级前置' },
+    { command: 'gridon', icon: 'icon-grid', disabled: false, title: '表格辅助', selected: false, separator: true },
+    { command: 'boxselect', icon: 'icon-selection', disabled: false, title: '框选', selected: false },
+    { command: 'line-straight', icon: 'icon-Line-Tool', disabled: false, title: '直线', selected: false, separator: true },
+    { command: 'line-taxi', icon: 'icon-gongzuoliuchengtu', disabled: false, title: '折线', selected: false },
+    { command: 'line-bezier', icon: 'icon-Bezier-', disabled: false, title: '曲线', selected: true },
+    { command: 'save', icon: 'icon-save', disabled: false, title: '保存', separator: true }
   ]
 }
 class Toolbar {
@@ -48,6 +48,8 @@ class Toolbar {
         this.rerender('line-straight', { selected: command === 'line-straight' })
         this.rerender('line-bezier', { selected: command === 'line-bezier' })
         this.rerender('line-taxi', { selected: command === 'line-taxi' })
+      } else if (command === 'fit') {
+        this.rerender('fit', { icon: commandOpt.icon === 'icon-fullscreen' ? 'icon-fullscreen-exit' : 'icon-fullscreen' })
       }
       if (commandOpt) {
         this.cy.trigger('cyeditor.toolbar-command', commandOpt)
@@ -96,24 +98,31 @@ class Toolbar {
     this._options.commands.forEach(({ command, title, icon, disabled, selected, separator }) => {
       let cls = `${icon} ${disabled ? 'disable' : ''} ${selected === true ? 'selected' : ''}`
       if (separator) icons += '<span class="separator"></span>'
-      icons += `<i data-command="${command}" class="command ${cls}" title="${title}"></i>`
+      icons += `<i data-command="${command}" class="iconfont command ${cls}" title="${title}"></i>`
     })
     this._panel.innerHTML = icons
   }
 
   rerender (cmd, options = {}) {
-    let opt
-    this._options.commands.forEach(it => {
-      if (it.command === cmd) {
-        opt = Object.assign(it, options)
-      }
-    })
+    let cmdItem = this._options.commands.find(it => it.command === cmd)
+    let opt = Object.assign(cmdItem, options)
     if (opt) {
-      let cls = `command ${opt.icon} ${opt.disabled ? 'disable' : ''} ${opt.selected === true ? 'selected' : ''}`
       let iconEls = utils.query(`i[data-command=${cmd}]`)
       iconEls.forEach(item => {
         if (item.parentNode === this._panel) {
-          item.className = cls
+          if (opt.icon) {
+            item.className = `iconfont command ${opt.icon}`
+          }
+          if (opt.disabled) {
+            utils.addClass(item, 'disable')
+          } else {
+            utils.removeClass(item, 'disable')
+          }
+          if (opt.selected) {
+            utils.addClass(item, 'selected')
+          } else {
+            utils.removeClass(item, 'selected')
+          }
         }
       })
     }

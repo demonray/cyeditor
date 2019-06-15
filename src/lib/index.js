@@ -17,7 +17,7 @@ import dragAddNodes from './cyeditor-drag-add-nodes'
 import contextMenu from './cyeditor-context-menu'
 import { defaultConfData, defaultEdgeStyles, defaultNodeStyles, pluginStyles } from '../const'
 
-import '../assets/css/flow.css'
+import '../assets/fonts/iconfont.css'
 import './index.css'
 
 cytoscape.use(edgehandles)
@@ -295,6 +295,7 @@ export default class CyEditor {
         this.editorOptions.lineType = 'straight'
         break
       case 'boxselect':
+        this.cy.userPanningEnabled(!item.selected)
         this.cy.boxSelectionEnabled(item.selected)
         break
       default:

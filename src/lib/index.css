@@ -143,9 +143,9 @@
 }
 
 #toolbar .command {
-    width: 27px;
-    height: 27px;
-    line-height:27px;
+    width: 28px;
+    height: 26px;
+    line-height:26px;
     margin: 0px 6px;
     border-radius: 2px;
     display: inline-block;
