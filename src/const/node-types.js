@@ -19,7 +19,8 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状'
+    category: '基础形状',
+    buildIn: true
   },
   {
     type: 'round-rectangle',
@@ -28,7 +29,8 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 56,
-    category: '基础形状'
+    category: '基础形状',
+    buildIn: true
   },
   {
     type: 'diamond',
@@ -37,7 +39,8 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状'
+    category: '基础形状',
+    buildIn: true
   },
   {
     type: 'pentagon',
@@ -46,7 +49,8 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状'
+    category: '基础形状',
+    buildIn: true
   },
   {
     type: 'tag',
@@ -55,7 +59,8 @@ const defaultNodeTypes = [
     resize: true,
     width: 70,
     height: 76,
-    category: '基础形状'
+    category: '基础形状',
+    buildIn: true
   },
   {
     type: 'star',
@@ -64,7 +69,8 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状'
+    category: '基础形状',
+    buildIn: true
   },
   {
     type: 'hexagon',
@@ -73,7 +79,8 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 70,
-    category: '基础形状'
+    category: '基础形状',
+    buildIn: true
   },
   {
     'type': 'polygon',
@@ -96,7 +103,8 @@ const defaultNodeTypes = [
       -1, -0.33,
       -0.33, -0.33
     ],
-    category: '基础形状'
+    category: '基础形状',
+    buildIn: true
   }
 ]
 const defaultNodeStyles = [{
@@ -125,6 +133,7 @@ const defaultNodeStyles = [{
   'selector': 'node[image]',
   'style': {
     'background-opacity': 0,
+    'background-fit': 'cover',
     'background-image': (e) => { return e.data('image') || { value: '' } }
   }
 }, {

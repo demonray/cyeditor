@@ -27,13 +27,17 @@ let defaults = {
 class Toolbar {
   constructor (cy, params) {
     this.cy = cy
-    this._options = Object.assign({}, defaults, params)
+    this._init(params)
     this._listeners = {}
-    this._init()
     this._initEvents()
   }
 
-  _init () {
+  _init (params) {
+    this._options = Object.assign({}, defaults, params)
+    if (Array.isArray(this._options.toolbar)) {
+      this._options.commands = this._options.commands.filter(item => this._options.toolbar.indexOf(item.command) > -1)
+    }
+
     this._initShapePanel()
   }
 

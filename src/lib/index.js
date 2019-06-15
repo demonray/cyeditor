@@ -47,39 +47,24 @@ let defaults = {
       ...pluginStyles
     ],
     minZoom: 0.1,
-    maxZoom: 10,
-    elements: {
-      nodes: [
-        { data: { id: 'j', name: 'Jerry', resize: true, bg: '#90235d', image: 'https://live.staticflickr.com/2660/3715569167_7e978e8319_b.jpg' } },
-        { data: { id: 'e', name: 'Elaine', resize: true, bg: '#f0545d' } },
-        { data: { id: 'k', name: 'Kramer', resize: true, bg: '#9954fd' } },
-        { data: { id: 'g', name: 'George', type: 'vee', bg: '#00888d' } }
-      ],
-      edges: [
-        { data: { source: 'j', target: 'e', lineColor: '#999' } },
-        { data: { source: 'j', target: 'k' } },
-        { data: { source: 'j', target: 'g' } },
-        { data: { source: 'e', target: 'j' } },
-        { data: { source: 'e', target: 'k' } },
-        { data: { source: 'k', target: 'j' } },
-        { data: { source: 'k', target: 'e' } },
-        { data: { source: 'k', target: 'g' } },
-        { data: { source: 'g', target: 'j' } }
-      ]
-    }
+    maxZoom: 10
   },
   editor: {
-    snapGrid: false,
     zoomRate: 0.2,
-    lineType: 'bezier'
+    lineType: 'bezier',
+    noderesize: true,
+    dragAddNodes: true,
+    elementsInfo: true,
+    toolbar: true, // ['undo', 'redo', 'copy', 'paste', 'delete', 'zoomin', 'zoomout', 'fit', 'leveldown', 'levelup', 'gridon', 'boxselect', 'line-straight', 'line-taxi', 'line-bezier', 'save']
+    snapGrid: true,
+    navigator: true,
+    nodeTypesConcat: true,
+    nodeTypes: defaultNodeTypes // [{type,src,category,width:76,height:76}]
   }
 }
 
 export default class CyEditor {
   constructor (params = defaults) {
-    if (params.editor.zoomRate <= 0 || params.editor.zoomRate >= 1) {
-      console.error('zoomRate must be float number, greater than 0 and less than 1')
-    }
     this._plugins = {}
     this._listeners = {}
     this._initOptions(params)
@@ -94,8 +79,14 @@ export default class CyEditor {
     this._initEditor()
   }
 
-  _initOptions (params) {
+  _initOptions (params = {}) {
     this.editorOptions = Object.assign({}, defaults.editor, params.editor)
+    if (this.editorOptions.nodeTypes && this.editorOptions.nodeTypesConcat && this.editorOptions.nodeTypes) {
+      this.editorOptions.nodeTypes = defaultNodeTypes.concat(this.editorOptions.nodeTypes)
+    }
+    if (this.editorOptions.zoomRate <= 0 || this.editorOptions.zoomRate >= 1) {
+      console.error('zoomRate must be float number, greater than 0 and less than 1')
+    }
     this.cyOptions = Object.assign({}, defaults.cy, params.cy)
     if (this.cyOptions.elements) {
       if (Array.isArray(this.cyOptions.elements.nodes)) {
@@ -123,19 +114,34 @@ export default class CyEditor {
   }
 
   _initDom () {
-    let domHtml = `<div id="toolbar">
-                    </div>
-                    <div id="editor">
-                      <div class="left">
-                          <div class="shapes"></div>
-                      </div>
+    let left = ''
+    if (this.editorOptions.dragAddNodes) {
+      left = `<div class="left"></div>`
+    }
+    let navigator = ''
+    if (this.editorOptions.navigator) {
+      navigator = `<div class="panel-title">导航器</div><div id="thumb"></div>`
+    }
+    let elementsInfo = ''
+    if (this.editorOptions.elementsInfo) {
+      elementsInfo = `<div id="info"></div>`
+    }
+    let right = ''
+    if (navigator || elementsInfo) {
+      right = `<div class="right">
+                  ${navigator}
+                  ${elementsInfo}
+              </div>`
+    }
+
+    let domHtml = `<div id="editor">
+                      ${left}
                       <div id="cy"></div>
-                      <div class="right">
-                          <div class="panel-title">导航器</div>
-                          <div id="thumb"></div>
-                          <div id="info"></div>
-                      </div>
+                      ${right}
                     </div>`
+    if (this.editorOptions.toolbar) {
+      domHtml = `<div id="toolbar"></div>${domHtml}`
+    }
 
     let { editorOptions } = this
     let editorContianer
@@ -158,33 +164,42 @@ export default class CyEditor {
 
   _initEvents () {
     this._listeners.showElementInfo = () => {
-      this._plugins.editElements.showElementsInfo()
+      if (this._plugins.editElements) {
+        this._plugins.editElements.showElementsInfo()
+      }
     }
     this._listeners.handleCommand = this._handleCommand.bind(this)
     this._listeners.hoverout = (e) => {
-      this._plugins.edgehandles.active = true
-      this._plugins.edgehandles.stop(e)
-      this._plugins.noderesize.clearDraws()
+      if (this._plugins.edgehandles) {
+        this._plugins.edgehandles.active = true
+        this._plugins.edgehandles.stop(e)
+      }
+      if (this._plugins.noderesize) {
+        this._plugins.noderesize.clearDraws()
+      }
     }
     this._listeners.select = (e) => {
       if (this._doAction === 'select') return
-      this.undoRedoAction('select', e.target)
+      if (this._plugins.undoRedo) {
+        this._undoRedoAction('select', e.target)
+      }
     }
 
     this._listeners.addEles = (evt, el) => {
       el.firstTime = true
-      this.undoRedoAction('add', el)
+      if (this._plugins.undoRedo) {
+        this._undoRedoAction('add', el)
+      } else {
+        this.cy.add(el)
+      }
     }
     this._listeners._changeUndoRedo = this._changeUndoRedo.bind(this)
-
     this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
       .on('cyeditor.toolbar-command', this._listeners.handleCommand)
       .on('click', this._listeners.hoverout)
       .on('select', this._listeners.select)
       .on('cyeditor.addnode', this._listeners.addEles)
       .on('cyeditor.afterDo cyeditor.afterRedo cyeditor.afterUndo', this._listeners._changeUndoRedo)
-
-    // resize unresize
   }
 
   _initEditor () {
@@ -207,45 +222,73 @@ export default class CyEditor {
       }
 
     })
+
     // drag node add to cy
-    this.cy.dragAddNodes({
-      container: '.left',
-      nodeTypes: defaultNodeTypes
-    })
+    if (this.editorOptions.dragAddNodes) {
+      this._plugins.dragAddNodes = this.cy.dragAddNodes({
+        container: '.left',
+        nodeTypes: this.editorOptions.nodeTypes
+      })
+    }
 
     // edit panel
-    this._plugins.editElements = this.cy.editElements({
-      container: '#info'
-    })
+    if (this.editorOptions.elementsInfo) {
+      this._plugins.editElements = this.cy.editElements({
+        container: '#info'
+      })
+    }
 
     // toolbar
-    this._plugins.toolbar = this.cy.toolbar({
-      container: '#toolbar'
-    })
+    if (this.editorOptions.toolbar) {
+      this._plugins.toolbar = this.cy.toolbar({
+        container: '#toolbar',
+        toolbar: this.editorOptions.toolbar
+      })
+      this.editorOptions.snapGrid = this.editorOptions.toolbar === true ||
+        this.editorOptions.toolbar.indexOf('gridon') > -1
+    }
 
-    // navigator
-    this.cy.navigator({
-      container: '#thumb'
-    })
+    let needUndoRedo = this.editorOptions.toolbar === true
+    let needClipboard = this.editorOptions.toolbar === true
+    if (Array.isArray(this.editorOptions.toolbar)) {
+      needUndoRedo = this.editorOptions.toolbar.indexOf('undo') > -1 ||
+      this.editorOptions.toolbar.indexOf('redo') > -1
+      needClipboard = this.editorOptions.toolbar.indexOf('copy') > -1 ||
+      this.editorOptions.toolbar.indexOf('paset') > -1
+    }
+
+    // clipboard
+    if (needClipboard) {
+      this._plugins.clipboard = this.cy.clipboard()
+    }
+    // undo-redo
+    if (needUndoRedo) {
+      this._plugins.undoRedo = this.cy.undoRedo()
+    }
 
     // snap-grid
     if (this.editorOptions.snapGrid) {
-      this.cySnapToGrid = this.cy.snapToGrid()
+      this._plugins.cySnapToGrid = this.cy.snapToGrid()
+    }
+
+    // navigator
+    if (this.editorOptions.navigator) {
+      this.cy.navigator({
+        container: '#thumb'
+      })
     }
 
     // noderesize
-    this._plugins.noderesize = this.cy.noderesize({
-      selector: 'node[resize]'
-    })
-
-    // clipboard
-    this._plugins.clipboard = this.cy.clipboard()
-
-    // undo-redo
-    this._plugins.undoRedo = this.cy.undoRedo()
+    if (this.editorOptions.noderesize) {
+      this._plugins.noderesize = this.cy.noderesize({
+        selector: 'node[resize]'
+      })
+    }
 
     // context-menu
-    this._plugins.contextMenu = this.cy.contextMenu()
+    if (this.editorOptions.contextMenu) {
+      this._plugins.contextMenu = this.cy.contextMenu()
+    }
   }
 
   _handleCommand (evt, item) {
@@ -305,6 +348,7 @@ export default class CyEditor {
   }
 
   _changeUndoRedo () {
+    if (!this._plugins.undoRedo || !this._plugins.toolbar) return
     let canRedo = this._plugins.undoRedo.isRedoStackEmpty()
     let canUndo = this._plugins.undoRedo.isUndoStackEmpty()
     if (canRedo !== this.lastCanRedo || canUndo !== this.lastCanUndo) {
@@ -315,44 +359,60 @@ export default class CyEditor {
     this.lastCanUndo = canUndo
   }
 
-  undo () {
-    let stack = this._plugins.undoRedo.getRedoStack()
-    if (stack.length) {
-      this._doAction = stack[stack.length - 1].action
-    }
-    this._plugins.undoRedo.undo()
-  }
-
-  redo () {
-    let stack = this._plugins.undoRedo.getUndoStack()
-    if (stack.length) {
-      this._doAction = stack[stack.length - 1].action
-    }
-    this._plugins.undoRedo.redo()
-  }
-
-  undoRedoAction (cmd, options) {
+  _undoRedoAction (cmd, options) {
     this._doAction = cmd
     this._plugins.undoRedo.do(cmd, options)
   }
 
-  copy () {
-    let selected = this.cy.$(':selected')
-    if (selected.length) {
-      this._cpids = this._plugins.clipboard.copy(selected)
-      if (this._cpids) {
-        this._plugins.toolbar.rerender('paste', { disabled: false })
+  undo () {
+    if (this._plugins.undoRedo) {
+      let stack = this._plugins.undoRedo.getRedoStack()
+      if (stack.length) {
+        this._doAction = stack[stack.length - 1].action
       }
+      this._plugins.undoRedo.undo()
+    } else {
+      console.warn('Can not `undo`, please check the initialize option `editor.toolbar`')
+    }
+  }
+
+  redo () {
+    if (this._plugins.undoRedo) {
+      let stack = this._plugins.undoRedo.getUndoStack()
+      if (stack.length) {
+        this._doAction = stack[stack.length - 1].action
+      }
+      this._plugins.undoRedo.redo()
+    } else {
+      console.warn('Can not `redo`, please check the initialize option `editor.toolbar`')
+    }
+  }
+
+  copy () {
+    if (this._plugins.clipboard) {
+      let selected = this.cy.$(':selected')
+      if (selected.length) {
+        this._cpids = this._plugins.clipboard.copy(selected)
+        if (this._cpids && this._plugins.toolbar) {
+          this._plugins.toolbar.rerender('paste', { disabled: false })
+        }
+      }
+    } else {
+      console.warn('Can not `copy`, please check the initialize option `editor.toolbar`')
     }
   }
 
   paste () {
-    if (this._cpids) {
-      this._plugins.clipboard.paste(this._cpids)
+    if (this._plugins.clipboard) {
+      if (this._cpids) {
+        this._plugins.clipboard.paste(this._cpids)
+      }
+    } else {
+      console.warn('Can not `paste`, please check the initialize option `editor.toolbar`')
     }
   }
 
-  changeLevel (type) {
+  changeLevel (type = 0) {
     let selected = this.cy.$(':selected')
     if (selected.length) {
       selected.forEach(el => {
@@ -369,7 +429,9 @@ export default class CyEditor {
   deleteSelected () {
     let selected = this.cy.$(':selected')
     if (selected.length) {
-      this.undoRedoAction('remove', selected)
+      if (this._plugins.undoRedo) {
+        this._undoRedoAction('remove', selected)
+      }
       this.cy.remove(selected)
     }
   }
@@ -418,17 +480,17 @@ export default class CyEditor {
   }
 
   toggleGrid () {
-    this.editorOptions.snapGrid = !this.editorOptions.snapGrid
-    if (this.cySnapToGrid) {
+    if (this._plugins.cySnapToGrid) {
+      this.editorOptions.snapGrid = !this.editorOptions.snapGrid
       if (this.editorOptions.snapGrid) {
-        this.cySnapToGrid.gridOn()
-        this.cySnapToGrid.snapOn()
+        this._plugins.cySnapToGrid.gridOn()
+        this._plugins.cySnapToGrid.snapOn()
       } else {
-        this.cySnapToGrid.gridOff()
-        this.cySnapToGrid.snapOff()
+        this._plugins.cySnapToGrid.gridOff()
+        this._plugins.cySnapToGrid.snapOff()
       }
-    } else if (this.editorOptions.snapGrid) {
-      this.cySnapToGrid = this.cy.snapToGrid()
+    } else {
+      console.warn('Can not `toggleGrid`, please check the initialize option')
     }
   }
 

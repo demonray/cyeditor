@@ -13,6 +13,7 @@
     z-index: 2;
     background: #F7F9FB;
     border-right: 1px solid #E6E9ED;
+    overflow: auto;
 }
 
 #editor .left .shapes {

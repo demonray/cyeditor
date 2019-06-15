@@ -14,6 +14,12 @@ class DragAddNodes {
   constructor (cy, params) {
     this.cy = cy
     this._options = Object.assign({}, defaults, params)
+    this._options.nodeTypes.forEach(item => {
+      item.width = item.width || 76
+      item.height = item.height || 76
+      item.category = item.category || 'other'
+    })
+
     if (this._options.nodeTypes.length < 1) return
     this._initShapePanel()
     this._initShapeItems()
@@ -39,8 +45,8 @@ class DragAddNodes {
       categorys.other = other
     }
     let categoryDom = Object.keys(categorys).map(item => {
-      let shapeItems = categorys[item].map(item => {
-        return `<img src="${item.src}"  class="shape-item" draggable="true" data-type="${item.type}" />`
+      let shapeItems = categorys[item].map(data => {
+        return `<img src="${data.src}"  class="shape-item" draggable="true" data-type="${data.type}" data-category="${item}" />`
       }).join('')
       return `<div class="category">
                   <div class="title">${item}</div>
@@ -58,17 +64,20 @@ class DragAddNodes {
 
     utils.query('.shape-item').forEach(item => {
       item.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('shapeType', e.target.getAttribute('data-type'))
+        e.dataTransfer.setData('shapeType', JSON.stringify({
+          category: e.target.getAttribute('data-category'),
+          type: e.target.getAttribute('data-type')
+        }))
       })
     })
 
     rightContainers.addEventListener('drop', (e) => {
-      let nodeType = e.dataTransfer.getData('shapeType')
+      let shape = JSON.parse(e.dataTransfer.getData('shapeType'))
       let pos = e.target.compareDocumentPosition(rightContainers)
       if (pos === 10) {
         let rect = { x: e.offsetX, y: e.offsetY }
-        if (nodeType) {
-          let shape = this._options.nodeTypes.find(item => item.type === nodeType)
+        if (shape) {
+          shape = this._options.nodeTypes.find(item => item.type === shape.type && item.category === shape.category)
           this._addNodeToCy(shape, rect)
         }
       }
@@ -78,10 +87,14 @@ class DragAddNodes {
     rightContainers.addEventListener('dragover', handler)
   }
 
-  _addNodeToCy ({ type, width, height, bg, resize, name = '', points }, rect) {
+  _addNodeToCy ({ type, width, height, bg, resize, name = '', points, buildIn = false, src }, rect) {
+    let data = { type, name, resize, bg, width, height }
+    if (!buildIn) {
+      data.image = src
+    }
     let node = {
       group: 'nodes',
-      data: { type, name, resize, bg, width, height },
+      data,
       position: rect
     }
     if (points) {
