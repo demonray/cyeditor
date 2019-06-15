@@ -3,27 +3,51 @@
  */
 import utils from '../../utils'
 import 'dragula/dragula.styl'
-import { defaultNodeTypes, getNodeConf } from '../../const'
 
 const defaults = {
   container: false,
-  addWhenDrop: true
+  addWhenDrop: true,
+  nodeTypes: []
 }
 
 class DragAddNodes {
   constructor (cy, params) {
     this.cy = cy
     this._options = Object.assign({}, defaults, params)
+    if (this._options.nodeTypes.length < 1) return
     this._initShapePanel()
     this._initShapeItems()
     this._initEvents()
   }
 
   _initShapeItems () {
-    let shapes = defaultNodeTypes.filter(item => item.type && item.src).map(item => {
-      return `<img src="${item.src}"  class="shape-item" draggable="true" data-type="${item.type}" />`
+    let shapes = this._options.nodeTypes.filter(item => item.type && item.src)
+    let categorys = {}
+    let other = []
+    shapes.forEach(item => {
+      if (item.category) {
+        if (categorys[item.category]) {
+          categorys[item.category].push(item)
+        } else {
+          categorys[item.category] = [item]
+        }
+      } else {
+        other.push(item)
+      }
+    })
+    if (other.length) {
+      categorys.other = other
+    }
+    let categoryDom = Object.keys(categorys).map(item => {
+      let shapeItems = categorys[item].map(item => {
+        return `<img src="${item.src}"  class="shape-item" draggable="true" data-type="${item.type}" />`
+      }).join('')
+      return `<div class="category">
+                  <div class="title">${item}</div>
+                  <div class="shapes">${shapeItems}</div>
+                </div>`
     }).join('')
-    this._shapePanel.innerHTML = shapes
+    this._shapePanel.innerHTML = categoryDom
   }
 
   _initEvents () {
@@ -44,7 +68,7 @@ class DragAddNodes {
       if (pos === 10) {
         let rect = { x: e.offsetX, y: e.offsetY }
         if (nodeType) {
-          let shape = getNodeConf(nodeType)
+          let shape = this._options.nodeTypes.find(item => item.type === nodeType)
           this._addNodeToCy(shape, rect)
         }
       }

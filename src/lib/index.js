@@ -15,7 +15,7 @@ import noderesize from './cyeditor-node-resize'
 import editElements from './cyeditor-edit-elements'
 import dragAddNodes from './cyeditor-drag-add-nodes'
 import contextMenu from './cyeditor-context-menu'
-import { defaultConfData, defaultEdgeStyles, defaultNodeStyles, pluginStyles } from '../const'
+import { defaultConfData, defaultEdgeStyles, defaultNodeStyles, pluginStyles, defaultNodeTypes } from '../const'
 
 import '../assets/fonts/iconfont.css'
 import './index.css'
@@ -124,18 +124,18 @@ export default class CyEditor {
 
   _initDom () {
     let domHtml = `<div id="toolbar">
-                        </div>
-                        <div id="editor">
-                            <div class="left">
-                                <div class="shapes"></div>
-                            </div>
-                        <div id="cy"></div>
-                        <div class="right">
-                            <div class="panel-title">导航器</div>
-                            <div id="thumb"></div>
-                            <div id="info"></div>
-                        </div>
-                      </div>`
+                    </div>
+                    <div id="editor">
+                      <div class="left">
+                          <div class="shapes"></div>
+                      </div>
+                      <div id="cy"></div>
+                      <div class="right">
+                          <div class="panel-title">导航器</div>
+                          <div id="thumb"></div>
+                          <div id="info"></div>
+                      </div>
+                    </div>`
 
     let { editorOptions } = this
     let editorContianer
@@ -209,7 +209,8 @@ export default class CyEditor {
     })
     // drag node add to cy
     this.cy.dragAddNodes({
-      container: '.shapes'
+      container: '.left',
+      nodeTypes: defaultNodeTypes
     })
 
     // edit panel

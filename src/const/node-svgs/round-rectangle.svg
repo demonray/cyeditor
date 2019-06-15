@@ -20,9 +20,6 @@
                     <use fill-opacity="0.46" fill="#1890FF" fill-rule="evenodd" xlink:href="#path-1"></use>
                     <rect stroke="#1890FF" stroke-width="1" x="0.5" y="0.5" width="79" height="47" rx="4"></rect>
                 </g>
-                <text id="圆角矩形" font-family="PingFangSC-Regular, PingFang SC" font-size="12" font-weight="normal" line-spacing="12" fill="#000000" fill-opacity="0.65">
-                    <tspan x="16" y="29">圆角矩形</tspan>
-                </text>
             </g>
         </g>
     </g>

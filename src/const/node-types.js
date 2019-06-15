@@ -18,7 +18,8 @@ const defaultNodeTypes = [
     bg: '#FFC069',
     resize: true,
     width: 76,
-    height: 76
+    height: 76,
+    category: '基础形状'
   },
   {
     type: 'round-rectangle',
@@ -26,7 +27,8 @@ const defaultNodeTypes = [
     bg: '#1890FF',
     resize: true,
     width: 76,
-    height: 56
+    height: 56,
+    category: '基础形状'
   },
   {
     type: 'diamond',
@@ -34,7 +36,8 @@ const defaultNodeTypes = [
     bg: '#5CDBD3',
     resize: true,
     width: 76,
-    height: 76
+    height: 76,
+    category: '基础形状'
   },
   {
     type: 'pentagon',
@@ -42,7 +45,8 @@ const defaultNodeTypes = [
     bg: '#722ed1',
     resize: true,
     width: 76,
-    height: 76
+    height: 76,
+    category: '基础形状'
   },
   {
     type: 'tag',
@@ -50,7 +54,8 @@ const defaultNodeTypes = [
     bg: '#efbae4',
     resize: true,
     width: 70,
-    height: 76
+    height: 76,
+    category: '基础形状'
   },
   {
     type: 'star',
@@ -58,7 +63,8 @@ const defaultNodeTypes = [
     bg: '#00e217',
     resize: true,
     width: 76,
-    height: 76
+    height: 76,
+    category: '基础形状'
   },
   {
     type: 'hexagon',
@@ -66,7 +72,8 @@ const defaultNodeTypes = [
     bg: '#ea9f00',
     resize: true,
     width: 76,
-    height: 70
+    height: 70,
+    category: '基础形状'
   },
   {
     'type': 'polygon',
@@ -88,7 +95,8 @@ const defaultNodeTypes = [
       -1, 0.33,
       -1, -0.33,
       -0.33, -0.33
-    ]
+    ],
+    category: '基础形状'
   }
 ]
 const defaultNodeStyles = [{
@@ -144,12 +152,7 @@ const defaultNodeStyles = [{
   }
 }]
 
-function getNodeConf (type) {
-  return defaultNodeTypes.find(item => item.type === type)
-}
-
 export {
   defaultNodeTypes,
-  defaultNodeStyles,
-  getNodeConf
+  defaultNodeStyles
 }

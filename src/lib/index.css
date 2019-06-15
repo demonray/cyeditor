@@ -20,6 +20,11 @@
     text-align: left;
 }
 
+#editor .left .title {
+    padding: 8px 20px;
+    background: #EBEEF2;
+}
+
 #editor .shapes img.shape-item {
     width: 80px;
     height: 80px;
@@ -226,8 +231,8 @@
     position: absolute;
     width: 150px;
     z-index: 1000;
-    border: 1px solid #ededed;
-    background: #fff;
+    border: 1px solid #ddd;
+    background: #EBEEF2;
     border-radius: 4px;
     box-shadow: 0px 4px 8px 0px rgba(2, 16, 31, 0.1);
     display: none;
@@ -237,11 +242,11 @@
     height: 30px;
     line-height: 30px;
     padding: 0 15px;
-    border: 1px solid #fff;
+    border: 1px solid #EBEEF2;
 }
 .cy-editor-ctx-menu .ctx-menu-divider {
     height: 1px;
-    background: #ededed
+    background: #ddd
 }
 .cy-editor-ctx-menu .ctx-menu-item:hover {
     background: #40a9ff;
