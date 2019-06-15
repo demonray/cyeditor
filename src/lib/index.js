@@ -389,33 +389,29 @@ export default class CyEditor {
   }
 
   fit () {
-    if (!this._initZoomState) {
-      let pan = this.cy.pan()
-      this._initZoomState = {
-        ...pan
-      }
+    if (this._initZoomPanState) {
+      this.cy.viewport({
+        zoom: this._initZoomPanState.zoom,
+        pan: this._initZoomPanState.pan
+      })
+      this._initZoomPanState = null
+    } else {
+      this._initZoomPanState = { pan: this.cy.pan(), zoom: this.cy.zoom() }
+      this.cy.fit()
     }
-    this.cy.fit()
   }
 
   zoom (type = 1, level) {
     level = level || this.editorOptions.zoomRate
-    let zoom = this.cy.zoom() * (1 + level * type)
     let w = this.cy.width()
     let h = this.cy.height()
-    zoom = zoom.toFixed(4) - 0
-    if (!this._initZoomState) {
-      let pan = this.cy.pan()
-      this._initZoomState = {
-        ...pan
-      }
-    }
+    let zoom = this.cy.zoom() + level * type
+    let pan = this.cy.pan()
+    pan.x = pan.x + -1 * w * level * type / 2
+    pan.y = pan.y + -1 * h * level * type / 2
     this.cy.viewport({
       zoom,
-      pan: {
-        x: -1 * w * (zoom - 1) / 2 + this._initZoomState.x,
-        y: -1 * h * (zoom - 1) / 2 + this._initZoomState.y
-      }
+      pan
     })
   }
 
