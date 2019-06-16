@@ -3,14 +3,13 @@
  */
 
 import cytoscape from 'cytoscape'
-import edgehandles from 'cytoscape-edgehandles'
-
 import utils from '../utils'
 import toolbar from './cyeditor-toolbar'
 import snapGrid from './cyeditor-snap-grid'
 import undoRedo from './cyeditor-undo-redo'
 import clipboard from './cyeditor-clipboard'
 import cynavigator from './cyeditor-navigator'
+import edgehandles from './cyeditor-edgehandles'
 import noderesize from './cyeditor-node-resize'
 import editElements from './cyeditor-edit-elements'
 import dragAddNodes from './cyeditor-drag-add-nodes'

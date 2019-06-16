@@ -26,7 +26,6 @@
     "license": "ISC",
     "dependencies": {
         "cytoscape": "^3.5.0",
-        "cytoscape-edgehandles": "^3.5.1",
         "vue": "^2.6.9"
     },
     "devDependencies": {

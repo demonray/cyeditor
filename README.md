@@ -10,7 +10,7 @@
 - [x] Support for editing nodes，edges
 - [x] Toolbar
 - [x] Context Menu
-- [ ] Custom Shapes
+- [x] Custom Shapes
 - [ ] Dash Line
 - [ ] Tootip or Popper
 - [ ] Export Image, JSON
