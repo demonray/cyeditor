@@ -14,10 +14,7 @@ import noderesize from './cyeditor-node-resize'
 import editElements from './cyeditor-edit-elements'
 import dragAddNodes from './cyeditor-drag-add-nodes'
 import contextMenu from './cyeditor-context-menu'
-import { defaultConfData, defaultEdgeStyles, defaultNodeStyles, pluginStyles, defaultNodeTypes } from '../const'
-
-import '../assets/fonts/iconfont.css'
-import './index.css'
+import { defaultConfData, defaultEditorConfig, defaultNodeTypes } from '../defaults'
 
 cytoscape.use(edgehandles)
 cytoscape.use(cynavigator)
@@ -30,40 +27,8 @@ cytoscape.use(clipboard)
 cytoscape.use(undoRedo)
 cytoscape.use(contextMenu)
 
-let defaults = {
-  cy: {
-    container: '#cy',
-    layout: {
-      name: 'concentric',
-      fit: false,
-      concentric: function (n) { return 0 },
-      minNodeSpacing: 100
-    },
-    styleEnabled: true,
-    style: [
-      ...defaultEdgeStyles,
-      ...defaultNodeStyles,
-      ...pluginStyles
-    ],
-    minZoom: 0.1,
-    maxZoom: 10
-  },
-  editor: {
-    zoomRate: 0.2,
-    lineType: 'bezier',
-    noderesize: true,
-    dragAddNodes: true,
-    elementsInfo: true,
-    toolbar: true, // ['undo', 'redo', 'copy', 'paste', 'delete', 'zoomin', 'zoomout', 'fit', 'leveldown', 'levelup', 'gridon', 'boxselect', 'line-straight', 'line-taxi', 'line-bezier', 'save']
-    snapGrid: true,
-    navigator: true,
-    nodeTypesConcat: true,
-    nodeTypes: defaultNodeTypes // [{type,src,category,width:76,height:76}]
-  }
-}
-
 export default class CyEditor {
-  constructor (params = defaults) {
+  constructor (params = defaultEditorConfig) {
     this._plugins = {}
     this._listeners = {}
     this._initOptions(params)
@@ -79,14 +44,14 @@ export default class CyEditor {
   }
 
   _initOptions (params = {}) {
-    this.editorOptions = Object.assign({}, defaults.editor, params.editor)
+    this.editorOptions = Object.assign({}, defaultEditorConfig.editor, params.editor)
     if (this.editorOptions.nodeTypes && this.editorOptions.nodeTypesConcat && this.editorOptions.nodeTypes) {
       this.editorOptions.nodeTypes = defaultNodeTypes.concat(this.editorOptions.nodeTypes)
     }
     if (this.editorOptions.zoomRate <= 0 || this.editorOptions.zoomRate >= 1) {
       console.error('zoomRate must be float number, greater than 0 and less than 1')
     }
-    this.cyOptions = Object.assign({}, defaults.cy, params.cy)
+    this.cyOptions = Object.assign({}, defaultEditorConfig.cy, params.cy)
     if (this.cyOptions.elements) {
       if (Array.isArray(this.cyOptions.elements.nodes)) {
         this.cyOptions.elements.nodes.forEach(node => {
@@ -113,42 +78,30 @@ export default class CyEditor {
   }
 
   _initDom () {
-    let left = ''
-    if (this.editorOptions.dragAddNodes) {
-      left = `<div class="left"></div>`
-    }
-    let navigator = ''
-    if (this.editorOptions.navigator) {
-      navigator = `<div class="panel-title">导航器</div><div id="thumb"></div>`
-    }
-    let elementsInfo = ''
-    if (this.editorOptions.elementsInfo) {
-      elementsInfo = `<div id="info"></div>`
-    }
+    let { dragAddNodes, navigator, elementsInfo, toolbar, container } = this.editorOptions
+    let left = dragAddNodes ? `<div class="left"></div>` : ''
+    let navigatorDom = navigator ? `<div class="panel-title">导航器</div><div id="thumb"></div>` : ''
+    let infoDom = elementsInfo ? `<div id="info"></div>` : ''
+    let domHtml = toolbar ? '<div id="toolbar"></div>' : ''
     let right = ''
     if (navigator || elementsInfo) {
       right = `<div class="right">
-                  ${navigator}
-                  ${elementsInfo}
+                ${navigatorDom}
+                ${infoDom}
               </div>`
     }
-
-    let domHtml = `<div id="editor">
-                      ${left}
-                      <div id="cy"></div>
-                      ${right}
-                    </div>`
-    if (this.editorOptions.toolbar) {
-      domHtml = `<div id="toolbar"></div>${domHtml}`
-    }
-
-    let { editorOptions } = this
+    domHtml += `<div id="editor">
+                ${left}
+                <div id="cy"></div>
+                ${right}
+              </div>`
     let editorContianer
-    if (editorOptions.container) {
-      if (typeof editorOptions.container === 'string') {
-        editorContianer = utils.query(editorOptions.container)[ 0 ]
-      } else if (utils.isNode(editorOptions.container)) {
-        editorContianer = editorOptions.container
+    this.cyOptions.container = '#cy'
+    if (container) {
+      if (typeof container === 'string') {
+        editorContianer = utils.query(container)[ 0 ]
+      } else if (utils.isNode(container)) {
+        editorContianer = container
       }
       if (!editorContianer) {
         console.error('There is no any element matching your container')
@@ -156,6 +109,7 @@ export default class CyEditor {
       }
     } else {
       editorContianer = document.createElement('div')
+      editorContianer.className = 'cy-editor-container'
       document.body.appendChild(editorContianer)
     }
     editorContianer.innerHTML = domHtml
@@ -186,11 +140,13 @@ export default class CyEditor {
 
     this._listeners.addEles = (evt, el) => {
       el.firstTime = true
+      if (!this._hook('beforeAdd', el, true)) return
       if (this._plugins.undoRedo) {
         this._undoRedoAction('add', el)
       } else {
         this.cy.add(el)
       }
+      this._hook('afterAdd', el)
     }
     this._listeners._changeUndoRedo = this._changeUndoRedo.bind(this)
     this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
@@ -202,7 +158,7 @@ export default class CyEditor {
   }
 
   _initEditor () {
-    if (this.editorOptions.lineType !== defaults.lineType) {
+    if (this.editorOptions.lineType !== defaultEditorConfig.lineType) {
       this.changeEdgeType(this.editorOptions.lineType)
     }
   }
@@ -363,6 +319,13 @@ export default class CyEditor {
     this._plugins.undoRedo.do(cmd, options)
   }
 
+  _hook (hook, params, result = false) {
+    if (typeof this.editorOptions[hook] === 'function') {
+      const res = this.editorOptions[hook](params)
+      return result ? res : true
+    }
+  }
+
   undo () {
     if (this._plugins.undoRedo) {
       let stack = this._plugins.undoRedo.getRedoStack()
@@ -436,6 +399,7 @@ export default class CyEditor {
   }
 
   async save () {
+    if (this._hook('save')) return
     try {
       let blob = await this.cy.png({ output: 'blob-promise' })
       if (window.navigator.msSaveBlob) {
@@ -452,14 +416,15 @@ export default class CyEditor {
   }
 
   fit () {
-    if (this._initZoomPanState) {
+    if (this._hook('fit', this._fit_status = !this._fit_status)) return
+    if (this._fit_status) {
       this.cy.viewport({
-        zoom: this._initZoomPanState.zoom,
-        pan: this._initZoomPanState.pan
+        zoom: this._fit_status.zoom,
+        pan: this._fit_status.pan
       })
-      this._initZoomPanState = null
+      this._fit_status = null
     } else {
-      this._initZoomPanState = { pan: this.cy.pan(), zoom: this.cy.zoom() }
+      this._fit_status = { pan: this.cy.pan(), zoom: this.cy.zoom() }
       this.cy.fit()
     }
   }
@@ -491,6 +456,52 @@ export default class CyEditor {
     } else {
       console.warn('Can not `toggleGrid`, please check the initialize option')
     }
+  }
+
+  jpg (opt = {}) {
+    return this.cy.png(opt)
+  }
+
+  png (opt) {
+    return this.cy.png(opt)
+  }
+  /**
+   * Export the graph as JSON or Import the graph as JSON
+   * @param {*} opt params for cy.json(opt)
+   * @param {*} keys JSON Object keys
+   */
+  json (opt = false, keys) {
+    keys = keys || ['boxSelectionEnabled', 'elements', 'pan', 'panningEnabled', 'userPanningEnabled', 'userZoomingEnabled', 'zoom', 'zoomingEnabled']
+    // export
+    let json = {}
+    if (typeof opt === 'boolean') {
+      let cyjson = this.cy.json(opt)
+      keys.forEach(key => { json[key] = cyjson[key] })
+      return json
+    }
+    // import
+    if (typeof opt === 'object') {
+      json = {}
+      keys.forEach(key => { json[key] = opt[key] })
+    }
+    return this.cy.json(json)
+  }
+
+  /**
+   * get or set data
+   * @param {string|object} name
+   * @param {*} value
+   */
+  data (name, value) {
+    return this.cy.data(name, value)
+  }
+
+  /**
+   *  remove data
+   * @param {string} names  split by space
+   */
+  removeData (names) {
+    this.cy.removeData(names)
   }
 
   destroy () {

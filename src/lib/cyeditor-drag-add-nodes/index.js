@@ -2,7 +2,6 @@
  * Created by DemonRay on 2019/3/22.
  */
 import utils from '../../utils'
-import 'dragula/dragula.styl'
 
 const defaults = {
   container: false,
@@ -28,6 +27,9 @@ class DragAddNodes {
 
   _initShapeItems () {
     let shapes = this._options.nodeTypes.filter(item => item.type && item.src)
+    shapes.forEach(item => {
+      item._id = utils.guid()
+    })
     let categorys = {}
     let other = []
     shapes.forEach(item => {
@@ -46,7 +48,7 @@ class DragAddNodes {
     }
     let categoryDom = Object.keys(categorys).map(item => {
       let shapeItems = categorys[item].map(data => {
-        return `<img src="${data.src}"  class="shape-item" draggable="true" data-type="${data.type}" data-category="${item}" />`
+        return `<img src="${data.src}"  class="shape-item" draggable="true" data-id="${data._id}" />`
       }).join('')
       return `<div class="category">
                   <div class="title">${item}</div>
@@ -64,20 +66,17 @@ class DragAddNodes {
 
     utils.query('.shape-item').forEach(item => {
       item.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('shapeType', JSON.stringify({
-          category: e.target.getAttribute('data-category'),
-          type: e.target.getAttribute('data-type')
-        }))
+        e.dataTransfer.setData('id', e.target.getAttribute('data-id'))
       })
     })
 
     rightContainers.addEventListener('drop', (e) => {
-      let shape = JSON.parse(e.dataTransfer.getData('shapeType'))
+      let shapeId = e.dataTransfer.getData('id')
       let pos = e.target.compareDocumentPosition(rightContainers)
       if (pos === 10) {
         let rect = { x: e.offsetX, y: e.offsetY }
-        if (shape) {
-          shape = this._options.nodeTypes.find(item => item.type === shape.type && item.category === shape.category)
+        if (shapeId) {
+          const shape = this._options.nodeTypes.find(item => item._id === shapeId)
           this._addNodeToCy(shape, rect)
         }
       }

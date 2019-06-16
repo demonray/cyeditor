@@ -5,8 +5,12 @@ function addCytoscapeListeners () {
   } = this
 
   // grabbing nodes
-  this.addListener(cy, 'drag', () => { this.grabbingNode = true })
-  this.addListener(cy, 'free', () => { this.grabbingNode = false })
+  this.addListener(cy, 'drag', () => {
+    this.grabbingNode = true
+  })
+  this.addListener(cy, 'free', () => {
+    this.grabbingNode = false
+  })
 
   // show handle on hover
   this.addListener(cy, 'mouseover', 'node', e => {

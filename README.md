@@ -6,15 +6,16 @@
 
 - [x] Navigator  
 - [x] Snap Grid 
-- [x] Built-in Elements, Support for adding nodes to editor by drag and drop
+- [x] Built-in Shapes, Support for adding Node by drag and drop
 - [x] Support for editing nodes，edges
 - [x] Toolbar
 - [x] Context Menu
 - [x] Custom Shapes
+- [x] Export as Image(jpg,png)
+- [x] Import or export the graph  JSON
+- [ ] Vue Component
 - [ ] Dash Line
 - [ ] Tootip or Popper
-- [ ] Export Image, JSON
-- [ ] Import Json
 
 ### doc  
 - [x] REACME

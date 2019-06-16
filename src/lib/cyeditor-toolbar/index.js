@@ -8,19 +8,19 @@ let defaults = {
   commands: [
     { command: 'undo', icon: 'icon-undo', disabled: true, title: '撤销' },
     { command: 'redo', icon: 'icon-Redo', disabled: true, title: '重做' },
+    { command: 'zoomin', icon: 'icon-zoomin', disabled: false, title: '放大', separator: true },
+    { command: 'zoomout', icon: 'icon-zoom', disabled: false, title: '缩小' },
+    { command: 'boxselect', icon: 'icon-selection', disabled: false, title: '框选', selected: false },
     { command: 'copy', icon: 'icon-copy', disabled: true, title: '复制', separator: true },
     { command: 'paste', icon: 'icon-paste', disabled: true, title: '粘贴' },
     { command: 'delete', icon: 'icon-delete', disabled: true, title: '删除' },
-    { command: 'zoomin', icon: 'icon-zoomin', disabled: false, title: '放大', separator: true },
-    { command: 'zoomout', icon: 'icon-zoom', disabled: false, title: '缩小' },
-    { command: 'fit', icon: 'icon-fullscreen', disabled: false, title: '适应画布' },
     { command: 'leveldown', icon: 'icon-arrow-to-bottom', disabled: true, title: '层级后置' },
     { command: 'levelup', icon: 'icon-top-arrow-from-top', disabled: true, title: '层级前置' },
-    { command: 'gridon', icon: 'icon-grid', disabled: false, title: '表格辅助', selected: false, separator: true },
-    { command: 'boxselect', icon: 'icon-selection', disabled: false, title: '框选', selected: false },
     { command: 'line-straight', icon: 'icon-Line-Tool', disabled: false, title: '直线', selected: false, separator: true },
     { command: 'line-taxi', icon: 'icon-gongzuoliuchengtu', disabled: false, title: '折线', selected: false },
     { command: 'line-bezier', icon: 'icon-Bezier-', disabled: false, title: '曲线', selected: true },
+    { command: 'gridon', icon: 'icon-grid', disabled: false, title: '表格辅助', selected: false, separator: true },
+    { command: 'fit', icon: 'icon-fullscreen', disabled: false, title: '适应画布' },
     { command: 'save', icon: 'icon-save', disabled: false, title: '保存', separator: true }
   ]
 }

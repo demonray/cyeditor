@@ -2,14 +2,14 @@
  * Created by DemonRay on 2019/3/24.
  */
 
-import roundRectangle from './node-svgs/round-rectangle.svg'
-import ellipse from './node-svgs/ellipse.svg'
-import hexagon from './node-svgs/hexagon.svg'
-import star from './node-svgs/star.svg'
-import pentagon from './node-svgs/pentagon.svg'
-import diamond from './node-svgs/diamond.svg'
-import tag from './node-svgs/tag.svg'
-import polygon from './node-svgs/polygon.svg'
+import roundRectangle from '../assets/node-svgs/round-rectangle.svg'
+import ellipse from '../assets/node-svgs/ellipse.svg'
+import hexagon from '../assets/node-svgs/hexagon.svg'
+import star from '../assets/node-svgs/star.svg'
+import pentagon from '../assets/node-svgs/pentagon.svg'
+import diamond from '../assets/node-svgs/diamond.svg'
+import tag from '../assets/node-svgs/tag.svg'
+import polygon from '../assets/node-svgs/polygon.svg'
 
 const defaultNodeTypes = [
   {

@@ -357,7 +357,6 @@ class NodeResize {
         return // only consider this a proper mousedown if on the handle
       }
 
-      // console.log('mdownHandler %s %o', node.id(), node);
       node.addClass('noderesize-resized')
 
       this._mdownOnHandle = true

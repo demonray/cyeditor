@@ -25,7 +25,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "cytoscape": "^3.5.0",
+        "cytoscape": "^3.7.0",
         "vue": "^2.6.9"
     },
     "devDependencies": {

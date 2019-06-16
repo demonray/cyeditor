@@ -80,7 +80,7 @@ class Clipboard {
     jsons = utils.extend(true, [], jsons)
     for (let i = 0; i < jsons.length; i++) {
       let jsonFirst = jsons[i]
-      let id = this.guid()
+      let id = utils.guid()
       this._oldIdToNewId[jsonFirst.data.id] = id
       jsonFirst.data.id = id
     }
@@ -106,16 +106,7 @@ class Clipboard {
     }
     return this.cy.scratch('_clipboard')
   }
-  guid () {
-    function s4 () {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1)
-    }
 
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-      s4() + '-' + s4() + s4() + s4()
-  }
   destroy () {
     this.cy.off('mousemove', this._listeners.onmousemove)
   }

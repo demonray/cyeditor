@@ -5,7 +5,6 @@ import cyListeners from './cy-listeners'
 import drawing from './drawing'
 import gestureLifecycle from './gesture-lifecycle'
 import listeners from './listeners'
-import edgeEvents from './edge-events-toggle'
 
 class Edgehandles {
   constructor (cy, options) {
@@ -115,11 +114,27 @@ class Edgehandles {
   disableDrawMode () {
     return this.toggleDrawMode(false)
   }
+
+  disableEdgeEvents () {
+    if (this.options.noEdgeEventsInDraw) {
+      this.cy.edges().style('events', 'no')
+    }
+
+    return this
+  }
+
+  enableEdgeEvents () {
+    if (this.options.noEdgeEventsInDraw) {
+      this.cy.edges().style('events', '')
+    }
+
+    return this
+  }
 }
 
 let proto = Edgehandles.prototype
 let extend = obj => Object.assign(proto, obj)
-const fns = [cyGesturesToggle, cyListeners, drawing, gestureLifecycle, listeners, edgeEvents]
+const fns = [cyGesturesToggle, cyListeners, drawing, gestureLifecycle, listeners]
 fns.forEach(extend)
 
 export default Edgehandles
