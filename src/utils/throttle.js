@@ -1,5 +1,4 @@
 import debounce from './debounce'
-// ported lodash throttle function
 const throttle = function (func, wait, options) {
   var leading = true
   var trailing = true

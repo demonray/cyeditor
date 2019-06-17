@@ -26,18 +26,13 @@ export default {
     noderesize: true,
     dragAddNodes: true,
     elementsInfo: true,
-    toolbar: true, // ['undo', 'redo', 'copy', 'paste', 'delete', 'zoomin', 'zoomout', 'fit', 'leveldown', 'levelup', 'gridon', 'boxselect', 'line-straight', 'line-taxi', 'line-bezier', 'save']
+    toolbar: true, // boolean or array: ['undo', 'redo', 'copy', 'paste', 'delete', 'zoomin', 'zoomout', 'fit', 'leveldown', 'levelup', 'gridon', 'boxselect', 'line-straight', 'line-taxi', 'line-bezier', 'save']
     snapGrid: true,
+    contextMenu: true,
     navigator: true,
-    nodeTypesConcat: true,
-    nodeTypes: defaultNodeTypes, // [{type,src,category,width:76,height:76}]
+    useDefaultNodeTypes: true, // whether nodeTypes should concat with defaultNodeTypes
+    nodeTypes: defaultNodeTypes,
     autoSave: true, // Todo
-    save (type) { // png jpg json
-
-    },
-    fit (status) {
-      console.log(status)
-    },
     beforeAdd (el) {
       return true
     },

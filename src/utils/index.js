@@ -24,6 +24,8 @@ const isFunction = function isFunction (obj) {
 
 const RGBToHex = (r, g, b) => ((r << 16) + (g << 8) + b).toString(16).padStart(6, '0')
 
+const query = document.querySelectorAll.bind(document)
+
 function isPlainObject (obj) {
   let proto, Ctor
 
@@ -119,6 +121,7 @@ function once (dom, type, callback) {
   }
   dom.addEventListener(type, handle)
 }
+
 function isNode (obj) {
   if (obj && obj.nodeType === 1) {
     if (window.Node && (obj instanceof Node)) {
@@ -171,10 +174,9 @@ function guid () {
 }
 
 export default {
-  getProto,
   hasOwn,
   isFunction,
-  query: document.querySelectorAll.bind(document),
+  query,
   isPlainObject,
   extend,
   css,
