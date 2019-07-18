@@ -1,7 +1,4 @@
 
-
-## TODO  
-
 ### feature 
 
 - [x] Navigator  
@@ -13,7 +10,6 @@
 - [x] Custom Shapes
 - [x] Export as Image(jpg,png)
 - [x] Import or export the graph  JSON
-- [ ] Vue Component
 - [ ] Dash Line
 - [ ] Tootip or Popper
 

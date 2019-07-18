@@ -1,11 +1,22 @@
 {
-    "name": "vue-flowchart-editor",
+    "name": "cyeditor",
     "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
+    "private": false,
+    "description": "cyeditor, a flow chart editor build with cytoscape",
+    "main": "dist/cyeditor.umd.js",
+    "keywords": [
+        "cyeditor",
+        "flow chart",
+        "flow editor",
+        "flowchart",
+        "flowchart editor",
+        "vue flowchart",
+        "diagram",
+        "javascript diagram"
+    ],
     "scripts": {
-        "serve": "vue-cli-service serve",
-        "build": "vue-cli-service build",
+        "serve": "vue-cli-service serve examples/main.js",
+        "build": "vue-cli-service build --target lib --name cyeditor src/index.js",
         "lint": "vue-cli-service lint --fix",
         "test": "echo \"Error: no test specified\" && exit 1",
         "precommit": "lint-staged"
@@ -22,11 +33,17 @@
             "git add"
         ]
     },
-    "author": "",
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "bugs": {
+        "url": " "
+    },
+    "author": "ryanlei <leiqirong@gmail.com>",
     "license": "ISC",
     "dependencies": {
-        "cytoscape": "^3.7.0",
-        "vue": "^2.6.9"
+        "cytoscape": "^3.7.0"
     },
     "devDependencies": {
         "@vue/cli-plugin-babel": "^3.5.1",
@@ -39,7 +56,8 @@
         "eslint-plugin-vue": "^5.2.2",
         "stylus": "^0.54.5",
         "stylus-loader": "^3.0.2",
-        "vue-template-compiler": "^2.6.9",
+        "vue": "^2.6.10",
+        "vue-template-compiler": "^2.6.10",
         "webpack": ">=4 < 4.29"
     }
 }
