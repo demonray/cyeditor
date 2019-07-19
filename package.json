@@ -2,7 +2,7 @@
     "name": "cyeditor",
     "version": "1.0.0",
     "private": false,
-    "description": "cyeditor, a flow chart editor build with cytoscape",
+    "description": "cyeditor, a flow chart editor build with cytoscape.js",
     "main": "dist/cyeditor.umd.js",
     "keywords": [
         "cyeditor",
@@ -35,10 +35,10 @@
     },
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/demonray/cyeditor.git"
     },
     "bugs": {
-        "url": " "
+        "url": "https://github.com/demonray/cyeditor/issues"
     },
     "author": "ryanlei <leiqirong@gmail.com>",
     "license": "ISC",
