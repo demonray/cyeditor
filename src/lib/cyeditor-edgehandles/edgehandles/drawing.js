@@ -307,7 +307,7 @@ function updateEdge () {
   return this
 }
 
-module.exports = {
+export default {
   makeEdges,
   makePreview,
   removePreview,

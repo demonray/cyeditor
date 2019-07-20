@@ -24,7 +24,7 @@ export default {
       default: () => ({})
     }
   },
-  async mounted () {
+  mounted () {
     const container = this.$el
     let config = {
       cy: {

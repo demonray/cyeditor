@@ -36,7 +36,7 @@ export default {
 <style scoped lang="stylus">
   .cy-editor {
     width: 100%;
-    height: 100%;
+    height: 600px;
     position: relative;
   }
 </style>
