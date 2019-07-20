@@ -1,9 +1,3 @@
-https://github.com/adrai/flowchart.js
-https://github.com/jsplumb/jsplumb
-https://github.com/Jeffreyrn/vue-simple-flowchart
-https://github.com/gaoli/GGEditor
-
-
 English | [简体中文](README.zh-CN.md)
 
 # CyEditor
@@ -12,9 +6,6 @@ A visual flow chart editor based on [cytoscape.js](https://github.com/cytoscape/
 
 ## Demo
 
-[Flow](http://ggeditor.com/demo/#/flow)
-
-[![Flow](https://img.alicdn.com/tfs/TB1cl0LyAzoK1RjSZFlXXai4VXa-800-407.gif)](http://ggeditor.com/demo/#/flow)
 
 ## Installation
 
