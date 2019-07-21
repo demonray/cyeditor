@@ -1,6 +1,6 @@
 {
     "name": "cyeditor",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "private": false,
     "description": "CyEditor, A visual flow chart editor based on cytoscape.js",
     "main": "dist/cyeditor.umd.js",
