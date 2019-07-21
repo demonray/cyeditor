@@ -6,6 +6,7 @@ A visual flow chart editor based on [cytoscape.js](https://github.com/cytoscape/
 
 ## Demo
 
+[Demo](https://demonray.github.io/cyeditor/)
 
 ## Installation
 
@@ -39,7 +40,7 @@ todo
 ```
 ## Documentation
 
-* You can find the documentation on the [Github Pages](/docs/README.md#api)
+* You can find the documentation on the [Github Pages](https://demonray.github.io/guide/)
 
 ### feature 
 

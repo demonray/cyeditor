@@ -4,7 +4,7 @@ module.exports = {
   head: [
     ['link', { rel: 'icon', href: '/logo.jpg' }],
   ],
-  base: '/',
+  base: '/cyeditor/',
   markdown: {
     lineNumbers: false
   },
