@@ -10,7 +10,7 @@ module.exports = {
   },
   themeConfig: {
     nav:[
-      {text: 'Demo', link: '/'},
+      {text: '示例', link: '/'},
       {text: '指南', link: '/guide/'},
       {text: '配置', link: '/config/'},
       {text: 'Github', link: 'https://github.com/demonray/cyeditor'}

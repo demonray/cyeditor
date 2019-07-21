@@ -42,7 +42,6 @@ class CyEditor extends EventBus {
     this._initCy()
     this._initPlugin()
     this._initEvents()
-    this._initEditor()
   }
 
   _verifyParams (params) {
@@ -83,7 +82,8 @@ class CyEditor extends EventBus {
     this._verifyParams(this.editorOptions)
     const { useDefaultNodeTypes, zoomRate } = this.editorOptions
     this._handleOptonsChange = {
-      snapGrid: this._snapGridChange
+      snapGrid: this._snapGridChange,
+      lineType: this._lineTypeChange
     }
     if (params.editor && params.editor.nodeTypes && useDefaultNodeTypes) {
       this.setOption('nodeTypes', defaultNodeTypes.concat(params.editor.nodeTypes))
@@ -204,16 +204,11 @@ class CyEditor extends EventBus {
       .on('select', this._listeners.select)
       .on('cyeditor.addnode', this._listeners.addEles)
       .on('cyeditor.afterDo cyeditor.afterRedo cyeditor.afterUndo', this._listeners._changeUndoRedo)
-  }
-
-  _initEditor () {
-    if (this.editorOptions.lineType !== defaultEditorConfig.lineType) {
-      this.changeEdgeType(this.editorOptions.lineType)
-    }
+    this.emit('ready')
   }
 
   _initPlugin () {
-    const { lineType, dragAddNodes, elementsInfo, toolbar,
+    const { dragAddNodes, elementsInfo, toolbar,
       contextMenu, snapGrid, navigator, noderesize } = this.editorOptions
     // edge
     this._plugins.edgehandles = this.cy.edgehandles({
@@ -221,11 +216,7 @@ class CyEditor extends EventBus {
       handlePosition () {
         return 'middle middle'
       },
-      edgeParams: () => {
-        return {
-          classes: lineType
-        }
-      }
+      edgeParams: this._edgeParams.bind(this)
     })
 
     // drag node add to cy
@@ -306,6 +297,24 @@ class CyEditor extends EventBus {
       this._plugins.cySnapToGrid.gridOff()
       this._plugins.cySnapToGrid.snapOff()
     }
+  }
+
+  _edgeParams () {
+    return {
+      data: { lineType: this.editorOptions.lineType }
+    }
+  }
+
+  _lineTypeChange (value) {
+    let selected = this.cy.$('edge:selected')
+    if (selected.length < 1) {
+      selected = this.cy.$('edge')
+    }
+    selected.forEach(item => {
+      item.data({
+        lineType: value
+      })
+    })
   }
 
   _handleCommand (evt, item) {
@@ -397,7 +406,7 @@ class CyEditor extends EventBus {
     if (typeof key === 'string') {
       this.editorOptions[key] = value
       if (typeof this._handleOptonsChange[key] === 'function') {
-        this._handleOptonsChange[key].call(this)
+        this._handleOptonsChange[key].call(this, value)
       }
     } else if (typeof key === 'object') {
       Object.assign(this.editorOptions, key)
@@ -460,11 +469,6 @@ class CyEditor extends EventBus {
         el.style('z-index', pre.zIndex - 0 + type > -1 ? pre.zIndex - 0 + type : 0)
       })
     }
-  }
-
-  changeEdgeType (type) {
-    this.setOption('lineType', type)
-    this.cy.$('edge').addClass(type)
   }
 
   deleteSelected () {

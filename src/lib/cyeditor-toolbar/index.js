@@ -18,7 +18,7 @@ let defaults = {
     { command: 'levelup', icon: 'icon-top-arrow-from-top', disabled: true, title: '层级前置' },
     { command: 'line-straight', icon: 'icon-Line-Tool', disabled: false, title: '直线', selected: false, separator: true },
     { command: 'line-taxi', icon: 'icon-gongzuoliuchengtu', disabled: false, title: '折线', selected: false },
-    { command: 'line-bezier', icon: 'icon-Bezier-', disabled: false, title: '曲线', selected: true },
+    { command: 'line-bezier', icon: 'icon-Bezier-', disabled: false, title: '曲线', selected: false },
     { command: 'gridon', icon: 'icon-grid', disabled: false, title: '表格辅助', selected: false, separator: true },
     { command: 'fit', icon: 'icon-fullscreen', disabled: false, title: '适应画布' },
     { command: 'save', icon: 'icon-save', disabled: false, title: '保存', separator: true }

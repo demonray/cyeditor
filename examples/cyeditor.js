@@ -36,9 +36,9 @@ export default {
       }
     }
     this.cyEditor = new CyEditor(config)
+    this.cyEditor.json(this.value)
     this.cyEditor.on('change', (scope, editor) => {
-      let json = this.cyEditor.json()
-      console.log(json)
+      // let json = this.cyEditor.json()
     })
   },
   render (h) {

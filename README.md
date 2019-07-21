@@ -39,7 +39,7 @@ todo
 ```
 ## Documentation
 
-* [API](/docs/README.md#api)
+* You can find the documentation on the [Github Pages](/docs/README.md#api)
 
 ### feature 
 

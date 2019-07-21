@@ -14,31 +14,14 @@ const defaultEdgeStyles = [
     }
   },
   {
-    'selector': 'edge.taxi',
+    'selector': 'edge[lineType]',
     'style': {
-      'curve-style': 'taxi',
-      'taxi-direction': 'downward',
-      'taxi-turn': 20,
-      'taxi-turn-min-distance': 5
-    }
-  },
-  {
-    'selector': 'edge.bezier',
-    'style': {
-      'curve-style': 'bezier',
-      'control-point-step-size': 40
-    }
-  },
-  {
-    'selector': 'edge.straight',
-    'style': {
-      'curve-style': 'straight'
+      'curve-style': 'data(lineType)'
     }
   },
   {
     selector: 'edge[lineColor]',
     style: {
-      'curve-style': 'bezier',
       'target-arrow-shape': 'triangle',
       'width': 2,
       'line-color': 'data(lineColor)',
@@ -49,7 +32,7 @@ const defaultEdgeStyles = [
     }
   },
   {
-    selector: 'edge:active',
+    selector: 'edge[lineColor]:active',
     style: {
       'overlay-color': '#0169D9',
       'overlay-padding': 3,
@@ -62,7 +45,7 @@ const defaultEdgeStyles = [
     }
   },
   {
-    selector: 'edge:selected',
+    selector: 'edge[lineColor]:selected',
     style: {
       'overlay-color': '#0169D9',
       'overlay-padding': 3,

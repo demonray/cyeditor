@@ -52,7 +52,7 @@ class EditElements {
 
   _panelHtml (params = { showName: true, showBgColor: true, showColor: true, showRect: true, colorTitle: '文字' }) {
     this._panel.innerHTML = `<div class="panel-title">元素${params.titile || ''}</div>
-               <div class="panel-body" id="info-items">
+              <div class="panel-body" id="info-items">
                 <div class="info-item-wrap" style="${!params.showName ? 'display:none' : ''}">名称：
                     <input class="input info-item" name="name" type="text" value="">
                 </div>
@@ -71,8 +71,8 @@ class EditElements {
                     <div class="info-item">
                         <input class="input color-input" name="background-color" autocomplete="off" type="color">
                     </div>
-                </div>          
-             </div>`
+                </div>
+            </div>`
   }
 
   _changeElementInfo (name, value) {
