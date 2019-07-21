@@ -31313,284 +31313,6 @@ module.exports = __webpack_require__.p + "img/pentagon.ab8426d3.svg";
 
 /***/ }),
 
-/***/ "b028":
-/***/ (function(module, exports) {
-
-const isString = x => typeof x === typeof '';
-
-function getEleJson(overrides, params, addedClasses) {
-  let json = {}; // basic values
-
-  Object.assign(json, params, overrides); // make sure params can specify data but that overrides take precedence
-
-  Object.assign(json.data, params.data, overrides.data);
-
-  if (isString(params.classes)) {
-    json.classes = params.classes + ' ' + addedClasses;
-  } else if (Array.isArray(params.classes)) {
-    json.classes = params.classes.join(' ') + ' ' + addedClasses;
-  } else {
-    json.classes = addedClasses;
-  }
-
-  return json;
-}
-
-function makeEdges(preview = false) {
-  let {
-    cy,
-    options,
-    presumptiveTargets,
-    previewEles,
-    active
-  } = this;
-  let source = this.sourceNode;
-  let target = this.targetNode;
-  let classes = preview ? 'eh-preview' : '';
-  let added = cy.collection();
-  let edgeType = options.edgeType(source, target); // can't make edges outside of regular gesture lifecycle
-
-  if (!active) {
-    return;
-  } // must have a non-empty edge type
-
-
-  if (!edgeType) {
-    return;
-  } // can't make preview if disabled
-
-
-  if (preview && !options.preview) {
-    return;
-  } // detect cancel
-
-
-  if (!target || target.size() === 0) {
-    previewEles.remove();
-    this.emit('cancel', this.mp(), source, presumptiveTargets);
-    return;
-  } // just remove preview class if we already have the edges
-
-
-  if (!preview && options.preview) {
-    previewEles.removeClass('eh-preview').style('events', '');
-    this.emit('complete', this.mp(), source, target, previewEles);
-    return;
-  }
-
-  let p1 = source.position();
-  let p2 = target.position();
-  let p;
-
-  if (source.same(target)) {
-    p = {
-      x: p1.x + options.nodeLoopOffset,
-      y: p1.y + options.nodeLoopOffset
-    };
-  } else {
-    p = {
-      x: (p1.x + p2.x) / 2,
-      y: (p1.y + p2.y) / 2
-    };
-  }
-
-  if (edgeType === 'node') {
-    let interNode = cy.add(getEleJson({
-      group: 'nodes',
-      position: p
-    }, options.nodeParams(source, target), classes));
-    let source2inter = cy.add(getEleJson({
-      group: 'edges',
-      data: {
-        source: source.id(),
-        target: interNode.id()
-      }
-    }, options.edgeParams(source, target, 0), classes));
-    let inter2target = cy.add(getEleJson({
-      group: 'edges',
-      data: {
-        source: interNode.id(),
-        target: target.id()
-      }
-    }, options.edgeParams(source, target, 1), classes));
-    added = added.merge(interNode).merge(source2inter).merge(inter2target);
-  } else {
-    // flat
-    let source2target = cy.add(getEleJson({
-      group: 'edges',
-      data: {
-        source: source.id(),
-        target: target.id()
-      }
-    }, options.edgeParams(source, target, 0), classes));
-    added = added.merge(source2target);
-  }
-
-  if (preview) {
-    this.previewEles = added;
-    added.style('events', 'no');
-  } else {
-    added.style('events', '');
-    this.emit('complete', this.mp(), source, target, added);
-  }
-
-  return this;
-}
-
-function makePreview() {
-  this.makeEdges(true);
-  return this;
-}
-
-function previewShown() {
-  return this.previewEles.nonempty() && this.previewEles.inside();
-}
-
-function removePreview() {
-  if (this.previewShown()) {
-    this.previewEles.remove();
-  }
-
-  return this;
-}
-
-function handleShown() {
-  return this.handleNode.nonempty() && this.handleNode.inside();
-}
-
-function removeHandle() {
-  if (this.handleShown()) {
-    this.handleNode.remove();
-  }
-
-  return this;
-}
-
-function setHandleFor(node) {
-  let {
-    options,
-    cy
-  } = this;
-  let handlePosition = typeof options.handlePosition === typeof '' ? () => options.handlePosition : options.handlePosition;
-  let p = node.position();
-  let h = node.outerHeight();
-  let w = node.outerWidth(); // store how much we should move the handle from origin(p.x, p.y)
-
-  let moveX = 0;
-  let moveY = 0; // grab axes
-
-  let axes = handlePosition(node).toLowerCase().split(/\s+/);
-  let axisX = axes[0];
-  let axisY = axes[1]; // based on handlePosition move left/right/top/bottom. Middle/middle will just be normal
-
-  if (axisX === 'left') {
-    moveX = -(w / 2);
-  } else if (axisX === 'right') {
-    moveX = w / 2;
-  }
-
-  if (axisY === 'top') {
-    moveY = -(h / 2);
-  } else if (axisY === 'bottom') {
-    moveY = h / 2;
-  } // set handle x and y based on adjusted positions
-
-
-  let hx = this.hx = p.x + moveX;
-  let hy = this.hy = p.y + moveY;
-  let pos = {
-    x: hx,
-    y: hy
-  };
-
-  if (this.handleShown()) {
-    this.handleNode.position(pos);
-  } else {
-    cy.batch(() => {
-      this.handleNode = cy.add({
-        classes: 'eh-handle',
-        position: pos,
-        grabbable: false,
-        selectable: false
-      });
-      this.handleNode.style('z-index', 9007199254740991);
-    });
-  }
-
-  return this;
-}
-
-function updateEdge() {
-  let {
-    sourceNode,
-    ghostNode,
-    cy,
-    mx,
-    my,
-    options
-  } = this;
-  let x = mx;
-  let y = my;
-  let ghostEdge, ghostEles; // can't draw a line without having the starting node
-
-  if (!sourceNode) {
-    return;
-  }
-
-  if (!ghostNode || ghostNode.length === 0 || ghostNode.removed()) {
-    ghostEles = this.ghostEles = cy.collection();
-    cy.batch(() => {
-      ghostNode = this.ghostNode = cy.add({
-        group: 'nodes',
-        classes: 'eh-ghost eh-ghost-node',
-        position: {
-          x: 0,
-          y: 0
-        }
-      });
-      ghostNode.style({
-        'background-color': 'blue',
-        'width': 0.0001,
-        'height': 0.0001,
-        'opacity': 0,
-        'events': 'no'
-      });
-      let ghostEdgeParams = options.ghostEdgeParams();
-      ghostEdge = cy.add(Object.assign({}, ghostEdgeParams, {
-        group: 'edges',
-        data: Object.assign({}, ghostEdgeParams.data, {
-          source: sourceNode.id(),
-          target: ghostNode.id()
-        })
-      }));
-      ghostEdge.addClass('eh-ghost eh-ghost-edge');
-      ghostEdge.style({
-        'events': 'no'
-      });
-    });
-    ghostEles.merge(ghostNode).merge(ghostEdge);
-  }
-
-  ghostNode.position({
-    x,
-    y
-  });
-  return this;
-}
-
-module.exports = {
-  makeEdges,
-  makePreview,
-  removePreview,
-  previewShown,
-  updateEdge,
-  handleShown,
-  setHandleFor,
-  removeHandle
-};
-
-/***/ }),
-
 /***/ "bb21":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -33389,7 +33111,7 @@ let cyeditor_toolbar_defaults = {
     icon: 'icon-Bezier-',
     disabled: false,
     title: '曲线',
-    selected: true
+    selected: false
   }, {
     command: 'gridon',
     icon: 'icon-grid',
@@ -35225,10 +34947,279 @@ function addCytoscapeListeners() {
 /* harmony default export */ var cy_listeners = ({
   addCytoscapeListeners
 });
-// EXTERNAL MODULE: ./src/lib/cyeditor-edgehandles/edgehandles/drawing.js
-var drawing = __webpack_require__("b028");
-var drawing_default = /*#__PURE__*/__webpack_require__.n(drawing);
+// CONCATENATED MODULE: ./src/lib/cyeditor-edgehandles/edgehandles/drawing.js
+const isString = x => typeof x === typeof '';
 
+function getEleJson(overrides, params, addedClasses) {
+  let json = {}; // basic values
+
+  Object.assign(json, params, overrides); // make sure params can specify data but that overrides take precedence
+
+  Object.assign(json.data, params.data, overrides.data);
+
+  if (isString(params.classes)) {
+    json.classes = params.classes + ' ' + addedClasses;
+  } else if (Array.isArray(params.classes)) {
+    json.classes = params.classes.join(' ') + ' ' + addedClasses;
+  } else {
+    json.classes = addedClasses;
+  }
+
+  return json;
+}
+
+function makeEdges(preview = false) {
+  let {
+    cy,
+    options,
+    presumptiveTargets,
+    previewEles,
+    active
+  } = this;
+  let source = this.sourceNode;
+  let target = this.targetNode;
+  let classes = preview ? 'eh-preview' : '';
+  let added = cy.collection();
+  let edgeType = options.edgeType(source, target); // can't make edges outside of regular gesture lifecycle
+
+  if (!active) {
+    return;
+  } // must have a non-empty edge type
+
+
+  if (!edgeType) {
+    return;
+  } // can't make preview if disabled
+
+
+  if (preview && !options.preview) {
+    return;
+  } // detect cancel
+
+
+  if (!target || target.size() === 0) {
+    previewEles.remove();
+    this.emit('cancel', this.mp(), source, presumptiveTargets);
+    return;
+  } // just remove preview class if we already have the edges
+
+
+  if (!preview && options.preview) {
+    previewEles.removeClass('eh-preview').style('events', '');
+    this.emit('complete', this.mp(), source, target, previewEles);
+    return;
+  }
+
+  let p1 = source.position();
+  let p2 = target.position();
+  let p;
+
+  if (source.same(target)) {
+    p = {
+      x: p1.x + options.nodeLoopOffset,
+      y: p1.y + options.nodeLoopOffset
+    };
+  } else {
+    p = {
+      x: (p1.x + p2.x) / 2,
+      y: (p1.y + p2.y) / 2
+    };
+  }
+
+  if (edgeType === 'node') {
+    let interNode = cy.add(getEleJson({
+      group: 'nodes',
+      position: p
+    }, options.nodeParams(source, target), classes));
+    let source2inter = cy.add(getEleJson({
+      group: 'edges',
+      data: {
+        source: source.id(),
+        target: interNode.id()
+      }
+    }, options.edgeParams(source, target, 0), classes));
+    let inter2target = cy.add(getEleJson({
+      group: 'edges',
+      data: {
+        source: interNode.id(),
+        target: target.id()
+      }
+    }, options.edgeParams(source, target, 1), classes));
+    added = added.merge(interNode).merge(source2inter).merge(inter2target);
+  } else {
+    // flat
+    let source2target = cy.add(getEleJson({
+      group: 'edges',
+      data: {
+        source: source.id(),
+        target: target.id()
+      }
+    }, options.edgeParams(source, target, 0), classes));
+    added = added.merge(source2target);
+  }
+
+  if (preview) {
+    this.previewEles = added;
+    added.style('events', 'no');
+  } else {
+    added.style('events', '');
+    this.emit('complete', this.mp(), source, target, added);
+  }
+
+  return this;
+}
+
+function makePreview() {
+  this.makeEdges(true);
+  return this;
+}
+
+function previewShown() {
+  return this.previewEles.nonempty() && this.previewEles.inside();
+}
+
+function removePreview() {
+  if (this.previewShown()) {
+    this.previewEles.remove();
+  }
+
+  return this;
+}
+
+function handleShown() {
+  return this.handleNode.nonempty() && this.handleNode.inside();
+}
+
+function removeHandle() {
+  if (this.handleShown()) {
+    this.handleNode.remove();
+  }
+
+  return this;
+}
+
+function setHandleFor(node) {
+  let {
+    options,
+    cy
+  } = this;
+  let handlePosition = typeof options.handlePosition === typeof '' ? () => options.handlePosition : options.handlePosition;
+  let p = node.position();
+  let h = node.outerHeight();
+  let w = node.outerWidth(); // store how much we should move the handle from origin(p.x, p.y)
+
+  let moveX = 0;
+  let moveY = 0; // grab axes
+
+  let axes = handlePosition(node).toLowerCase().split(/\s+/);
+  let axisX = axes[0];
+  let axisY = axes[1]; // based on handlePosition move left/right/top/bottom. Middle/middle will just be normal
+
+  if (axisX === 'left') {
+    moveX = -(w / 2);
+  } else if (axisX === 'right') {
+    moveX = w / 2;
+  }
+
+  if (axisY === 'top') {
+    moveY = -(h / 2);
+  } else if (axisY === 'bottom') {
+    moveY = h / 2;
+  } // set handle x and y based on adjusted positions
+
+
+  let hx = this.hx = p.x + moveX;
+  let hy = this.hy = p.y + moveY;
+  let pos = {
+    x: hx,
+    y: hy
+  };
+
+  if (this.handleShown()) {
+    this.handleNode.position(pos);
+  } else {
+    cy.batch(() => {
+      this.handleNode = cy.add({
+        classes: 'eh-handle',
+        position: pos,
+        grabbable: false,
+        selectable: false
+      });
+      this.handleNode.style('z-index', 9007199254740991);
+    });
+  }
+
+  return this;
+}
+
+function updateEdge() {
+  let {
+    sourceNode,
+    ghostNode,
+    cy,
+    mx,
+    my,
+    options
+  } = this;
+  let x = mx;
+  let y = my;
+  let ghostEdge, ghostEles; // can't draw a line without having the starting node
+
+  if (!sourceNode) {
+    return;
+  }
+
+  if (!ghostNode || ghostNode.length === 0 || ghostNode.removed()) {
+    ghostEles = this.ghostEles = cy.collection();
+    cy.batch(() => {
+      ghostNode = this.ghostNode = cy.add({
+        group: 'nodes',
+        classes: 'eh-ghost eh-ghost-node',
+        position: {
+          x: 0,
+          y: 0
+        }
+      });
+      ghostNode.style({
+        'background-color': 'blue',
+        'width': 0.0001,
+        'height': 0.0001,
+        'opacity': 0,
+        'events': 'no'
+      });
+      let ghostEdgeParams = options.ghostEdgeParams();
+      ghostEdge = cy.add(Object.assign({}, ghostEdgeParams, {
+        group: 'edges',
+        data: Object.assign({}, ghostEdgeParams.data, {
+          source: sourceNode.id(),
+          target: ghostNode.id()
+        })
+      }));
+      ghostEdge.addClass('eh-ghost eh-ghost-edge');
+      ghostEdge.style({
+        'events': 'no'
+      });
+    });
+    ghostEles.merge(ghostNode).merge(ghostEdge);
+  }
+
+  ghostNode.position({
+    x,
+    y
+  });
+  return this;
+}
+
+/* harmony default export */ var drawing = ({
+  makeEdges,
+  makePreview,
+  removePreview,
+  previewShown,
+  updateEdge,
+  handleShown,
+  setHandleFor,
+  removeHandle
+});
 // CONCATENATED MODULE: ./src/lib/cyeditor-edgehandles/edgehandles/gesture-lifecycle.js
 const gesture_lifecycle_memoize = __webpack_require__("bb21");
 
@@ -35740,7 +35731,7 @@ let proto = edgehandles_Edgehandles.prototype;
 
 let edgehandles_extend = obj => Object.assign(proto, obj);
 
-const fns = [cy_gestures_toggle, cy_listeners, drawing_default.a, gesture_lifecycle, listeners];
+const fns = [cy_gestures_toggle, cy_listeners, drawing, gesture_lifecycle, listeners];
 fns.forEach(edgehandles_extend);
 /* harmony default export */ var edgehandles = (edgehandles_Edgehandles);
 // CONCATENATED MODULE: ./src/lib/cyeditor-edgehandles/index.js
@@ -36281,7 +36272,7 @@ class cyeditor_edit_elements_EditElements {
     colorTitle: '文字'
   }) {
     this._panel.innerHTML = `<div class="panel-title">元素${params.titile || ''}</div>
-               <div class="panel-body" id="info-items">
+              <div class="panel-body" id="info-items">
                 <div class="info-item-wrap" style="${!params.showName ? 'display:none' : ''}">名称：
                     <input class="input info-item" name="name" type="text" value="">
                 </div>
@@ -36300,8 +36291,8 @@ class cyeditor_edit_elements_EditElements {
                     <div class="info-item">
                         <input class="input color-input" name="background-color" autocomplete="off" type="color">
                     </div>
-                </div>          
-             </div>`;
+                </div>
+            </div>`;
   }
 
   _changeElementInfo(name, value) {
@@ -36954,28 +36945,13 @@ const defaultEdgeStyles = [{
     'width': 2
   }
 }, {
-  'selector': 'edge.taxi',
+  'selector': 'edge[lineType]',
   'style': {
-    'curve-style': 'taxi',
-    'taxi-direction': 'downward',
-    'taxi-turn': 20,
-    'taxi-turn-min-distance': 5
-  }
-}, {
-  'selector': 'edge.bezier',
-  'style': {
-    'curve-style': 'bezier',
-    'control-point-step-size': 40
-  }
-}, {
-  'selector': 'edge.straight',
-  'style': {
-    'curve-style': 'straight'
+    'curve-style': 'data(lineType)'
   }
 }, {
   selector: 'edge[lineColor]',
   style: {
-    'curve-style': 'bezier',
     'target-arrow-shape': 'triangle',
     'width': 2,
     'line-color': 'data(lineColor)',
@@ -36985,7 +36961,7 @@ const defaultEdgeStyles = [{
     'mid-target-arrow-color': 'data(lineColor)'
   }
 }, {
-  selector: 'edge:active',
+  selector: 'edge[lineColor]:active',
   style: {
     'overlay-color': '#0169D9',
     'overlay-padding': 3,
@@ -36997,7 +36973,7 @@ const defaultEdgeStyles = [{
     'mid-target-arrow-color': 'data(lineColor)'
   }
 }, {
-  selector: 'edge:selected',
+  selector: 'edge[lineColor]:selected',
   style: {
     'overlay-color': '#0169D9',
     'overlay-padding': 3,
@@ -37131,8 +37107,6 @@ class lib_CyEditor extends eventbus {
     this._initPlugin();
 
     this._initEvents();
-
-    this._initEditor();
   }
 
   _verifyParams(params) {
@@ -37180,7 +37154,8 @@ class lib_CyEditor extends eventbus {
       zoomRate
     } = this.editorOptions;
     this._handleOptonsChange = {
-      snapGrid: this._snapGridChange
+      snapGrid: this._snapGridChange,
+      lineType: this._lineTypeChange
     };
 
     if (params.editor && params.editor.nodeTypes && useDefaultNodeTypes) {
@@ -37326,17 +37301,11 @@ class lib_CyEditor extends eventbus {
 
     this._listeners._changeUndoRedo = this._changeUndoRedo.bind(this);
     this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo).on('cyeditor.toolbar-command', this._listeners.handleCommand).on('click', this._listeners.hoverout).on('select', this._listeners.select).on('cyeditor.addnode', this._listeners.addEles).on('cyeditor.afterDo cyeditor.afterRedo cyeditor.afterUndo', this._listeners._changeUndoRedo);
-  }
-
-  _initEditor() {
-    if (this.editorOptions.lineType !== editor_config.lineType) {
-      this.changeEdgeType(this.editorOptions.lineType);
-    }
+    this.emit('ready');
   }
 
   _initPlugin() {
     const {
-      lineType,
       dragAddNodes,
       elementsInfo,
       toolbar,
@@ -37353,11 +37322,7 @@ class lib_CyEditor extends eventbus {
         return 'middle middle';
       },
 
-      edgeParams: () => {
-        return {
-          classes: lineType
-        };
-      }
+      edgeParams: this._edgeParams.bind(this)
     }); // drag node add to cy
 
     if (dragAddNodes) {
@@ -37441,6 +37406,28 @@ class lib_CyEditor extends eventbus {
 
       this._plugins.cySnapToGrid.snapOff();
     }
+  }
+
+  _edgeParams() {
+    return {
+      data: {
+        lineType: this.editorOptions.lineType
+      }
+    };
+  }
+
+  _lineTypeChange(value) {
+    let selected = this.cy.$('edge:selected');
+
+    if (selected.length < 1) {
+      selected = this.cy.$('edge');
+    }
+
+    selected.forEach(item => {
+      item.data({
+        lineType: value
+      });
+    });
   }
 
   _handleCommand(evt, item) {
@@ -37560,7 +37547,7 @@ class lib_CyEditor extends eventbus {
       this.editorOptions[key] = value;
 
       if (typeof this._handleOptonsChange[key] === 'function') {
-        this._handleOptonsChange[key].call(this);
+        this._handleOptonsChange[key].call(this, value);
       }
     } else if (typeof key === 'object') {
       Object.assign(this.editorOptions, key);
@@ -37632,11 +37619,6 @@ class lib_CyEditor extends eventbus {
         el.style('z-index', pre.zIndex - 0 + type > -1 ? pre.zIndex - 0 + type : 0);
       });
     }
-  }
-
-  changeEdgeType(type) {
-    this.setOption('lineType', type);
-    this.cy.$('edge').addClass(type);
   }
 
   deleteSelected() {

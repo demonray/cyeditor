@@ -43,17 +43,12 @@ todo
 
 ### feature 
 
-- [x] Navigator  
-- [x] Snap Grid 
-- [x] Built-in Shapes, Support for adding Node by drag and drop
-- [x] Support for editing nodes，edges
-- [x] Toolbar
-- [x] Context Menu
-- [x] Custom Shapes
-- [x] Export as Image(jpg,png)
-- [x] Import or export the graph  JSON
-- [ ] Dash Line
-- [ ] Tootip or Popper
-
-### doc  
-- [ ] Doc
+- [x] Navigator provides previews for easy viewing
+- [x] grid lines
+- [x] built-in shape and support for custom shapes
+- [x] configurable toolbar for common operations
+- [x] node size control and node information editing
+- [x] Support for custom right-click menu
+- [x] Support flow chart export to image, export json data
+- [ ] More edge type support, dotted line
+- [ ] Element information popper
