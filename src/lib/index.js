@@ -185,6 +185,12 @@ class CyEditor extends EventBus {
     }
 
     this._listeners.addEles = (evt, el) => {
+      if (el.position) {
+        let panZoom = { pan: this.cy.pan(), zoom: this.cy.zoom() }
+        let x = (el.position.x - panZoom.pan.x) / panZoom.zoom
+        let y = (el.position.y - panZoom.pan.y) / panZoom.zoom
+        el.position = { x, y }
+      }
       el.firstTime = true
       if (!this._hook('beforeAdd', el, true)) return
       if (undoRedo) {

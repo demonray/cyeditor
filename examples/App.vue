@@ -78,14 +78,6 @@ export default {
               'x': 297.5,
               'y': 262.5
             }
-          }, {
-            'data': {
-              'id': '129c6fa8-a876-4eb9-942c-ec25fc1bbe39'
-            },
-            'position': {
-              'x': 297.5,
-              'y': 262.5
-            }
           }],
           edges: [{
             'data': {
