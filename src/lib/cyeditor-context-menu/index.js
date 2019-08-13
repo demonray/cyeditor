@@ -93,19 +93,25 @@ class ContextMenu {
   show (e) {
     if (typeof this._options.beforeShow === 'function' && !this.isShow) {
       const show = this._options.beforeShow(e, this._options.menus.slice(0))
-      if (show === true) {
-        utils.css(this.ctxmenu, {
-          display: 'block'
+      if (!show) return
+      if (show && show.then) {
+        show.then((res) => {
+          if (res) {
+            utils.css(this.ctxmenu, {
+              display: 'block'
+            })
+            this.isShow = true
+          }
         })
-        this.isShow = true
-      } else if (show.then) {
-        show.then(() => {
-          utils.css(this.ctxmenu, {
-            display: 'block'
-          })
-          this.isShow = true
-        })
+        return
       }
+      if (Array.isArray(show)) {
+        this.changeMenus(show)
+      }
+      utils.css(this.ctxmenu, {
+        display: 'block'
+      })
+      this.isShow = true
     }
   }
 
