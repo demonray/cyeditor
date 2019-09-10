@@ -585,8 +585,8 @@ class CyEditor extends EventBus {
   }
 
   destroy () {
-    this.cy.off('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
-      .off('cyeditor.toolbar-command', this._listeners.handleCommand)
+    this.cy.removeAllListeners()
+    this.cy.destroy()
   }
 }
 
