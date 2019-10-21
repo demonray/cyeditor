@@ -8,6 +8,8 @@
 
 [示例](https://demonray.github.io/cyeditor/)
 
+![demo image](https://github.com/demonray/cyeditor/tree/master/examples/example.png)
+
 ## 安装
 
 ### npm
