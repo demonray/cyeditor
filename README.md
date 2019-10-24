@@ -8,7 +8,7 @@ A visual flow chart editor based on [cytoscape.js](https://github.com/cytoscape/
 
 [Demo](https://demonray.github.io/cyeditor/)
 
-![demo image](https://github.com/demonray/cyeditor/tree/master/examples/example.png)
+![demo image](https://github.com/demonray/cyeditor/blob/master/examples/example.png)
 
 ## Installation
 
