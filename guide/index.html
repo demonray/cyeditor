@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>指南 | CyEditor</title>
+    <meta name="description" content="A visual flow chart editor based on cytoscape.js.">
+    <link rel="icon" href="/cyeditor/logo.jpg">
+    
+    <link rel="preload" href="/cyeditor/assets/css/0.styles.f4d863ab.css" as="style"><link rel="preload" href="/cyeditor/assets/js/app.e349c43c.js" as="script"><link rel="preload" href="/cyeditor/assets/js/4.5493a2e2.js" as="script"><link rel="preload" href="/cyeditor/assets/js/11.78aa5126.js" as="script"><link rel="prefetch" href="/cyeditor/assets/js/1.d9ff206d.js"><link rel="prefetch" href="/cyeditor/assets/js/10.4889d3a5.js"><link rel="prefetch" href="/cyeditor/assets/js/3.0412742b.js"><link rel="prefetch" href="/cyeditor/assets/js/5.de96ee9b.js"><link rel="prefetch" href="/cyeditor/assets/js/6.aff52a13.js"><link rel="prefetch" href="/cyeditor/assets/js/7.58639c72.js"><link rel="prefetch" href="/cyeditor/assets/js/8.84bae295.js"><link rel="prefetch" href="/cyeditor/assets/js/9.e86ac7bf.js">
+    <link rel="stylesheet" href="/cyeditor/assets/css/0.styles.f4d863ab.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/cyeditor/" class="home-link router-link-active"><!----> <span class="site-name">CyEditor</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/cyeditor/" class="nav-link">示例</a></div><div class="nav-item"><a href="/cyeditor/guide/" class="nav-link router-link-exact-active router-link-active">指南</a></div><div class="nav-item"><a href="/cyeditor/config/" class="nav-link">配置</a></div><div class="nav-item"><a href="https://github.com/demonray/cyeditor" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/cyeditor/" class="nav-link">示例</a></div><div class="nav-item"><a href="/cyeditor/guide/" class="nav-link router-link-exact-active router-link-active">指南</a></div><div class="nav-item"><a href="/cyeditor/config/" class="nav-link">配置</a></div><div class="nav-item"><a href="https://github.com/demonray/cyeditor" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>指南</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/cyeditor/guide/#介绍" class="sidebar-link">介绍</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/cyeditor/guide/#简介" class="sidebar-link">简介</a></li><li class="sidebar-sub-header"><a href="/cyeditor/guide/#特性" class="sidebar-link">特性</a></li></ul></li><li><a href="/cyeditor/guide/#开始使用" class="sidebar-link">开始使用</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/cyeditor/guide/#安装" class="sidebar-link">安装</a></li><li class="sidebar-sub-header"><a href="/cyeditor/guide/#vue-组件" class="sidebar-link">Vue 组件</a></li></ul></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="指南"><a href="#指南" aria-hidden="true" class="header-anchor">#</a> 指南</h1> <h2 id="介绍"><a href="#介绍" aria-hidden="true" class="header-anchor">#</a> 介绍</h2> <h3 id="简介"><a href="#简介" aria-hidden="true" class="header-anchor">#</a> 简介</h3> <p>可视化的流程图编辑器基于<a href="https://github.com/cytoscape/cytoscape.js" target="_blank" rel="noopener noreferrer">cytoscape.js<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>.</p> <h3 id="特性"><a href="#特性" aria-hidden="true" class="header-anchor">#</a> 特性</h3> <ul><li>[x] 导航器提供预览图，方便查看</li> <li>[x] 表格辅助</li> <li>[x] 内置形状，并支持自定义形状</li> <li>[x] 可配置的工具栏，提供常用操作</li> <li>[x] 节点大小控制及节点信息编辑</li> <li>[x] 支持自定义的右键菜单</li> <li>[x] 支持流程图导出为图片，导出json数据</li> <li>[ ] 更多边类型支持，虚线</li> <li>[ ] 元素信息提示浮层</li></ul> <h2 id="开始使用"><a href="#开始使用" aria-hidden="true" class="header-anchor">#</a> 开始使用</h2> <h3 id="安装"><a href="#安装" aria-hidden="true" class="header-anchor">#</a> 安装</h3> <h4 id="npm"><a href="#npm" aria-hidden="true" class="header-anchor">#</a> npm</h4> <p>使用 npm 的方式安装，与 webpack 打包工具配合使用。</p> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token function">npm</span> <span class="token function">install</span> cyeditor
+</code></pre></div><h4 id="cdn"><a href="#cdn" aria-hidden="true" class="header-anchor">#</a> CDN</h4> <p>目前可以通过 <a href="https://cdn.jsdelivr.net/npm/cyeditor/" target="_blank" rel="noopener noreferrer">jsdelivr<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a> 获取到最新版本的资源，在页面上引入 js 和 css 文件即可开始使用。</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token comment">&lt;!-- 引入样式 --&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>stylesheet<span class="token punctuation">&quot;</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>https://cdn.jsdelivr.net/npm/cyeditor@${version}/dist/cyeditor.css<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+<span class="token comment">&lt;!-- 引入组件库 --&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>https://cdn.jsdelivr.net/npm/cyeditor@${version}/dist/cyeditor.umd.min.js<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h3 id="vue-组件"><a href="#vue-组件" aria-hidden="true" class="header-anchor">#</a> Vue 组件</h3> <p>创建你的vue组件, cyeditor.js:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> CyEditor <span class="token keyword">from</span> <span class="token string">'cyeditor'</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  name<span class="token punctuation">:</span> <span class="token string">'CyEditor'</span><span class="token punctuation">,</span>
+  props<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    value<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      type<span class="token punctuation">:</span> Object<span class="token punctuation">,</span>
+      <span class="token function-variable function">default</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    cyConfig<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      type<span class="token punctuation">:</span> Object<span class="token punctuation">,</span>
+      <span class="token function-variable function">default</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    editorConfig<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      type<span class="token punctuation">:</span> Object<span class="token punctuation">,</span>
+      <span class="token function-variable function">default</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">mounted</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> container <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$el
+    <span class="token keyword">let</span> config <span class="token operator">=</span> <span class="token punctuation">{</span>
+      cy<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token operator">...</span>this<span class="token punctuation">.</span>cyConfig
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      editor<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        container<span class="token punctuation">,</span>
+        <span class="token operator">...</span>this<span class="token punctuation">.</span>editorConfig
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>cyEditor <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CyEditor</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>cyEditor<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>value<span class="token punctuation">)</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>cyEditor<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'change'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">scope<span class="token punctuation">,</span> editor</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token keyword">let</span> json <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>cyEditor<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>json<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">render</span> <span class="token punctuation">(</span><span class="token parameter">h</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token function">h</span><span class="token punctuation">(</span><span class="token string">'div'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>然后像使用普通vue组件一样：</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>cy-editor</span>
+    <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>cy-editor<span class="token punctuation">&quot;</span></span>
+    <span class="token attr-name">:value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>value<span class="token punctuation">&quot;</span></span>
+    <span class="token attr-name">:cy-config</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>cyConfig<span class="token punctuation">&quot;</span></span>
+    <span class="token attr-name">:editor-config</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>editorConfig<span class="token punctuation">&quot;</span></span>
+    <span class="token attr-name">@change</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>change<span class="token punctuation">&quot;</span></span>
+  <span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+<span class="token keyword">import</span> cyEditor <span class="token keyword">from</span> <span class="token string">'./cyeditor.js'</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  name<span class="token punctuation">:</span> <span class="token string">'App'</span><span class="token punctuation">,</span>
+  components<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    cyEditor
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">data</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      value<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        zoom<span class="token punctuation">:</span> <span class="token number">0.7</span><span class="token punctuation">,</span>
+        pan<span class="token punctuation">:</span> <span class="token punctuation">{</span> x<span class="token punctuation">:</span> <span class="token number">100</span><span class="token punctuation">,</span> y<span class="token punctuation">:</span> <span class="token number">40</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        elements<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+          nodes<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+            <span class="token string">'data'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'type'</span><span class="token punctuation">:</span> <span class="token string">'round-rectangle'</span><span class="token punctuation">,</span>
+              <span class="token string">'name'</span><span class="token punctuation">:</span> <span class="token string">'开始'</span><span class="token punctuation">,</span>
+              <span class="token string">'resize'</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+              <span class="token string">'bg'</span><span class="token punctuation">:</span> <span class="token string">'#1890FF'</span><span class="token punctuation">,</span>
+              <span class="token string">'width'</span><span class="token punctuation">:</span> <span class="token number">76</span><span class="token punctuation">,</span>
+              <span class="token string">'height'</span><span class="token punctuation">:</span> <span class="token number">56</span><span class="token punctuation">,</span>
+              <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token string">'a79249d9-4d5b-43e1-b268-d389df7ed592'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'position'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'x'</span><span class="token punctuation">:</span> <span class="token number">192.5</span><span class="token punctuation">,</span>
+              <span class="token string">'y'</span><span class="token punctuation">:</span> <span class="token number">52.5</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+            <span class="token string">'data'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'type'</span><span class="token punctuation">:</span> <span class="token string">'round-rectangle'</span><span class="token punctuation">,</span>
+              <span class="token string">'name'</span><span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+              <span class="token string">'resize'</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+              <span class="token string">'bg'</span><span class="token punctuation">:</span> <span class="token string">'#1890FF'</span><span class="token punctuation">,</span>
+              <span class="token string">'width'</span><span class="token punctuation">:</span> <span class="token number">76</span><span class="token punctuation">,</span>
+              <span class="token string">'height'</span><span class="token punctuation">:</span> <span class="token number">56</span><span class="token punctuation">,</span>
+              <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token string">'27e14443-0b39-446f-94e2-3e521a1706f9'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'position'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'x'</span><span class="token punctuation">:</span> <span class="token number">87.5</span><span class="token punctuation">,</span>
+              <span class="token string">'y'</span><span class="token punctuation">:</span> <span class="token number">262.5</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+            <span class="token string">'data'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'type'</span><span class="token punctuation">:</span> <span class="token string">'diamond'</span><span class="token punctuation">,</span>
+              <span class="token string">'name'</span><span class="token punctuation">:</span> <span class="token string">'条件'</span><span class="token punctuation">,</span>
+              <span class="token string">'resize'</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+              <span class="token string">'bg'</span><span class="token punctuation">:</span> <span class="token string">'#5CDBD3'</span><span class="token punctuation">,</span>
+              <span class="token string">'width'</span><span class="token punctuation">:</span> <span class="token number">156</span><span class="token punctuation">,</span>
+              <span class="token string">'height'</span><span class="token punctuation">:</span> <span class="token number">52</span><span class="token punctuation">,</span>
+              <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token string">'4072b83e-b702-4168-b548-56bcc52eebd9'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'position'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'x'</span><span class="token punctuation">:</span> <span class="token number">192.5</span><span class="token punctuation">,</span>
+              <span class="token string">'y'</span><span class="token punctuation">:</span> <span class="token number">157.5</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+            <span class="token string">'data'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'type'</span><span class="token punctuation">:</span> <span class="token string">'round-rectangle'</span><span class="token punctuation">,</span>
+              <span class="token string">'name'</span><span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+              <span class="token string">'resize'</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+              <span class="token string">'bg'</span><span class="token punctuation">:</span> <span class="token string">'#1890FF'</span><span class="token punctuation">,</span>
+              <span class="token string">'width'</span><span class="token punctuation">:</span> <span class="token number">76</span><span class="token punctuation">,</span>
+              <span class="token string">'height'</span><span class="token punctuation">:</span> <span class="token number">56</span><span class="token punctuation">,</span>
+              <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token string">'6be4a6b0-49e2-4b2c-b3bd-135684da938a'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'position'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'x'</span><span class="token punctuation">:</span> <span class="token number">297.5</span><span class="token punctuation">,</span>
+              <span class="token string">'y'</span><span class="token punctuation">:</span> <span class="token number">262.5</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+          edges<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+            <span class="token string">'data'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'source'</span><span class="token punctuation">:</span> <span class="token string">'a79249d9-4d5b-43e1-b268-d389df7ed592'</span><span class="token punctuation">,</span>
+              <span class="token string">'target'</span><span class="token punctuation">:</span> <span class="token string">'4072b83e-b702-4168-b548-56bcc52eebd9'</span><span class="token punctuation">,</span>
+              <span class="token string">'lineType'</span><span class="token punctuation">:</span> <span class="token string">'taxi'</span><span class="token punctuation">,</span>
+              <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token string">'3e6d9858-adbe-4b73-828d-d0732ac29279'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'position'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'x'</span><span class="token punctuation">:</span> <span class="token number">17.5</span><span class="token punctuation">,</span>
+              <span class="token string">'y'</span><span class="token punctuation">:</span> <span class="token number">17.5</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+            <span class="token string">'data'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'source'</span><span class="token punctuation">:</span> <span class="token string">'4072b83e-b702-4168-b548-56bcc52eebd9'</span><span class="token punctuation">,</span>
+              <span class="token string">'target'</span><span class="token punctuation">:</span> <span class="token string">'27e14443-0b39-446f-94e2-3e521a1706f9'</span><span class="token punctuation">,</span>
+              <span class="token string">'lineType'</span><span class="token punctuation">:</span> <span class="token string">'taxi'</span><span class="token punctuation">,</span>
+              <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token string">'b63708fe-3b53-469a-b908-4c9608112164'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'position'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'x'</span><span class="token punctuation">:</span> <span class="token number">17.5</span><span class="token punctuation">,</span>
+              <span class="token string">'y'</span><span class="token punctuation">:</span> <span class="token number">17.5</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+            <span class="token string">'data'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'source'</span><span class="token punctuation">:</span> <span class="token string">'4072b83e-b702-4168-b548-56bcc52eebd9'</span><span class="token punctuation">,</span>
+              <span class="token string">'target'</span><span class="token punctuation">:</span> <span class="token string">'6be4a6b0-49e2-4b2c-b3bd-135684da938a'</span><span class="token punctuation">,</span>
+              <span class="token string">'lineType'</span><span class="token punctuation">:</span> <span class="token string">'taxi'</span><span class="token punctuation">,</span>
+              <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token string">'0c4d0dc9-a2ee-4ea5-b422-4730913a7ab1'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'position'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+              <span class="token string">'x'</span><span class="token punctuation">:</span> <span class="token number">17.5</span><span class="token punctuation">,</span>
+              <span class="token string">'y'</span><span class="token punctuation">:</span> <span class="token number">17.5</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span><span class="token punctuation">]</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      cyConfig<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      editorConfig<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        lineType<span class="token punctuation">:</span> <span class="token string">'taxi'</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">mounted</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">//</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  computed<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  methods<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token function">change</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">//</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span> <span class="token attr-name">scoped</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>stylus<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span><span class="token style"><span class="token language-css">
+  <span class="token selector">.cy-editor</span> <span class="token punctuation">{</span>
+    <span class="token property">width</span><span class="token punctuation">:</span> 100%<span class="token punctuation">;</span>
+    <span class="token property">height</span><span class="token punctuation">:</span> 600px<span class="token punctuation">;</span>
+    <span class="token property">position</span><span class="token punctuation">:</span> relative<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>style</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/cyeditor/assets/js/app.e349c43c.js" defer></script><script src="/cyeditor/assets/js/4.5493a2e2.js" defer></script><script src="/cyeditor/assets/js/11.78aa5126.js" defer></script>
+  </body>
+</html>
