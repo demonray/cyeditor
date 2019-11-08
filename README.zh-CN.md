@@ -38,7 +38,7 @@ $ npm run serve
 
 ## 文档
 
-* 详细文档见 [Github Pages](https://demonray.github.io/guide/)
+* 详细文档见 [Github Pages](https://demonray.github.io/cyeditor/guide/)
 
 ### 特性 
 

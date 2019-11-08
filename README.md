@@ -33,16 +33,10 @@ $ npm install
 $ npm run serve
 ```
 
-## Usage
 
-### Vue
-
-```jsx
-todo
-```
 ## Documentation
 
-* You can find the documentation on the [Github Pages](https://demonray.github.io/guide/)
+* You can find the documentation on the [Github Pages](https://demonray.github.io/cyeditor/guide/)
 
 ### feature 
 
