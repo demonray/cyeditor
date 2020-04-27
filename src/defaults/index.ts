@@ -4,8 +4,9 @@
 import pluginStyles from './plugin-style'
 import defaultEditorConfig from './editor-config'
 import { defaultNodeTypes, defaultNodeStyles } from './node-types'
-import { defaultEdgeTypes, defaultEdgeStyles, getEdgeConf } from './edge-types'
+import { defaultEdgeStyles } from './edge-types'
 
+// default node style, default edge style
 const defaultConfData = {
   node: {
     type: 'rectangle',
@@ -25,9 +26,7 @@ export {
   defaultConfData,
   defaultNodeTypes,
   defaultNodeStyles,
-  defaultEdgeTypes,
   defaultEdgeStyles,
-  getEdgeConf,
   pluginStyles,
   defaultEditorConfig
 }

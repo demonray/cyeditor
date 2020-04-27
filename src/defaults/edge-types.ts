@@ -1,10 +1,7 @@
 /**
  * Created by DemonRay on 2019/3/27.
  */
-
-const defaultEdgeTypes = {}
-
-const defaultEdgeStyles = [
+const defaultEdgeStyles: cytoscape.Stylesheet[] = [
   {
     selector: 'edge',
     style: {
@@ -59,8 +56,4 @@ const defaultEdgeStyles = [
   }
 ]
 
-function getEdgeConf (type) {
-  return defaultEdgeTypes.find(item => item.type === type)
-}
-
-export { defaultEdgeTypes, defaultEdgeStyles, getEdgeConf }
+export {  defaultEdgeStyles }

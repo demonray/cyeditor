@@ -12,6 +12,7 @@ let defaults = {
 }
 
 class Clipboard {
+  [x: string]: any
   constructor (cy, params) {
     this.cy = cy
     this._options = Object.assign({}, defaults, params)
@@ -31,7 +32,7 @@ class Clipboard {
 
       scratchPad.instance = {
         copy: (eles, _id) => {
-          let id = _id || this._getItemId()
+          let id = _id || this._getItemId(false)
           eles.unselect()
           let descs = eles.nodes().descendants()
           let nodes = eles.nodes().union(descs).filter(':visible')
@@ -73,7 +74,7 @@ class Clipboard {
 
     return scratchPad.instance // return the extension instance
   }
-  _getItemId (last) {
+  _getItemId (last: boolean) {
     return last ? 'item_' + this._counter : 'item_' + (++this._counter)
   }
   changeIds (jsons) {

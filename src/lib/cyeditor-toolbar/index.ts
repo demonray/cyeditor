@@ -25,6 +25,7 @@ let defaults = {
   ]
 }
 class Toolbar {
+  [x: string]: any
   constructor (cy, params) {
     this.cy = cy
     this._init(params)

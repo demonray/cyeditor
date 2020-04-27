@@ -1,4 +1,4 @@
-const pluginStyles = [
+const pluginStyles: cytoscape.Stylesheet[] = [
   {
     selector: '.eh-handle',
     style: {

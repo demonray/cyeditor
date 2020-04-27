@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import cyEditor from './cyeditor.js'
+import cyEditor from './cyeditor.ts'
 
 export default {
   name: 'App',

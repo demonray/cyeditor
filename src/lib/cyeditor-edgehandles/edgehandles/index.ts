@@ -1,4 +1,4 @@
-import utils from '../../../utils'
+import { throttle } from 'lodash'
 import defaults from './defaults'
 import cyGesturesToggle from './cy-gestures-toggle'
 import cyListeners from './cy-listeners'
@@ -28,7 +28,7 @@ class Edgehandles {
     this.options = Object.assign({}, defaults, options)
     this.saveGestureState()
     this.addListeners()
-    this.throttledSnap = utils.throttle(this.snap.bind(this), 1000 / options.snapFrequency)
+    this.throttledSnap = throttle(this.snap.bind(this), 1000 / options.snapFrequency)
     this.preventDefault = e => e.preventDefault()
     let supportsPassive = false
     try {

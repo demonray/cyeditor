@@ -1,4 +1,5 @@
 /**
+ * built in node types
  * Created by DemonRay on 2019/3/24.
  */
 
@@ -107,7 +108,7 @@ const defaultNodeTypes = [
     buildIn: true
   }
 ]
-const defaultNodeStyles = [{
+const defaultNodeStyles: cytoscape.Stylesheet[] = [{
   'selector': 'node[type]',
   'style': {
     'shape': 'data(type)',

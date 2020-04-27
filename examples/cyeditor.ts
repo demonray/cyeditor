@@ -1,4 +1,4 @@
-import CyEditor from '../src'
+import CyEditor from '../src/index.ts'
 export default {
   name: 'CyEditor',
   props: {

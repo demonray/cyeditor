@@ -1,5 +1,5 @@
 
-import utils from '../../../utils'
+import { memoize } from 'lodash'
 
 function canStartOn (node) {
   const { options, previewEles, ghostEles, handleNode } = this
@@ -85,7 +85,7 @@ function snap () {
   let mousePos = this.mp()
   let sqDist = (p1, p2) => (p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y)
   let getRadius = n => (n.outerWidth() + n.outerHeight()) / 4
-  let nodeSqDist = utils.memoize(n => sqDist(n.position(), mousePos), n => n.id())
+  let nodeSqDist = memoize(n => sqDist(n.position(), mousePos), n => n.id())
   let isWithinTheshold = n => nodeSqDist(n) <= sqThreshold(n)
   let cmpSqDist = (n1, n2) => nodeSqDist(n1) - nodeSqDist(n2)
   let allowHoverDelay = false

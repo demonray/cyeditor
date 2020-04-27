@@ -19,6 +19,7 @@ const defaults = {
 }
 
 class ContextMenu {
+  [x: string]: any
   constructor (cy, params) {
     this.cy = cy
     this._options = Object.assign({}, defaults, params)

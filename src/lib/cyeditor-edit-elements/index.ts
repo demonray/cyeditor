@@ -9,6 +9,7 @@ const defaults = {
 }
 
 class EditElements {
+  [x: string]: any
   constructor (cy, params) {
     this.cy = cy
     this._options = Object.assign({}, defaults, params)
@@ -50,8 +51,8 @@ class EditElements {
     this._panel.style.display = 'none'
   }
 
-  _panelHtml (params = { showName: true, showBgColor: true, showColor: true, showRect: true, colorTitle: '文字' }) {
-    this._panel.innerHTML = `<div class="panel-title">元素${params.titile || ''}</div>
+  _panelHtml (params = { showName: true, showBgColor: true, showColor: true, showRect: true, colorTitle: '文字', title: '' }) {
+    this._panel.innerHTML = `<div class="panel-title">元素${params.title || ''}</div>
               <div class="panel-body" id="info-items">
                 <div class="info-item-wrap" style="${!params.showName ? 'display:none' : ''}">名称：
                     <input class="input info-item" name="name" type="text" value="">
@@ -97,7 +98,7 @@ class EditElements {
     let selected = this.cy.$(':selected')
     this.selected = selected
     let allNode = selected.every(it => it.isNode())
-    let opt = { showName: allNode, showBgColor: allNode, showColor: true, showRect: allNode, colorTitle: allNode ? '文字' : '颜色' }
+    let opt: any = { showName: allNode, showBgColor: allNode, showColor: true, showRect: allNode, colorTitle: allNode ? '文字' : '颜色' }
     if (selected.length > 1) {
       this._infos.name = ''
       this._panelHtml(opt)
@@ -110,7 +111,7 @@ class EditElements {
           this._infos[item] = el.data('name')
         } else if (item === 'color' || item === 'background-color') {
           let color = el.numericStyle(item)
-          this._infos[item] = '#' + utils.RGBToHex(...color)
+          this._infos[item] = '#' + utils.RGBToHex(color[0],color[2],color[2])
         } else {
           this._infos[item] = el.numericStyle(item)
         }

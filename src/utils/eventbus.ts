@@ -1,7 +1,10 @@
 /* eslint-disable no-mixed-operators */
 export class EventBus {
+
+  private events: object = {}
+
   constructor () {
-    this.events = {}
+
   }
 
   /**
@@ -71,7 +74,7 @@ export class EventBus {
    * @param {object} target The caller
    * @param {...any} args Any number of args to be passed to the callback
    */
-  emit (type, target, ...args) {
+  emit (type, target?: any, ...args: any) {
     if (typeof this.events[type] === 'undefined') { // Check if any event of the passed type exists
       return // If not, quit method
     }

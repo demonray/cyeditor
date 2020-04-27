@@ -3,6 +3,7 @@
  */
 
 import utils from '../../utils'
+import { debounce } from 'lodash'
 
 let defaults = {
   handleColor: '#000000', // the colour of the handle and the line drawn from it
@@ -39,6 +40,8 @@ function ptInTriangle (p, p0, p1, p2) {
 }
 
 class NodeResize {
+  [x: string]: any
+
   constructor (cy, params) {
     this.cy = cy
     this._container = this.cy.container()
@@ -91,7 +94,7 @@ class NodeResize {
     this.canvas = document.createElement('canvas')
     this.ctx = this.canvas.getContext('2d')
     this._container.append(this.canvas)
-    this._listeners._sizeCanvas = utils.debounce(this._sizeCanvas, 250).bind(this)
+    this._listeners._sizeCanvas = debounce(this._sizeCanvas, 250).bind(this)
     this._listeners._sizeCanvas()
 
     this._initEvents()
@@ -320,7 +323,7 @@ class NodeResize {
     this._drawHandle(node)
 
     node.trigger('cyeditor.noderesize-showhandle')
-    let lastPosition = {}
+    let lastPosition:any = {}
 
     let mdownHandler = (e) => {
       this._container.removeEventListener('mousedown', mdownHandler, true)

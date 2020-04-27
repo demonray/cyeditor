@@ -3,7 +3,7 @@
  */
 // Get scratch pad reserved for this extension on the given element or the core if 'name' parameter is not set,
 // if the 'name' parameter is set then return the related property in the scratch instead of the whole scratchpad
-function getScratch (eleOrCy, name) {
+function getScratch (eleOrCy, name?) {
   if (eleOrCy.scratch('_undoRedo') === undefined) {
     eleOrCy.scratch('_undoRedo', {})
   }
@@ -23,7 +23,8 @@ function setScratch (eleOrCy, name, val) {
 
 // Generate an instance of the extension for the given cy instance
 function generateInstance (cy) {
-  let instance = {}
+
+  let instance: any= {}
 
   instance.options = {
     isDebug: false, // Debug mode for console messages
@@ -236,7 +237,7 @@ function defaultActions (cy) {
     return roots
   }
 
-  function moveNodes (positionDiff, nodes, notCalcTopMostNodes) {
+  function moveNodes (positionDiff, nodes, notCalcTopMostNodes?) {
     let topMostNodes = notCalcTopMostNodes ? nodes : getTopMostNodes(nodes)
     for (let i = 0; i < topMostNodes.length; i++) {
       let node = topMostNodes[i]
@@ -297,7 +298,7 @@ function defaultActions (cy) {
   }
 
   function changeParent (param) {
-    let result = {
+    let result: any = {
     }
     // If this is first time we should move the node to its new parent and relocate it by given posDiff params
     // else we should remove the moved eles and restore the eles to restore
@@ -414,7 +415,7 @@ function defaultActions (cy) {
       },
       _undo: function (eles) {
         let newEles = cy.collection()
-        let location = {}
+        let location:any = {}
         if (eles.newNodes.length > 0) {
           location.parent = eles.newNodes[0].parent()
 

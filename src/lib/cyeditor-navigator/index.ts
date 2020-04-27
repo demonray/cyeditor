@@ -2,6 +2,7 @@
  * Created by DemonRay on 2019/3/20.
  */
 import utils from '../../utils'
+import { throttle } from 'lodash'
 
 let defaults = {
   container: false, // can be a selector
@@ -12,12 +13,13 @@ let defaults = {
 }
 
 class Navigator {
+  [x: string]: any
+
   constructor (cy, options) {
     this.cy = cy
     this._options = utils.extend({}, defaults, options)
-    this._init(cy, options)
+    this._init()
   }
-
   _init () {
     this._cyListeners = []
     this._contianer = this.cy.container()
@@ -482,7 +484,7 @@ class Navigator {
       img.style.top = translate.y + 'px'
     }
 
-    this._onRenderHandler = utils.throttle(render, this._options.rerenderDelay)
+    this._onRenderHandler = throttle(render, this._options.rerenderDelay)
 
     this.cy.onRender(this._onRenderHandler)
   }
@@ -494,7 +496,7 @@ class Navigator {
     })
   }
 
-  _zoomCy (zoomRate) {
+  _zoomCy (zoomRate, pos ?) {
     let zoomCenter = {
       x: this.width / 2,
       y: this.height / 2

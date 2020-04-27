@@ -10,6 +10,7 @@ const defaults = {
 }
 
 class DragAddNodes {
+  [x: string]: any
   constructor (cy, params) {
     this.cy = cy
     this._options = Object.assign({}, defaults, params)
@@ -30,7 +31,7 @@ class DragAddNodes {
     shapes.forEach(item => {
       item._id = utils.guid()
     })
-    let categorys = {}
+    let categorys: any = {}
     let other = []
     shapes.forEach(item => {
       if (item.category) {
@@ -87,7 +88,7 @@ class DragAddNodes {
   }
 
   _addNodeToCy ({ type, width, height, bg, resize, name = '', points, buildIn = false, src }, rect) {
-    let data = { type, name, resize, bg, width, height }
+    let data: any = { type, name, resize, bg, width, height }
     if (!buildIn) {
       data.image = src
     }

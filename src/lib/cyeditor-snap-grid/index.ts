@@ -4,6 +4,7 @@
 import utils from '../../utils'
 
 class SnapToGrid {
+  [x: string]: any
   constructor (cy, params) {
     this.cy = cy
     let defaults = {

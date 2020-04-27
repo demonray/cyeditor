@@ -2,10 +2,6 @@
  * Created by DemonRay on 2019/3/24.
  */
 
-import memoize from './memorize'
-import debounce from './debounce'
-import throttle from './throttle'
-
 const class2type = {}
 
 const getProto = Object.getPrototypeOf
@@ -47,11 +43,11 @@ function isPlainObject (obj) {
   return typeof Ctor === 'function' && fnToString.call(Ctor) === ObjectFunctionString
 }
 
-function extend () {
+function extend (...args) {
   let options; let name; let src; let copy; let copyIsArray; let clone
-  let target = arguments[ 0 ] || {}
+  let target = args[ 0 ] || {}
   let i = 1
-  let length = arguments.length
+  let length = args.length
   let deep = false
 
   // Handle a deep copy situation
@@ -59,7 +55,7 @@ function extend () {
     deep = target
 
     // Skip the boolean and the target
-    target = arguments[ i ] || {}
+    target = args[ i ] || {}
     i++
   }
 
@@ -76,7 +72,7 @@ function extend () {
 
   for (; i < length; i++) {
     // Only deal with non-null/undefined values
-    if ((options = arguments[ i ]) != null) {
+    if ((options = args[ i ]) != null) {
       // Extend the base object
       for (name in options) {
         src = target[ name ]
@@ -187,9 +183,6 @@ export default {
   once,
   $,
   isNode,
-  debounce,
-  throttle,
   RGBToHex,
-  memoize,
   guid
 }

@@ -1,71 +1,78 @@
 {
-    "name": "cyeditor",
-    "version": "1.0.3",
-    "private": false,
-    "description": "CyEditor, A visual flow chart editor based on cytoscape.js",
-    "main": "dist/cyeditor.umd.js",
-    "jsdelivr": "dist/cytoscape.umd.min.js",
-    "keywords": [
-        "cyeditor",
-        "flowchart",
-        "flow chart",
-        "flow editor",
-        "process editor",
-        "flow chart editor",
-        "vue flow chart",
-        "cytoscape editor",
-        "javascript flow",
-        "graph editor",
-        "diagram"
-    ],
-    "scripts": {
-        "serve": "vue-cli-service serve examples/main.js",
-        "build": "vue-cli-service build --target lib --name cyeditor src/index.js",
-        "lint": "vue-cli-service lint --fix",
-        "docs:dev": "vuepress dev docs",
-        "docs:build": "vuepress build docs",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "precommit": "lint-staged",
-        "deploy": "./deploy.sh"
-    },
-    "husky": {
-        "hooks": {
-            "postcommit": "git update-index --again",
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "src/**/*": [
-            "eslint --fix",
-            "git add"
-        ]
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/demonray/cyeditor.git"
-    },
-    "bugs": {
-        "url": "https://github.com/demonray/cyeditor/issues"
-    },
-    "author": "ryanlei <leiqirong@gmail.com>",
-    "license": "ISC",
-    "dependencies": {
-        "cytoscape": "^3.7.0"
-    },
-    "devDependencies": {
-        "@vue/cli-plugin-babel": "^3.5.1",
-        "@vue/cli-plugin-eslint": "^3.5.1",
-        "@vue/cli-service": "^3.5.1",
-        "@vue/eslint-config-standard": "^4.0.0",
-        "babel-core": "^6.26.3",
-        "babel-eslint": "^10.0.1",
-        "eslint": "^5.15.3",
-        "eslint-plugin-vue": "^5.2.2",
-        "stylus": "^0.54.5",
-        "stylus-loader": "^3.0.2",
-        "vue": "^2.6.10",
-        "vue-template-compiler": "^2.6.10",
-        "vuepress": "^1.0.2",
-        "webpack": ">=4 < 4.29"
+  "name": "cyeditor",
+  "version": "1.0.3",
+  "private": false,
+  "description": "CyEditor, A visual flow chart editor based on cytoscape.js",
+  "author": "ryanlei <leiqirong@gmail.com>",
+  "scripts": {
+    "serve": "vue-cli-service serve examples/main.ts",
+    "build": "vue-cli-service build --target lib --name cyeditor src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "vue-cli-service lint --fix",
+    "deploy": "./deploy.sh",
+    "docs:build": "vuepress build docs",
+    "docs:dev": "vuepress dev docs",
+    "precommit": "lint-staged"
+  },
+  "main": "dist/cyeditor.umd.ts",
+  "dependencies": {
+    "cytoscape": "^3.8.7",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "@types/cytoscape": "^3.8.7",
+    "@vue/cli-plugin-babel": "^3.5.1",
+    "@vue/cli-plugin-eslint": "^3.5.1",
+    "@vue/cli-service": "^3.5.1",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "@vue/eslint-config-typescript": "^4.0.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.15.3",
+    "eslint-plugin-vue": "^5.2.2",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
+    "typescript": "^3.2.1",
+    "vue": "^2.6.10",
+    "vue-class-component": "^6.0.0",
+    "vue-cli-plugin-typescript": "^0.0.1",
+    "vue-property-decorator": "^7.0.0",
+    "vue-template-compiler": "^2.6.10",
+    "vuepress": "^1.0.2",
+    "webpack": ">=4 < 4.29"
+  },
+  "bugs": {
+    "url": "https://github.com/demonray/cyeditor/issues"
+  },
+  "husky": {
+    "hooks": {
+      "postcommit": "git update-index --again",
+      "pre-commit": "lint-staged"
     }
+  },
+  "jsdelivr": "dist/cytoscape.umd.min.js",
+  "keywords": [
+    "cyeditor",
+    "flowchart",
+    "flow chart",
+    "flow editor",
+    "process editor",
+    "flow chart editor",
+    "vue flow chart",
+    "cytoscape editor",
+    "javascript flow",
+    "graph editor",
+    "diagram"
+  ],
+  "license": "ISC",
+  "lint-staged": {
+    "src/**/*": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/demonray/cyeditor.git"
+  }
 }
