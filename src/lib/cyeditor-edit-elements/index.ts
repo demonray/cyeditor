@@ -3,14 +3,17 @@
  */
 import utils from '../../utils'
 
+interface Options {
+  container?: string | Node
+  attrs: string[]
+}
 const defaults = {
-  container: false,
-  attrs: [ 'name', 'height', 'width', 'color', 'background-color' ]
+  attrs: ['name', 'height', 'width', 'color', 'background-color']
 }
 
 class EditElements {
   [x: string]: any
-  constructor (cy, params) {
+  constructor(cy: cytoscape.Core, params: Options) {
     this.cy = cy
     this._options = Object.assign({}, defaults, params)
     this._infos = {}
@@ -19,8 +22,8 @@ class EditElements {
     this._initEvents()
   }
 
-  _initEvents () {
-    this._panel.addEventListener('input', (e) => { // debounce todo
+  _initEvents() {
+    this._panel.addEventListener('input', (e: any) => { // debounce todo
       if (this._options.attrs.indexOf(e.target.name) > -1) {
         this._infos[e.target.name] = e.target.value
         this._changeElementInfo(e.target.name, e.target.value)
@@ -31,11 +34,11 @@ class EditElements {
     })
   }
 
-  _initPanel () {
+  _initPanel() {
     let { _options } = this
     if (_options.container) {
       if (typeof _options.container === 'string') {
-        this._panel = utils.query(_options.container)[ 0 ]
+        this._panel = utils.query(_options.container)[0]
       } else if (utils.isNode(_options.container)) {
         this._panel = _options.container
       }
@@ -51,7 +54,7 @@ class EditElements {
     this._panel.style.display = 'none'
   }
 
-  _panelHtml (params = { showName: true, showBgColor: true, showColor: true, showRect: true, colorTitle: '文字', title: '' }) {
+  _panelHtml(params = { showName: true, showBgColor: true, showColor: true, showRect: true, colorTitle: '文字', title: '' }) {
     this._panel.innerHTML = `<div class="panel-title">元素${params.title || ''}</div>
               <div class="panel-body" id="info-items">
                 <div class="info-item-wrap" style="${!params.showName ? 'display:none' : ''}">名称：
@@ -76,12 +79,12 @@ class EditElements {
             </div>`
   }
 
-  _changeElementInfo (name, value) {
+  _changeElementInfo(name: string, value: any) {
     if (name === 'name') {
       this.selected[0].data({ name: value })
       return
     }
-    this.selected.forEach(item => {
+    this.selected.forEach((item: any) => {
       if (item.isEdge() && name === 'color') {
         name = 'lineColor'
       }
@@ -94,10 +97,10 @@ class EditElements {
     })
   }
 
-  showElementsInfo () {
+  showElementsInfo() {
     let selected = this.cy.$(':selected')
     this.selected = selected
-    let allNode = selected.every(it => it.isNode())
+    let allNode = selected.every((it: any) => it.isNode())
     let opt: any = { showName: allNode, showBgColor: allNode, showColor: true, showRect: allNode, colorTitle: allNode ? '文字' : '颜色' }
     if (selected.length > 1) {
       this._infos.name = ''
@@ -106,12 +109,12 @@ class EditElements {
       this._panelHtml(opt)
       this._panel.style.display = 'block'
       let el = selected[0]
-      this._options.attrs.forEach(item => {
+      this._options.attrs.forEach((item: any) => {
         if (item === 'name') { // from data
           this._infos[item] = el.data('name')
         } else if (item === 'color' || item === 'background-color') {
           let color = el.numericStyle(item)
-          this._infos[item] = '#' + utils.RGBToHex(color[0],color[2],color[2])
+          this._infos[item] = '#' + utils.RGBToHex(color[0], color[2], color[2])
         } else {
           this._infos[item] = el.numericStyle(item)
         }
@@ -119,8 +122,8 @@ class EditElements {
     } else {
       this._panel.style.display = 'none'
     }
-    this._options.attrs.filter(item => this._infos[item]).forEach(name => {
-      let item = utils.query(`#info-items input[name=${name}`)
+    this._options.attrs.filter((item: string) => this._infos[item]).forEach((name: string) => {
+      let item: any = utils.query(`#info-items input[name=${name}`)
       if (item.length) {
         item[0].value = this._infos[name]
       }
@@ -128,10 +131,10 @@ class EditElements {
   }
 }
 
-export default (cytoscape) => {
-  if (!cytoscape) { return }
+export default (cy?: any) => {
+  if (!cy) { return }
 
-  cytoscape('core', 'editElements', function (params) {
+  cy('core', 'editElements', function (this: cytoscape.Core, params: Options = defaults) {
     return new EditElements(this, params)
   })
 }

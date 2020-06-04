@@ -1,7 +1,7 @@
-const isString = x => typeof x === typeof ''
+const isString = (x: any) => typeof x === typeof ''
 
-function getEleJson (overrides, params, addedClasses) {
-  let json = {}
+function getEleJson(overrides: { group?: string; position?: { x: any; y: any }; data?: any }, params: { data: any; classes: string | any[] }, addedClasses: string) {
+  let json: any = {}
 
   // basic values
   Object.assign(json, params, overrides)
@@ -20,7 +20,7 @@ function getEleJson (overrides, params, addedClasses) {
   return json
 }
 
-function makeEdges (preview = false) {
+function makeEdges(this: any, preview = false) {
   let {
     cy,
     options,
@@ -90,8 +90,8 @@ function makeEdges (preview = false) {
         group: 'nodes',
         position: p
       },
-      options.nodeParams(source, target),
-      classes
+        options.nodeParams(source, target),
+        classes
       ))
 
     let source2inter = cy.add(
@@ -102,8 +102,8 @@ function makeEdges (preview = false) {
           target: interNode.id()
         }
       },
-      options.edgeParams(source, target, 0),
-      classes
+        options.edgeParams(source, target, 0),
+        classes
       )
     )
 
@@ -115,8 +115,8 @@ function makeEdges (preview = false) {
           target: target.id()
         }
       },
-      options.edgeParams(source, target, 1),
-      classes
+        options.edgeParams(source, target, 1),
+        classes
       )
     )
 
@@ -130,8 +130,8 @@ function makeEdges (preview = false) {
           target: target.id()
         }
       },
-      options.edgeParams(source, target, 0),
-      classes
+        options.edgeParams(source, target, 0),
+        classes
       )
     )
 
@@ -151,17 +151,17 @@ function makeEdges (preview = false) {
   return this
 }
 
-function makePreview () {
+function makePreview(this: any) {
   this.makeEdges(true)
 
   return this
 }
 
-function previewShown () {
+function previewShown(this: any) {
   return this.previewEles.nonempty() && this.previewEles.inside()
 }
 
-function removePreview () {
+function removePreview(this: any) {
   if (this.previewShown()) {
     this.previewEles.remove()
   }
@@ -169,11 +169,11 @@ function removePreview () {
   return this
 }
 
-function handleShown () {
+function handleShown(this: any) {
   return this.handleNode.nonempty() && this.handleNode.inside()
 }
 
-function removeHandle () {
+function removeHandle(this: any) {
   if (this.handleShown()) {
     this.handleNode.remove()
   }
@@ -181,7 +181,7 @@ function removeHandle () {
   return this
 }
 
-function setHandleFor (node) {
+function setHandleFor(this: any, node: any) {
   let {
     options,
     cy
@@ -240,7 +240,7 @@ function setHandleFor (node) {
   return this
 }
 
-function updateEdge () {
+function updateEdge(this: any) {
   let {
     sourceNode,
     ghostNode,

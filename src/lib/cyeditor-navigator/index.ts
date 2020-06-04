@@ -4,8 +4,15 @@
 import utils from '../../utils'
 import { throttle } from 'lodash'
 
+interface Options {
+  container?: string | Node,
+  viewLiveFramerate: boolean | number,
+  dblClickDelay: number,
+  removeCustomContainer: boolean,
+  rerenderDelay: number
+}
+
 let defaults = {
-  container: false, // can be a selector
   viewLiveFramerate: 0, // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
   dblClickDelay: 200, // milliseconds
   removeCustomContainer: true, // destroy the container specified by user on plugin destroy
@@ -15,12 +22,12 @@ let defaults = {
 class Navigator {
   [x: string]: any
 
-  constructor (cy, options) {
+  constructor(cy: cytoscape.Core, options: Options) {
     this.cy = cy
     this._options = utils.extend({}, defaults, options)
     this._init()
   }
-  _init () {
+  _init() {
     this._cyListeners = []
     this._contianer = this.cy.container()
 
@@ -39,7 +46,7 @@ class Navigator {
     this._initOverlay()
   }
 
-  _addCyListener (events, handler) {
+  _addCyListener(events: cytoscape.EventNames, handler: cytoscape.EventHandler) {
     this._cyListeners.push({
       events: events,
       handler: handler
@@ -48,22 +55,22 @@ class Navigator {
     this.cy.on(events, handler)
   }
 
-  _removeCyListeners () {
+  _removeCyListeners() {
     let cy = this.cy
 
-    this._cyListeners.forEach(function (l) {
+    this._cyListeners.forEach(function (l: any) {
       cy.off(l.events, l.handler)
     })
 
     cy.offRender(this._onRenderHandler)
   }
 
-  _initPanel () {
+  _initPanel() {
     let options = this._options
 
     if (options.container) {
       if (typeof options.container === 'string') {
-        this.$panel = utils.query(options.container)[ 0 ]
+        this.$panel = utils.query(options.container)[0]
       } else if (utils.isNode(options.container)) {
         this.$panel = options.container
       }
@@ -82,14 +89,14 @@ class Navigator {
     this._addCyListener('resize', this.resize.bind(this))
   }
 
-  _setupPanel () {
+  _setupPanel() {
     let panelRect = this.$panel.getBoundingClientRect()
     // Cache sizes
     this.panelWidth = panelRect.width
     this.panelHeight = panelRect.height
   }
 
-  _initThumbnail () {
+  _initThumbnail() {
     // Create thumbnail
     this.$thumbnail = document.createElement('img')
 
@@ -101,7 +108,7 @@ class Navigator {
     this._updateThumbnailImage()
   }
 
-  _setupThumbnailSizes () {
+  _setupThumbnailSizes() {
     // Update bounding box cache
     this.boundingBox = this.bb()
 
@@ -116,7 +123,7 @@ class Navigator {
 
   // If bounding box has changed then update sizes
   // Otherwise just update the thumbnail
-  _checkThumbnailSizesAndUpdate () {
+  _checkThumbnailSizesAndUpdate() {
     // Cache previous values
     let _zoom = this.thumbnailZoom
     let _panX = this.thumbnailPan.x
@@ -130,7 +137,7 @@ class Navigator {
     }
   }
 
-  _initView () {
+  _initView() {
     this.$view = document.createElement('div')
     this.$view.className = 'cytoscape-navigatorView'
     this.$panel.appendChild(this.$view)
@@ -138,10 +145,10 @@ class Navigator {
     let viewStyle = window.getComputedStyle(this.$view)
 
     // Compute borders
-    this.viewBorderTop = parseInt(viewStyle[ 'border-top-width' ], 10)
-    this.viewBorderRight = parseInt(viewStyle[ 'border-right-width' ], 10)
-    this.viewBorderBottom = parseInt(viewStyle[ 'border-bottom-width' ], 10)
-    this.viewBorderLeft = parseInt(viewStyle[ 'border-left-width' ], 10)
+    this.viewBorderTop = parseInt(viewStyle['border-top-width'], 10)
+    this.viewBorderRight = parseInt(viewStyle['border-right-width'], 10)
+    this.viewBorderBottom = parseInt(viewStyle['border-bottom-width'], 10)
+    this.viewBorderLeft = parseInt(viewStyle['border-left-width'], 10)
 
     // Abstract borders
     this.viewBorderHorizontal = this.viewBorderLeft + this.viewBorderRight
@@ -153,7 +160,7 @@ class Navigator {
     this._addCyListener('zoom pan', this._setupView.bind(this))
   }
 
-  _setupView () {
+  _setupView() {
     if (this.viewLocked) { return }
 
     let cyZoom = this.cy.zoom()
@@ -183,7 +190,7 @@ class Navigator {
      * inMovement {boolean}
      * hookPoint {object} {x: 0, y: 0}
      */
-  _initOverlay () {
+  _initOverlay() {
     // Used to capture mouse events
     this.$overlay = document.createElement('div')
     this.$overlay.className = 'cytoscape-navigatorOverlay'
@@ -199,7 +206,7 @@ class Navigator {
     this._initEventsHandling()
   }
 
-  _initEventsHandling () {
+  _initEventsHandling() {
     let eventsLocal = [
       // Mouse events
       'mousedown',
@@ -218,7 +225,7 @@ class Navigator {
     ]
 
     // handle events and stop their propagation
-    let overlayListener = (env) => {
+    let overlayListener = (env: any) => {
       // Touch events
       let ev = utils.extend({}, env)
       if (ev.type === 'touchstart') {
@@ -247,7 +254,7 @@ class Navigator {
     }
 
     // Hook global events
-    let globalListener = (env) => {
+    let globalListener = (env: any) => {
       let ev = utils.extend({}, env)
       // Do not make any computations if it is has no effect on Navigator
       if (!this.overlayInMovement) return
@@ -258,8 +265,8 @@ class Navigator {
         ev.offsetY = this.viewY + this.viewH / 2
       } else if (ev.type === 'touchmove') {
         // Hack - we take in account only first touch
-        ev.pageX = ev.touches[ 0 ].pageX
-        ev.pageY = ev.touches[ 0 ].pageY
+        ev.pageX = ev.touches[0].pageX
+        ev.pageY = ev.touches[0].pageY
       }
 
       // Normalize offset for browsers which do not provide that value
@@ -312,12 +319,12 @@ class Navigator {
     }
   }
 
-  _eventMoveStart (ev) {
+  _eventMoveStart(ev: any) {
     let now = new Date().getTime()
 
     // Check if it was double click
     if (this.overlayLastMoveStartTime &&
-            this.overlayLastMoveStartTime + this._options.dblClickDelay > now) {
+      this.overlayLastMoveStartTime + this._options.dblClickDelay > now) {
       // Reset lastMoveStartTime
       this.overlayLastMoveStartTime = 0
       // Enable View in order to move it to the center
@@ -354,7 +361,7 @@ class Navigator {
 
       // if event started in View
       if (ev.offsetX >= this.viewX && ev.offsetX <= this.viewX + this.viewW &&
-                ev.offsetY >= this.viewY && ev.offsetY <= this.viewY + this.viewH
+        ev.offsetY >= this.viewY && ev.offsetY <= this.viewY + this.viewH
       ) {
         this.overlayHookPointX = ev.offsetX - this.viewX
         this.overlayHookPointY = ev.offsetY - this.viewY
@@ -369,7 +376,7 @@ class Navigator {
     }
   }
 
-  _eventMove (ev) {
+  _eventMove(ev: any) {
     this._checkMousePosition(ev)
 
     // break if it is useless event
@@ -400,17 +407,17 @@ class Navigator {
     }
   }
 
-  _checkMousePosition (ev) {
+  _checkMousePosition(ev: any) {
     // If mouse in over View
     if (ev.offsetX > this.viewX && ev.offsetX < this.viewX + this.viewBorderHorizontal + this.viewW &&
-            ev.offsetY > this.viewY && ev.offsetY < this.viewY + this.viewBorderVertical + this.viewH) {
+      ev.offsetY > this.viewY && ev.offsetY < this.viewY + this.viewBorderVertical + this.viewH) {
       this.$panel.classList.add('mouseover-view')
     } else {
       this.$panel.classList.remove('mouseover-view')
     }
   }
 
-  _eventMoveEnd (ev) {
+  _eventMoveEnd(ev: any) {
     // Unlock view changing caused by graph events
     this.viewLocked = false
 
@@ -433,18 +440,18 @@ class Navigator {
     this.overlayInMovement = false
   }
 
-  _eventZoom (ev) {
+  _eventZoom(ev: any) {
     let zoomRate = Math.pow(10, ev.wheelDeltaY / 1000 || ev.wheelDelta / 1000 || ev.detail / -32)
-    let mousePosition = {
-      left: ev.offsetX,
-      top: ev.offsetY
-    }
+    // let mousePosition = {
+    //   left: ev.offsetX,
+    //   top: ev.offsetY
+    // }
     if (this.cy.zoomingEnabled()) {
-      this._zoomCy(zoomRate, mousePosition)
+      this._zoomCy(zoomRate)
     }
   }
 
-  _updateThumbnailImage () {
+  _updateThumbnailImage() {
     if (this._thumbnailUpdating) {
       return
     }
@@ -489,14 +496,14 @@ class Navigator {
     this.cy.onRender(this._onRenderHandler)
   }
 
-  _moveCy () {
+  _moveCy() {
     this.cy.pan({
       x: -(this.viewX + this.viewBorderLeft - this.thumbnailPan.x) * this.width / this.viewW,
       y: -(this.viewY + this.viewBorderLeft - this.thumbnailPan.y) * this.height / this.viewH
     })
   }
 
-  _zoomCy (zoomRate, pos ?) {
+  _zoomCy(zoomRate: number) {
     let zoomCenter = {
       x: this.width / 2,
       y: this.height / 2
@@ -508,7 +515,7 @@ class Navigator {
     })
   }
 
-  destroy () {
+  destroy() {
     this._removeCyListeners()
     this._removeEventsHandling()
 
@@ -516,14 +523,14 @@ class Navigator {
     if (this._options.container && !this._options.removeCustomContainer) {
       let childs = this.$panel.childNodes
       for (let i = childs.length - 1; i >= 0; i--) {
-        this.$panel.removeChild(childs[ i ])
+        this.$panel.removeChild(childs[i])
       }
     } else {
       this.$panel.parentNode.removeChild(this.$panel)
     }
   }
 
-  resize () {
+  resize() {
     // Cache sizes
     let panelRect = this._contianer.getBoundingClientRect()
     this.width = panelRect.width
@@ -533,7 +540,7 @@ class Navigator {
     this._setupView()
   }
 
-  bb () {
+  bb() {
     let bb = this.cy.elements().boundingBox()
 
     if (bb.w === 0 || bb.h === 0) {
@@ -551,10 +558,10 @@ class Navigator {
   }
 }
 
-export default (cytoscape) => {
-  if (!cytoscape) { return }
+export default (cy?: any) => {
+  if (!cy) { return }
 
-  cytoscape('core', 'navigator', function (options) {
+  cy('core', 'navigator', function (this: cytoscape.Core, options: Options = defaults) {
     return new Navigator(this, options)
   })
 }

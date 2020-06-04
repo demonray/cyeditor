@@ -22,6 +22,8 @@ const defaultConfData = {
   }
 }
 
+export * from './editor-config'
+
 export {
   defaultConfData,
   defaultNodeTypes,

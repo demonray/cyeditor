@@ -1,10 +1,10 @@
-function addListeners () {
+function addListeners(this: any) {
   this.addCytoscapeListeners()
   this.addListener(this.cy, 'destroy', () => this.destroy())
   return this
 }
 
-function removeListeners () {
+function removeListeners(this: any) {
   for (let i = this.listeners.length - 1; i >= 0; i--) {
     let l = this.listeners[i]
     this.removeListener(l.target, l.event, l.selector, l.callback, l.options)
@@ -12,7 +12,7 @@ function removeListeners () {
   return this
 }
 
-function getListener (target, event, selector, callback, options) {
+function getListener(this: any, target: any, event: any, selector: any, callback: any, options: any) {
   if (typeof selector !== typeof '') {
     callback = selector
     options = callback
@@ -26,11 +26,11 @@ function getListener (target, event, selector, callback, options) {
   return { target, event, selector, callback, options }
 }
 
-function isDom (target) {
+function isDom(target: any) {
   return target instanceof Element
 }
 
-function addListener (target, event, selector, callback, options) {
+function addListener(this: any, target: any, event: any, selector: any, callback: any, options: any) {
   let l = getListener(target, event, selector, callback, options)
 
   this.listeners.push(l)
@@ -48,7 +48,7 @@ function addListener (target, event, selector, callback, options) {
   return this
 }
 
-function removeListener (target, event, selector, callback, options) {
+function removeListener(this: any, target: any, event: any, selector: any, callback: any, options: any) {
   let l = getListener(target, event, selector, callback, options)
 
   for (let i = this.listeners.length - 1; i >= 0; i--) {
@@ -79,12 +79,12 @@ function removeListener (target, event, selector, callback, options) {
   return this
 }
 
-function emit (type, position, ...args) {
+function emit(this: any, type: string, position: any, ...args: any[]) {
   let { options, cy } = this
 
   cy.emit({ type: `eh${type}`, position }, args)
 
-  let handler = options[ type ]
+  let handler = options[type]
 
   if (handler != null) {
     handler(...args)

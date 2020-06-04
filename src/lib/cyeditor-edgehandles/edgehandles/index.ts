@@ -1,13 +1,14 @@
 import { throttle } from 'lodash'
-import defaults from './defaults'
 import cyGesturesToggle from './cy-gestures-toggle'
 import cyListeners from './cy-listeners'
 import drawing from './drawing'
 import gestureLifecycle from './gesture-lifecycle'
 import listeners from './listeners'
+import defaults, { Options } from './defaults'
 
 class Edgehandles {
-  constructor (cy, options) {
+  [x: string]: any
+  constructor (cy: cytoscape.Core, options: Options) {
     this.cy = cy
     this.listeners = []
     // edgehandles gesture state
@@ -28,8 +29,9 @@ class Edgehandles {
     this.options = Object.assign({}, defaults, options)
     this.saveGestureState()
     this.addListeners()
-    this.throttledSnap = throttle(this.snap.bind(this), 1000 / options.snapFrequency)
-    this.preventDefault = e => e.preventDefault()
+    let snapFrequency = options.snapFrequency || defaults.snapFrequency
+    this.throttledSnap = throttle(this.snap.bind(this), 1000 / snapFrequency)
+    this.preventDefault = (e:any) => e.preventDefault()
     let supportsPassive = false
     try {
       let opts = Object.defineProperty({}, 'passive', {
@@ -37,6 +39,7 @@ class Edgehandles {
           supportsPassive = true
         }
       })
+      // @ts-ignore
       window.addEventListener('test', null, opts)
     } catch (err) {}
     if (supportsPassive) {
@@ -51,7 +54,7 @@ class Edgehandles {
   destroy () {
     this.removeListeners()
   }
-  setOptions (options) {
+  setOptions (options: Options) {
     Object.assign(this.options, options)
   }
   mp () {
@@ -85,7 +88,7 @@ class Edgehandles {
     this.emit('disable')
     return this
   }
-  toggleDrawMode (bool) {
+  toggleDrawMode (bool:any) {
     let {
       cy,
       options
@@ -133,7 +136,7 @@ class Edgehandles {
 }
 
 let proto = Edgehandles.prototype
-let extend = obj => Object.assign(proto, obj)
+let extend = (obj: any) => Object.assign(proto, obj)
 const fns = [cyGesturesToggle, cyListeners, drawing, gestureLifecycle, listeners]
 fns.forEach(extend)
 

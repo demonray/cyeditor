@@ -2,9 +2,22 @@
  * Created by DemonRay on 2019/3/28.
  */
 import utils from '../../utils'
+import { EventObject } from 'cytoscape'
+
+type CommandItem = {
+  command: string,
+  icon: string,
+  disabled: boolean,
+  title: string,
+  selected?: boolean,
+  separator?: boolean
+}
+interface Options {
+  container?: string | Node
+  commands: CommandItem[]
+}
 
 let defaults = {
-  container: false,
   commands: [
     { command: 'undo', icon: 'icon-undo', disabled: true, title: '撤销' },
     { command: 'redo', icon: 'icon-Redo', disabled: true, title: '重做' },
@@ -26,27 +39,23 @@ let defaults = {
 }
 class Toolbar {
   [x: string]: any
-  constructor (cy, params) {
+  constructor(cy: cytoscape.Core, params: Options) {
     this.cy = cy
-    this._init(params)
+    this._options = Object.assign({}, defaults, params)
+    this._init()
     this._listeners = {}
     this._initEvents()
   }
 
-  _init (params) {
-    this._options = Object.assign({}, defaults, params)
-    if (Array.isArray(this._options.toolbar)) {
-      this._options.commands = this._options.commands.filter(item => this._options.toolbar.indexOf(item.command) > -1)
-    }
-
+  _init() {
     this._initShapePanel()
   }
 
-  _initEvents () {
-    this._listeners.command = (e) => {
+  _initEvents() {
+    this._listeners.command = (e: EventObject) => {
       let command = e.target.getAttribute('data-command')
       if (!command) { return }
-      let commandOpt = this._options.commands.find(it => it.command === command)
+      let commandOpt = this._options.commands.find((it: any) => it.command === command)
       if (['boxselect', 'gridon'].indexOf(command) > -1) {
         this.rerender(command, { selected: !commandOpt.selected })
       } else if (['line-straight', 'line-bezier', 'line-taxi'].indexOf(command) > -1) {
@@ -65,12 +74,12 @@ class Toolbar {
     this.cy.on('select unselect', this._listeners.select)
   }
 
-  _selectChange () {
+  _selectChange() {
     let selected = this.cy.$(':selected')
     if (selected && selected.length !== this._last_selected_length) {
       let hasSelected = selected.length > 0
-      this._options.commands.forEach(item => {
-        if ([ 'delete', 'copy', 'leveldown', 'levelup' ].indexOf(item.command) > -1) {
+      this._options.commands.forEach((item: any) => {
+        if (['delete', 'copy', 'leveldown', 'levelup'].indexOf(item.command) > -1) {
           item.disabled = !hasSelected
         }
       })
@@ -79,11 +88,11 @@ class Toolbar {
     this._last_selected_length = selected
   }
 
-  _initShapePanel () {
+  _initShapePanel() {
     let { _options } = this
     if (_options.container) {
       if (typeof _options.container === 'string') {
-        this._panel = utils.query(_options.container)[ 0 ]
+        this._panel = utils.query(_options.container)[0]
       } else if (utils.isNode(_options.container)) {
         this._panel = _options.container
       }
@@ -98,9 +107,10 @@ class Toolbar {
     this._panelHtml()
   }
 
-  _panelHtml () {
+  _panelHtml() {
     let icons = ''
-    this._options.commands.forEach(({ command, title, icon, disabled, selected, separator }) => {
+    this._options.commands.forEach((item: CommandItem) => {
+      let { command, title, icon, disabled, selected, separator } = item
       let cls = `${icon} ${disabled ? 'disable' : ''} ${selected === true ? 'selected' : ''}`
       if (separator) icons += '<span class="separator"></span>'
       icons += `<i data-command="${command}" class="iconfont command ${cls}" title="${title}"></i>`
@@ -108,8 +118,8 @@ class Toolbar {
     this._panel.innerHTML = icons
   }
 
-  rerender (cmd, options = {}) {
-    let cmdItem = this._options.commands.find(it => it.command === cmd)
+  rerender(cmd: string, options = {}) {
+    let cmdItem = this._options.commands.find((it: any) => it.command === cmd)
     let opt = Object.assign(cmdItem, options)
     if (opt) {
       let iconEls = utils.query(`i[data-command=${cmd}]`)
@@ -134,10 +144,10 @@ class Toolbar {
   }
 }
 
-export default (cytoscape) => {
-  if (!cytoscape) { return }
+export default (cy?: any) => {
+  if (!cy) { return }
 
-  cytoscape('core', 'toolbar', function (options) {
+  cy('core', 'toolbar', function (this: cytoscape.Core, options: Options = defaults) {
     return new Toolbar(this, options)
   })
 }

@@ -1,13 +1,13 @@
 
 import { memoize } from 'lodash'
 
-function canStartOn (node) {
+function canStartOn(this: any, node: any) {
   const { options, previewEles, ghostEles, handleNode } = this
-  const isPreview = el => previewEles.anySame(el)
-  const isGhost = el => ghostEles.anySame(el)
-  const userFilter = el => el.filter(options.handleNodes).length > 0
-  const isHandle = el => handleNode.same(el)
-  const isTemp = el => isPreview(el) || isHandle(el) || isGhost(el)
+  const isPreview = (el: any) => previewEles.anySame(el)
+  const isGhost = (el: any) => ghostEles.anySame(el)
+  const userFilter = (el: { filter: (arg0: any) => { (): any; new(): any; length: number } }) => el.filter(options.handleNodes).length > 0
+  const isHandle = (el: any) => handleNode.same(el)
+  const isTemp = (el: any) => isPreview(el) || isHandle(el) || isGhost(el)
 
   const { enabled, active, grabbingNode } = this
 
@@ -17,15 +17,15 @@ function canStartOn (node) {
   )
 }
 
-function canStartDrawModeOn (node) {
+function canStartDrawModeOn(this: any, node: any) {
   return this.canStartOn(node) && this.drawMode
 }
 
-function canStartNonDrawModeOn (node) {
+function canStartNonDrawModeOn(this: any, node: any) {
   return this.canStartOn(node) && !this.drawMode
 }
 
-function show (node) {
+function show(this: any, node: any) {
   let { options, drawMode } = this
 
   if (!this.canStartOn(node) || (drawMode && !options.handleInDrawMode)) { return }
@@ -39,7 +39,7 @@ function show (node) {
   return this
 }
 
-function hide () {
+function hide(this: any) {
   this.removeHandle()
 
   this.emit('hide', this.hp(), this.sourceNode)
@@ -47,7 +47,7 @@ function hide () {
   return this
 }
 
-function start (node) {
+function start(this: any, node: any) {
   if (!this.canStartOn(node)) { return }
 
   this.active = true
@@ -61,7 +61,7 @@ function start (node) {
   this.emit('start', this.hp(), node)
 }
 
-function update (pos) {
+function update(this: any, pos: any) {
   if (!this.active) { return }
 
   let p = pos
@@ -75,19 +75,19 @@ function update (pos) {
   return this
 }
 
-function snap () {
+function snap(this: any) {
   if (!this.active || !this.options.snap) { return false }
 
   let cy = this.cy
   let tgt = this.targetNode
   let threshold = this.options.snapThreshold
-  let sqThreshold = n => { let r = getRadius(n); let t = r + threshold; return t * t }
+  let sqThreshold = (n: any) => { let r = getRadius(n); let t = r + threshold; return t * t }
   let mousePos = this.mp()
-  let sqDist = (p1, p2) => (p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y)
-  let getRadius = n => (n.outerWidth() + n.outerHeight()) / 4
+  let sqDist = (p1: { x: number; y: number }, p2: { x: number; y: number }) => (p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y)
+  let getRadius = (n: { outerWidth: () => any; outerHeight: () => any }) => (n.outerWidth() + n.outerHeight()) / 4
   let nodeSqDist = memoize(n => sqDist(n.position(), mousePos), n => n.id())
-  let isWithinTheshold = n => nodeSqDist(n) <= sqThreshold(n)
-  let cmpSqDist = (n1, n2) => nodeSqDist(n1) - nodeSqDist(n2)
+  let isWithinTheshold = (n: any) => nodeSqDist(n) <= sqThreshold(n)
+  let cmpSqDist = (n1: any, n2: any) => nodeSqDist(n1) - nodeSqDist(n2)
   let allowHoverDelay = false
 
   let nodesByDist = cy.nodes(isWithinTheshold).sort(cmpSqDist)
@@ -109,7 +109,7 @@ function snap () {
   return snapped
 }
 
-function preview (target, allowHoverDelay = true) {
+function preview(this: any, target: { same: (arg0: any) => any; addClass: (arg0: string) => void }, allowHoverDelay = true) {
   let { options, sourceNode, ghostNode, ghostEles, presumptiveTargets, previewEles, active } = this
   let source = sourceNode
   let isLoop = target.same(source)
@@ -159,7 +159,7 @@ function preview (target, allowHoverDelay = true) {
   return true
 }
 
-function unpreview (target) {
+function unpreview(this: any, target: { same: (arg0: any) => any; removeClass: (arg0: string) => void }) {
   if (!this.active || target.same(this.handleNode)) { return }
 
   let { previewTimeout, sourceNode, previewEles, ghostEles, cy } = this
@@ -182,7 +182,7 @@ function unpreview (target) {
   return this
 }
 
-function stop () {
+function stop(this: any) {
   if (!this.active) { return }
 
   let { sourceNode, targetNode, ghostEles, presumptiveTargets } = this

@@ -1,5 +1,17 @@
 import utils from '../../utils'
 
+type MenuItem = {
+  id: string,
+  content: string,
+  disabled: boolean,
+  divider?: boolean
+}
+interface Options {
+  menus: MenuItem[],
+  beforeShow: () => boolean
+  beforeClose: () => boolean
+}
+
 const defaults = {
   menus: [
     {
@@ -20,28 +32,28 @@ const defaults = {
 
 class ContextMenu {
   [x: string]: any
-  constructor (cy, params) {
+  constructor(cy: cytoscape.Core, params: any) {
     this.cy = cy
-    this._options = Object.assign({}, defaults, params)
+    this._options = Object.assign({}, params)
     this._listeners = {}
     this._init()
   }
-  _init () {
+  _init() {
     this._initContainer()
     this._initDom()
     this._initEvents()
   }
 
-  _initContainer () {
+  _initContainer() {
     this._container = this.cy.container()
     this.ctxmenu = document.createElement('div')
     this.ctxmenu.className = 'cy-editor-ctx-menu'
     this._container.append(this.ctxmenu)
   }
 
-  _initDom () {
+  _initDom() {
     let domItem = ''
-    this._options.menus.forEach(item => {
+    this._options.menus.forEach((item: MenuItem) => {
       domItem += `<div class="ctx-menu-item ${item.disabled ? 'ctx-menu-item-disabled' : ''}" data-menu-item="${item.id}">${item.content}</div>`
       if (item.divider) {
         domItem += '<div class="ctx-menu-divider" ></div>'
@@ -50,9 +62,9 @@ class ContextMenu {
     this.ctxmenu.innerHTML = domItem
   }
 
-  _initEvents () {
-    this._listeners.eventCyTap = (event) => {
-      let renderedPos = event.renderedPosition || event.cyRenderedPosition
+  _initEvents() {
+    this._listeners.eventCyTap = (event: cytoscape.EventObject) => {
+      let renderedPos = event.renderedPosition
       let left = renderedPos.x
       let top = renderedPos.y
       utils.css(this.ctxmenu, {
@@ -61,12 +73,12 @@ class ContextMenu {
       })
       this.show(event)
     }
-    this._listeners.eventTapstart = (e) => {
+    this._listeners.eventTapstart = (e: cytoscape.EventObject) => {
       this.close(e)
     }
-    this._listeners.click = (e) => {
+    this._listeners.click = (e: cytoscape.EventObject) => {
       const id = e.target.getAttribute('data-menu-item')
-      const menuItem = this._options.menus.find(item => item.id === id)
+      const menuItem = this._options.menus.find((item: MenuItem) => item.id === id)
       this.cy.trigger('cyeditor.ctxmenu', menuItem)
     }
 
@@ -75,7 +87,7 @@ class ContextMenu {
     this.cy.on('tapstart', this._listeners.eventTapstart)
   }
 
-  disable (id, disabled = true) {
+  disable(id: string, disabled = true) {
     const items = utils.query(`.cy-editor-ctx-menu [data-menu-item=${id}]`)
     items.forEach(menuItem => {
       if (disabled) {
@@ -86,17 +98,17 @@ class ContextMenu {
     })
   }
 
-  changeMenus (menus) {
+  changeMenus(menus: MenuItem[]) {
     this._options.menus = menus
     this._initDom()
   }
 
-  show (e) {
-    if (typeof this._options.beforeShow === 'function' && !this.isShow) {
+  show(e: cytoscape.EventObject) {
+    if (!this.isShow) {
       const show = this._options.beforeShow(e, this._options.menus.slice(0))
       if (!show) return
       if (show && show.then) {
-        show.then((res) => {
+        show.then((res: boolean) => {
           if (res) {
             utils.css(this.ctxmenu, {
               display: 'block'
@@ -116,8 +128,8 @@ class ContextMenu {
     }
   }
 
-  close (e) {
-    if (typeof this._options.beforeShow === 'function' && this.isShow) {
+  close(e: cytoscape.EventObject) {
+    if (this.isShow) {
       const close = this._options.beforeClose(e)
       if (close === true) {
         utils.css(this.ctxmenu, {
@@ -135,19 +147,19 @@ class ContextMenu {
     }
   }
 
-  destroyCxtMenu () {
+  destroyCxtMenu() {
     this.ctxmenu.removeEventListener('mousedown', this._listeners.click)
     this.cy.off('tapstart', this._listeners.eventTapstart)
     this.cy.off('cxttap', this._listeners.eventCyTap)
   }
 }
 
-export default (cytoscape) => {
-  if (!cytoscape) {
+export default (cy?: any) => {
+  if (!cy) {
     return
   }
 
-  cytoscape('core', 'contextMenu', function (options) {
+  cy('core', 'contextMenu', function (this: cytoscape.Core, options: Options = defaults) {
     return new ContextMenu(this, options)
   })
 }

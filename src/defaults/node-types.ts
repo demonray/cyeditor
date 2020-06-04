@@ -12,7 +12,21 @@ import diamond from '../assets/node-svgs/diamond.svg'
 import tag from '../assets/node-svgs/tag.svg'
 import polygon from '../assets/node-svgs/polygon.svg'
 
-const defaultNodeTypes = [
+export type NodeType = {
+  _id?: string,
+  type: string,
+  name?: string,
+  src: any,
+  bg: string,
+  resize: boolean,
+  width: number,
+  height: number,
+  category: string,
+  buildIn?: boolean
+  points?: number[]
+}
+
+const defaultNodeTypes: NodeType[] = [
   {
     type: 'ellipse',
     src: ellipse,
@@ -84,13 +98,13 @@ const defaultNodeTypes = [
     buildIn: true
   },
   {
-    'type': 'polygon',
-    'src': polygon,
+    type: 'polygon',
+    src: polygon,
     bg: '#f7130e',
     resize: true,
     width: 76,
     height: 76,
-    'points': [
+    points: [
       -0.33, -1,
       0.33, -1,
       0.33, -0.33,
@@ -108,9 +122,11 @@ const defaultNodeTypes = [
     buildIn: true
   }
 ]
+
 const defaultNodeStyles: cytoscape.Stylesheet[] = [{
   'selector': 'node[type]',
   'style': {
+    // @ts-ignore
     'shape': 'data(type)',
     'label': 'data(type)',
     'height': 'data(height)',

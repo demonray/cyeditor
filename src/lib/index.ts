@@ -1,8 +1,9 @@
 /**
  * Created by DemonRay on 2019/3/25.
  */
+import { CyEditorOptions, LineTypes } from '../defaults/index'
 
-import * as cytoscape from 'cytoscape'
+import cytoscape from 'cytoscape'
 import utils from '../utils'
 import EventBus from '../utils/eventbus'
 import toolbar from './cyeditor-toolbar'
@@ -32,56 +33,22 @@ class CyEditor extends EventBus {
 
   [x: string]: any
 
-  constructor(params = defaultEditorConfig) {
+  constructor(params: CyEditorOptions = defaultEditorConfig) {
     super()
     this._plugins = {}
     this._listeners = {}
     this._init(params)
   }
 
-  _init(params) {
+  _init(params: CyEditorOptions) {
     this._initOptions(params)
     this._initDom()
     this._initPlugin()
     this._initEvents()
   }
 
-  _verifyParams(params) {
-    const mustBe = (arr, type) => {
-      let valid = true
-      arr.forEach(item => {
-        const typeItem = typeof params[item]
-        if (typeItem !== type) {
-          console.warn(`'editor.${item}' must be ${type}`)
-          valid = false
-        }
-      })
-      return valid
-    }
-    const {
-      zoomRate,
-      toolbar,
-      nodeTypes
-    } = params
-    mustBe(['noderesize', 'dragAddNodes', 'elementsInfo', 'snapGrid', 'navigator', 'useDefaultNodeTypes', 'autoSave'], 'boolean')
-    mustBe(['beforeAdd', 'afterAdd'], 'function')
-
-    if (zoomRate <= 0 || zoomRate >= 1 || typeof zoomRate !== 'number') {
-      console.warn(`'editor.zoomRate' must be < 1 and > 0`)
-    }
-
-    if (typeof toolbar !== 'boolean' && !Array.isArray(toolbar)) {
-      console.warn(`'editor.nodeTypes' must be boolean or array`)
-    }
-
-    if (!Array.isArray(nodeTypes)) {
-      console.warn(`'editor.nodeTypes' must be array`)
-    }
-  }
-
   _initOptions(params = defaultEditorConfig) {
     this.editorOptions = Object.assign({}, defaultEditorConfig.editor, params.editor)
-    this._verifyParams(this.editorOptions)
     const { useDefaultNodeTypes, zoomRate } = this.editorOptions
     this._handleOptonsChange = {
       snapGrid: this._snapGridChange,
@@ -94,15 +61,15 @@ class CyEditor extends EventBus {
       console.error('zoomRate must be float number, greater than 0 and less than 1')
     }
     this.cyOptions = Object.assign({}, defaultEditorConfig.cy, params.cy)
-    const elements: any  = this.cyOptions.elements
+    const elements: any = this.cyOptions.elements
     if (elements) {
       if (Array.isArray(elements.nodes)) {
-        elements.nodes.forEach(node => {
+        elements.nodes.forEach((node: { data: any }) => {
           node.data = Object.assign({}, defaultConfData.node, node.data)
         })
       }
       if (Array.isArray(elements.edges)) {
-        elements.edges.forEach(edge => {
+        elements.edges.forEach((edge: { data: any }) => {
           edge.data = Object.assign({}, defaultConfData.edge, edge.data)
         })
       }
@@ -159,7 +126,7 @@ class CyEditor extends EventBus {
 
     this._listeners.handleCommand = this._handleCommand.bind(this)
 
-    this._listeners.hoverout = (e) => {
+    this._listeners.hoverout = (e: any) => {
       if (edgehandles) {
         edgehandles.active = true
         edgehandles.stop(e)
@@ -169,14 +136,14 @@ class CyEditor extends EventBus {
       }
     }
 
-    this._listeners.select = (e) => {
+    this._listeners.select = (e: { target: any }) => {
       if (this._doAction === 'select') return
       if (undoRedo) {
         this._undoRedoAction('select', e.target)
       }
     }
 
-    this._listeners.addEles = (evt, el) => {
+    this._listeners.addEles = (evt: any, el: { position: { x: any; y: any }; firstTime?: boolean }) => {
       if (el.position) {
         let panZoom = { pan: this.cy.pan(), zoom: this.cy.zoom() }
         let x = (el.position.x - panZoom.pan.x) / panZoom.zoom
@@ -235,8 +202,7 @@ class CyEditor extends EventBus {
     // toolbar
     if (Array.isArray(toolbar) || toolbar === true) {
       this._plugins.toolbar = this.cy.toolbar({
-        container: '#toolbar',
-        toolbar: toolbar
+        container: '#toolbar'
       })
       if (toolbar === true || toolbar.indexOf('gridon') > -1) {
         this.setOption('snapGrid', true)
@@ -303,19 +269,19 @@ class CyEditor extends EventBus {
     }
   }
 
-  _lineTypeChange(value) {
+  _lineTypeChange(value: LineTypes) {
     let selected = this.cy.$('edge:selected')
     if (selected.length < 1) {
       selected = this.cy.$('edge')
     }
-    selected.forEach(item => {
+    selected.forEach((item: any) => {
       item.data({
         lineType: value
       })
     })
   }
 
-  _handleCommand(evt, item) {
+  _handleCommand(evt: any, item: any) {
     switch (item.command) {
       case 'undo':
         this.undo()
@@ -383,12 +349,12 @@ class CyEditor extends EventBus {
     this.lastCanUndo = canUndo
   }
 
-  _undoRedoAction(cmd, options) {
+  _undoRedoAction(cmd: string, options: any) {
     this._doAction = cmd
     this._plugins.undoRedo.do(cmd, options)
   }
 
-  _hook(hook, params, result = false) {
+  _hook(hook: string, params: any, result = false) {
     if (typeof this.editorOptions[hook] === 'function') {
       const res = this.editorOptions[hook](params)
       return result ? res : true
@@ -400,7 +366,7 @@ class CyEditor extends EventBus {
    * @param {string|object} key
    * @param {*} value
    */
-  setOption(key, value) {
+  setOption(key: string | object, value?: any) {
     if (typeof key === 'string') {
       this.editorOptions[key] = value
       if (typeof this._handleOptonsChange[key] === 'function') {
@@ -462,7 +428,7 @@ class CyEditor extends EventBus {
   changeLevel(type = 0) {
     let selected = this.cy.$(':selected')
     if (selected.length) {
-      selected.forEach(el => {
+      selected.forEach((el: any) => {
         let pre = el.style()
         el.style('z-index', pre.zIndex - 0 + type > -1 ? pre.zIndex - 0 + type : 0)
       })
@@ -508,7 +474,7 @@ class CyEditor extends EventBus {
     }
   }
 
-  zoom(type = 1, level=this.editorOptions.zoomRate) {
+  zoom(type = 1, level = this.editorOptions.zoomRate) {
     let w = this.cy.width()
     let h = this.cy.height()
     let zoom = this.cy.zoom() + level * type
@@ -533,7 +499,7 @@ class CyEditor extends EventBus {
     return this.cy.png(opt)
   }
 
-  png(opt) {
+  png(opt: any) {
     return this.cy.png(opt)
   }
   /**
@@ -541,19 +507,19 @@ class CyEditor extends EventBus {
    * @param {*} opt params for cy.json(opt)
    * @param {*} keys JSON Object keys
    */
-  json(opt:boolean = false, keys:any) {
+  json(opt: boolean = false, keys: any) {
     keys = keys || ['boxSelectionEnabled', 'elements', 'pan', 'panningEnabled', 'userPanningEnabled', 'userZoomingEnabled', 'zoom', 'zoomingEnabled']
     // export
     let json = {}
     if (typeof opt === 'boolean') {
       let cyjson = this.cy.json()
-      keys.forEach(key => { json[key] = cyjson[key] })
+      keys.forEach((key: string) => { json[key] = cyjson[key] })
       return json
     }
     // import
     if (typeof opt === 'object') {
       json = {}
-      keys.forEach(key => { json[key] = opt[key] })
+      keys.forEach((key: string) => { json[key] = opt[key] })
     }
     return this.cy.json(json)
   }
@@ -563,7 +529,7 @@ class CyEditor extends EventBus {
    * @param {string|object} name
    * @param {*} value
    */
-  data(name, value) {
+  data(name: string | object, value?: any) {
     return this.cy.data(name, value)
   }
 
@@ -571,7 +537,7 @@ class CyEditor extends EventBus {
    *  remove data
    * @param {string} names  split by space
    */
-  removeData(names) {
+  removeData(names: string) {
     this.cy.removeData(names)
   }
 

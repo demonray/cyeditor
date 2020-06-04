@@ -1,4 +1,4 @@
-function addCytoscapeListeners () {
+function addCytoscapeListeners(this: any) {
   let {
     cy,
     options
@@ -13,12 +13,12 @@ function addCytoscapeListeners () {
   })
 
   // show handle on hover
-  this.addListener(cy, 'mouseover', 'node', e => {
+  this.addListener(cy, 'mouseover', 'node', (e: { target: any }) => {
     this.show(e.target)
   })
 
   // hide handle on tap handle
-  this.addListener(cy, 'tap', 'node', e => {
+  this.addListener(cy, 'tap', 'node', (e: { target: any }) => {
     let node = e.target
 
     if (!node.same(this.handleNode)) {
@@ -27,7 +27,7 @@ function addCytoscapeListeners () {
   })
 
   // hide handle when source node moved
-  this.addListener(cy, 'position', 'node', e => {
+  this.addListener(cy, 'position', 'node', (e: { target: { same: (arg0: any) => any } }) => {
     if (e.target.same(this.sourceNode)) {
       this.hide()
     }
@@ -36,7 +36,7 @@ function addCytoscapeListeners () {
   // start on tapstart handle
   // start on tapstart node (draw mode)
   // toggle on source node
-  this.addListener(cy, 'tapstart', 'node', e => {
+  this.addListener(cy, 'tapstart', 'node', (e: { target: any }) => {
     let node = e.target
 
     if (node.same(this.handleNode)) {
@@ -49,17 +49,17 @@ function addCytoscapeListeners () {
   })
 
   // update line on drag
-  this.addListener(cy, 'tapdrag', e => {
+  this.addListener(cy, 'tapdrag', (e: { position: any }) => {
     this.update(e.position)
   })
 
   // hover over preview
-  this.addListener(cy, 'tapdragover', 'node', e => {
+  this.addListener(cy, 'tapdragover', 'node', (e: { target: any }) => {
     this.preview(e.target)
   })
 
   // hover out unpreview
-  this.addListener(cy, 'tapdragout', 'node', e => {
+  this.addListener(cy, 'tapdragout', 'node', (e: { target: { same: (arg0: any) => any } }) => {
     if (options.snap && e.target.same(this.targetNode)) {
       // then keep the preview
     } else {
@@ -73,7 +73,7 @@ function addCytoscapeListeners () {
   })
 
   // hide handle if source node is removed
-  this.addListener(cy, 'remove', e => {
+  this.addListener(cy, 'remove', (e: { target: { same: (arg0: any) => any } }) => {
     if (e.target.same(this.sourceNode)) {
       this.hide()
     }

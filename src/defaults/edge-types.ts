@@ -13,6 +13,7 @@ const defaultEdgeStyles: cytoscape.Stylesheet[] = [
   {
     'selector': 'edge[lineType]',
     'style': {
+      // @ts-ignore
       'curve-style': 'data(lineType)'
     }
   },

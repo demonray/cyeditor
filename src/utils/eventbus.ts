@@ -14,7 +14,7 @@ export class EventBus {
    * @param {object} scope The scope in which the callback shall be executed
    * @param  {...any} args Any number of args to be passed to the callback
    */
-  on (type, callback, scope, ...args) {
+  on (type: string | number, callback: any, scope: any, ...args: any[]) {
     if (typeof this.events[type] === 'undefined') { // Check if there is already event of this type registered
       this.events[type] = [] // If not, create array for it
     }
@@ -31,13 +31,13 @@ export class EventBus {
    * @param {function} callback Callback of the event to remove
    * @param {object} scope The scope of the to be removed event
    */
-  off (type, callback, scope) {
+  off (type: string | number, callback: any, scope: any) {
     if (typeof this.events[type] === 'undefined') { // Check if event of this type exists
       return // If not just return
     }
 
     // keep all elements that aren't equal to the passed event
-    const filterFn = event => event.scope !== scope || event.callback !== callback
+    const filterFn = (event: { scope: any; callback: any }) => event.scope !== scope || event.callback !== callback
     this.events[type] = this.events[type].filter(filterFn)
   }
 
@@ -47,7 +47,7 @@ export class EventBus {
    * @param {callback} callback Callback of the to be checked event
    * @param {object} scope Scope of the to be checked event
    */
-  has (type, callback, scope) {
+  has (type: string | number, callback: undefined, scope: undefined) {
     if (typeof this.events[type] === 'undefined') { // Check if the passed type even exists
       return false // If not, quit method
     }
@@ -58,7 +58,7 @@ export class EventBus {
       return numOfCallbacks > 0 // If there are any callbacks we can be sure it matches the passed one
     }
 
-    const conditionFn = event => {
+    const conditionFn = (event: { scope: any; callback: any }) => {
       const scopeIsSame = scope ? event.scope === scope : true // Check if scope is equal to the one passed
       const callbackIsSame = event.callback === callback // Check if callback is equal to the one passed
       if (scopeIsSame && callbackIsSame) { // Check if current event and passed event are equal
@@ -74,7 +74,7 @@ export class EventBus {
    * @param {object} target The caller
    * @param {...any} args Any number of args to be passed to the callback
    */
-  emit (type, target?: any, ...args: any) {
+  emit (type: string, target?: any, ...args: any) {
     if (typeof this.events[type] === 'undefined') { // Check if any event of the passed type exists
       return // If not, quit method
     }

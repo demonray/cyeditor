@@ -1,4 +1,4 @@
-function disableGestures () {
+function disableGestures(this: any) {
   this.saveGestureState()
   this.cy
     .zoomingEnabled(false)
@@ -16,7 +16,7 @@ function disableGestures () {
   return this
 }
 
-function resetGestures () {
+function resetGestures(this: any) {
   (this.cy
     .zoomingEnabled(this.lastZoomingEnabled)
     .panningEnabled(this.lastPanningEnabled)
@@ -34,7 +34,7 @@ function resetGestures () {
   return this
 }
 
-function saveGestureState () {
+function saveGestureState(this: any) {
   let {
     cy
   } = this

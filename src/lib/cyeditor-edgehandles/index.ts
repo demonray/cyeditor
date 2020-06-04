@@ -1,9 +1,10 @@
 import Edgehandles from './edgehandles'
+import defaults, { Options } from './edgehandles/defaults'
 
-export default (cytoscape) => {
-  if (!cytoscape) { return }
+export default (cy?: any) => {
+  if (!cy) { return }
 
-  cytoscape('core', 'edgehandles', function (options) {
+  cy('core', 'edgehandles', function (this: cytoscape.Core, options: Options = defaults) {
     return new Edgehandles(this, options)
   })
 }

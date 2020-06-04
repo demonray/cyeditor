@@ -5,6 +5,19 @@
 import utils from '../../utils'
 import { debounce } from 'lodash'
 
+interface Options {
+  handleColor: string,
+  enabled: boolean,
+  minNodeWidth: number,
+  minNodeHeight: number,
+  triangleSize: number,
+  selector: string,
+  lines: number,
+  padding: number,
+
+  start: (sourceNode: cytoscape.Singular) => void,
+  stop: (sourceNode: cytoscape.Singular) => void
+}
 let defaults = {
   handleColor: '#000000', // the colour of the handle and the line drawn from it
   enabled: true, // whether to start the plugin in the enabled state
@@ -15,13 +28,10 @@ let defaults = {
   lines: 3,
   padding: 5,
 
-  start: function (sourceNode) {
+  start: function () {
     // fired when noderesize interaction starts (drag on handle)
   },
-  complete: function (sourceNode, targetNodes, addedEntities) {
-    // fired when noderesize is done and entities are added
-  },
-  stop: function (sourceNode) {
+  stop: function () {
     // fired when noderesize interaction is stopped (either complete with added edges or incomplete)
   }
 }
@@ -30,7 +40,7 @@ let defaults = {
  * Checks if the point p is inside the triangle p0,p1,p2
  * using barycentric coordinates
  */
-function ptInTriangle (p, p0, p1, p2) {
+function ptInTriangle(p: { x: any; y: any }, p0: { x: any; y: any }, p1: { x: any; y: any }, p2: { x: any; y: any }) {
   let A = 1 / 2 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (p1.y - p2.y) + p1.x * p2.y)
   let sign = A < 0 ? -1 : 1
   let s = (p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y) * p.x + (p0.x - p2.x) * p.y) * sign
@@ -42,7 +52,7 @@ function ptInTriangle (p, p0, p1, p2) {
 class NodeResize {
   [x: string]: any
 
-  constructor (cy, params) {
+  constructor(cy: cytoscape.Core, params: Options) {
     this.cy = cy
     this._container = this.cy.container()
     this._listeners = {}
@@ -52,7 +62,7 @@ class NodeResize {
     this._init(params)
   }
 
-  destroy () {
+  destroy() {
     let data = this._options
 
     if (!data) {
@@ -62,34 +72,34 @@ class NodeResize {
     this._options = {}
   }
 
-  disable () {
+  disable() {
     this._options.enabled = false
     this._options.disabled = true
   }
 
-  enable () {
+  enable() {
     this._options.enabled = true
     this._options.disabled = false
   }
 
-  resize () {
+  resize() {
     this.cy.trigger('cyeditor.noderesize-resize')
   }
 
-  drawon () {
+  drawon() {
     this._drawMode = true
     this._prevUngrabifyState = this.cy.autoungrabify()
     this.cy.autoungrabify(true)
     this.cy.trigger('cyeditor.noderesize-drawon')
   }
 
-  drawoff () {
+  drawoff() {
     this._drawMode = false
     this.cy.autoungrabify(this._prevUngrabifyState)
     this.cy.trigger('cyeditor.noderesize-drawoff')
   }
 
-  _init (params) {
+  _init(params: Options) {
     this._options = utils.extend(true, {}, defaults, params)
     this.canvas = document.createElement('canvas')
     this.ctx = this.canvas.getContext('2d')
@@ -100,7 +110,7 @@ class NodeResize {
     this._initEvents()
   }
 
-  _sizeCanvas () {
+  _sizeCanvas() {
     let rect = this._container.getBoundingClientRect()
     this.canvas.width = rect.width
     this.canvas.height = rect.height
@@ -121,7 +131,7 @@ class NodeResize {
     }, 0)
   }
 
-  clearDraws () {
+  clearDraws() {
     if (this._drawsClear) {
       return
     }
@@ -135,7 +145,7 @@ class NodeResize {
     this._drawsClear = true
   }
 
-  _disableGestures () {
+  _disableGestures() {
     this._lastPanningEnabled = this.cy.panningEnabled()
     this._lastZoomingEnabled = this.cy.zoomingEnabled()
     this._lastBoxSelectionEnabled = this.cy.boxSelectionEnabled()
@@ -146,20 +156,20 @@ class NodeResize {
       .boxSelectionEnabled(false)
   }
 
-  _resetGestures () {
+  _resetGestures() {
     this.cy
       .zoomingEnabled(this._lastZoomingEnabled)
       .panningEnabled(this._lastPanningEnabled)
       .boxSelectionEnabled(this._lastBoxSelectionEnabled)
   }
 
-  _resetToDefaultState () {
+  _resetToDefaultState() {
     this.clearDraws()
     this.sourceNode = null
     this._resetGestures()
   }
 
-  _drawHandle (node) {
+  _drawHandle(node: any) {
     this.ctx.fillStyle = this._options.handleColor
     this.ctx.strokeStyle = this._options.handleColor
     let padding = this._options.padding * this.cy.zoom()
@@ -199,7 +209,7 @@ class NodeResize {
     this._drawsClear = false
   }
 
-  _initEvents () {
+  _initEvents() {
     window.addEventListener('resize', this._listeners._sizeCanvas)
     this.cy.on('cyeditor.noderesize-resize', this._listeners._sizeCanvas)
     this._grabbingNode = false
@@ -234,10 +244,6 @@ class NodeResize {
       if (this._drawMode) {
         return
       }
-
-      if (this._mdownOnHandle) {
-        clearTimeout(hoverTimeout)
-      }
     }
     let freeNodeHandler = () => {
       this._grabbingNode = false
@@ -248,7 +254,7 @@ class NodeResize {
       }
       setTimeout(() => this.clearDraws(), 50)
     }
-    let removeHandler = (e) => {
+    let removeHandler = (e: cytoscape.EventObject) => {
       let id = e.target.id()
 
       if (id === this._lastActiveId) {
@@ -257,7 +263,7 @@ class NodeResize {
         }, 16)
       }
     }
-    let tapToStartHandler = (e) => {
+    let tapToStartHandler = (e: cytoscape.EventObject) => {
       let node = e.target
 
       if (!this.sourceNode) { // must not be active
@@ -302,7 +308,7 @@ class NodeResize {
     }
   }
 
-  _startHandler (e) {
+  _startHandler(e: any) {
     let node = e.target
 
     if (this._options.disabledd || this._drawMode || this._mdownOnHandle || this._grabbingNode || node.isParent()) {
@@ -323,14 +329,14 @@ class NodeResize {
     this._drawHandle(node)
 
     node.trigger('cyeditor.noderesize-showhandle')
-    let lastPosition:any = {}
+    let lastPosition: any = {}
 
-    let mdownHandler = (e) => {
+    let mdownHandler = (e: any) => {
       this._container.removeEventListener('mousedown', mdownHandler, true)
       this._container.removeEventListener('touchstart', mdownHandler, true)
 
-      let pageX = !e.touches ? e.pageX : e.touches[ 0 ].pageX
-      let pageY = !e.touches ? e.pageY : e.touches[ 0 ].pageY
+      let pageX = !e.touches ? e.pageX : e.touches[0].pageX
+      let pageY = !e.touches ? e.pageY : e.touches[0].pageY
       let x = pageX - utils.offset(this._container).left
       let y = pageY - utils.offset(this._container).top
       lastPosition.x = x
@@ -375,7 +381,7 @@ class NodeResize {
         height: node.height()
       }
 
-      let doneMoving = (dmEvent) => {
+      let doneMoving = () => {
         if (!this._mdownOnHandle) {
           return
         }
@@ -399,7 +405,7 @@ class NodeResize {
         )
       }
 
-      [ 'mouseup', 'touchend', 'touchcancel', 'blur' ].forEach(function (e) {
+      ['mouseup', 'touchend', 'touchcancel', 'blur'].forEach(function (e) {
         utils.once(window, e, doneMoving)
       })
       window.addEventListener('mousemove', moveHandler)
@@ -410,9 +416,9 @@ class NodeResize {
       return false
     }
 
-    let moveHandler = (e) => {
-      let pageX = !e.touches ? e.pageX : e.touches[ 0 ].pageX
-      let pageY = !e.touches ? e.pageY : e.touches[ 0 ].pageY
+    let moveHandler = (e: any) => {
+      let pageX = !e.touches ? e.pageX : e.touches[0].pageX
+      let pageY = !e.touches ? e.pageY : e.touches[0].pageY
       let x = pageX - utils.offset(this._container).left
       let y = pageY - utils.offset(this._container).top
 
@@ -439,10 +445,10 @@ class NodeResize {
       node.data('width', Math.max(w + dx * 2, this._options.minNodeWidth))
       node.data('height', Math.max(h + dy * 2, this._options.minNodeHeight))
 
-      this.cy.trigger('cyeditor.noderesize-resizing', [ node, {
+      this.cy.trigger('cyeditor.noderesize-resizing', [node, {
         width: node.width(),
         height: node.height()
-      } ])
+      }])
 
       this.clearDraws()
       this._drawHandle(node)
@@ -456,10 +462,10 @@ class NodeResize {
   }
 }
 
-export default (cytoscape) => {
-  if (!cytoscape) { return }
+export default (cy?: any) => {
+  if (!cy) { return }
 
-  cytoscape('core', 'noderesize', function (options) {
+  cy('core', 'noderesize', function (this: cytoscape.Core, options: Options = defaults) {
     return new NodeResize(this, options)
   })
 }

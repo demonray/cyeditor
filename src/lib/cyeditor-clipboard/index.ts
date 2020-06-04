@@ -3,24 +3,23 @@
  */
 import utils from '../../utils'
 
-let defaults = {
-  clipboardSize: 0,
-  beforeCopy: null,
-  afterCopy: null,
-  beforePaste: null,
-  afterPaste: null
+interface Options {
+  beforeCopy?: Function,
+  afterCopy?: Function,
+  beforePaste?: Function,
+  afterPaste?: Function
 }
 
 class Clipboard {
   [x: string]: any
-  constructor (cy, params) {
+  constructor(cy: cytoscape.Core, params: any) {
     this.cy = cy
-    this._options = Object.assign({}, defaults, params)
+    this._options = Object.assign({}, params)
     this._counter = 0
     this._listeners = {}
     return this._init()
   }
-  _init () {
+  _init() {
     // get the scratchpad reserved for this extension on cy
     let scratchPad = this._getScratch()
 
@@ -31,7 +30,7 @@ class Clipboard {
       let clipboard = {}
 
       scratchPad.instance = {
-        copy: (eles, _id) => {
+        copy: (eles: any, _id: any) => {
           let id = _id || this._getItemId(false)
           eles.unselect()
           let descs = eles.nodes().descendants()
@@ -48,7 +47,7 @@ class Clipboard {
           this._targetPos = nodes[0] ? nodes[0].position() : { x: 0, y: 0 }
           return id
         },
-        paste: (_id) => {
+        paste: (_id: any) => {
           let id = _id || this._getItemId(true)
           let res = this.cy.collection()
           if (this._options.beforePaste) {
@@ -74,10 +73,10 @@ class Clipboard {
 
     return scratchPad.instance // return the extension instance
   }
-  _getItemId (last: boolean) {
+  _getItemId(last: boolean) {
     return last ? 'item_' + this._counter : 'item_' + (++this._counter)
   }
-  changeIds (jsons) {
+  changeIds(jsons: any) {
     jsons = utils.extend(true, [], jsons)
     for (let i = 0; i < jsons.length; i++) {
       let jsonFirst = jsons[i]
@@ -101,22 +100,22 @@ class Clipboard {
 
     return jsons
   }
-  _getScratch () {
+  _getScratch() {
     if (!this.cy.scratch('_clipboard')) {
-      this.cy.scratch('_clipboard', { })
+      this.cy.scratch('_clipboard', {})
     }
     return this.cy.scratch('_clipboard')
   }
 
-  destroy () {
+  destroy() {
     this.cy.off('mousemove', this._listeners.onmousemove)
   }
 }
 
-export default (cytoscape) => {
-  if (!cytoscape) { return }
+export default (cy?: any): void => {
+  if (!cy) { return }
 
-  cytoscape('core', 'clipboard', function (options) {
+  cy('core', 'clipboard', function (this: cytoscape.Core, options: Options = {}) {
     return new Clipboard(this, options)
   })
 }

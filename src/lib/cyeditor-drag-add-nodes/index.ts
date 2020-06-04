@@ -2,19 +2,25 @@
  * Created by DemonRay on 2019/3/22.
  */
 import utils from '../../utils'
+import { NodeType } from '@/defaults/node-types'
+
+interface Options {
+  container?: string | Node,
+  addWhenDrop: boolean,
+  nodeTypes: NodeType[]
+}
 
 const defaults = {
-  container: false,
   addWhenDrop: true,
   nodeTypes: []
 }
 
 class DragAddNodes {
   [x: string]: any
-  constructor (cy, params) {
+  constructor(cy: cytoscape.Core, params: Options) {
     this.cy = cy
-    this._options = Object.assign({}, defaults, params)
-    this._options.nodeTypes.forEach(item => {
+    this._options = Object.assign({}, params)
+    this._options.nodeTypes.forEach((item: NodeType) => {
       item.width = item.width || 76
       item.height = item.height || 76
       item.category = item.category || 'other'
@@ -26,14 +32,14 @@ class DragAddNodes {
     this._initEvents()
   }
 
-  _initShapeItems () {
-    let shapes = this._options.nodeTypes.filter(item => item.type && item.src)
-    shapes.forEach(item => {
+  _initShapeItems() {
+    let shapes = this._options.nodeTypes.filter((item: NodeType) => item.type && item.src)
+    shapes.forEach((item: NodeType) => {
       item._id = utils.guid()
     })
     let categorys: any = {}
-    let other = []
-    shapes.forEach(item => {
+    let other: NodeType[] = []
+    shapes.forEach((item: NodeType) => {
       if (item.category) {
         if (categorys[item.category]) {
           categorys[item.category].push(item)
@@ -48,7 +54,7 @@ class DragAddNodes {
       categorys.other = other
     }
     let categoryDom = Object.keys(categorys).map(item => {
-      let shapeItems = categorys[item].map(data => {
+      let shapeItems = categorys[item].map((data: NodeType) => {
         return `<img src="${data.src}"  class="shape-item" draggable="true" data-id="${data._id}" />`
       }).join('')
       return `<div class="category">
@@ -59,25 +65,25 @@ class DragAddNodes {
     this._shapePanel.innerHTML = categoryDom
   }
 
-  _initEvents () {
+  _initEvents() {
     let rightContainers = this.cy.container()
-    let handler = (e) => {
+    let handler = (e: Event) => {
       e.preventDefault()
     }
 
     utils.query('.shape-item').forEach(item => {
-      item.addEventListener('dragstart', (e) => {
+      item.addEventListener('dragstart', (e: any) => {
         e.dataTransfer.setData('id', e.target.getAttribute('data-id'))
       })
     })
 
-    rightContainers.addEventListener('drop', (e) => {
+    rightContainers.addEventListener('drop', (e: any) => {
       let shapeId = e.dataTransfer.getData('id')
       let pos = e.target.compareDocumentPosition(rightContainers)
       if (pos === 10) {
         let rect = { x: e.offsetX, y: e.offsetY }
         if (shapeId) {
-          const shape = this._options.nodeTypes.find(item => item._id === shapeId)
+          const shape = this._options.nodeTypes.find((item: NodeType) => item._id === shapeId)
           this._addNodeToCy(shape, rect)
         }
       }
@@ -87,7 +93,8 @@ class DragAddNodes {
     rightContainers.addEventListener('dragover', handler)
   }
 
-  _addNodeToCy ({ type, width, height, bg, resize, name = '', points, buildIn = false, src }, rect) {
+  _addNodeToCy(nodeItem: NodeType, rect: { x: any; y: any }) {
+    let { type, width, height, bg, resize, name = '', points, buildIn = false, src } = nodeItem
     let data: any = { type, name, resize, bg, width, height }
     if (!buildIn) {
       data.image = src
@@ -105,11 +112,11 @@ class DragAddNodes {
     }
   }
 
-  _initShapePanel () {
+  _initShapePanel() {
     let { _options } = this
     if (_options.container) {
       if (typeof _options.container === 'string') {
-        this._shapePanel = utils.query(_options.container)[ 0 ]
+        this._shapePanel = utils.query(_options.container)[0]
       } else if (utils.isNode(_options.container)) {
         this._shapePanel = _options.container
       }
@@ -123,10 +130,10 @@ class DragAddNodes {
   }
 }
 
-export default (cytoscape) => {
-  if (!cytoscape) { return }
+export default (cy?: any) => {
+  if (!cy) { return }
 
-  cytoscape('core', 'dragAddNodes', function (params) {
-    return new DragAddNodes(this, params)
+  cy('core', 'dragAddNodes', function (this: cytoscape.Core, options: Options = defaults) {
+    return new DragAddNodes(this, options)
   })
 }

@@ -3,34 +3,44 @@
  */
 import utils from '../../utils'
 
+interface Options {
+  gridSpacing: number,
+  strokeStyle: string,
+  lineWidth: number,
+  lineDash: number[],
+  zoomDash: boolean,
+  panGrid: boolean,
+  snapToGrid: boolean,
+  drawGrid: boolean
+}
+let defaults = {
+  gridSpacing: 35,
+  strokeStyle: '#CCCCCC',
+  lineWidth: 1.0,
+  lineDash: [5, 8],
+  zoomDash: true,
+  panGrid: true,
+  snapToGrid: true,
+  drawGrid: true
+}
 class SnapToGrid {
   [x: string]: any
-  constructor (cy, params) {
+  constructor(cy: cytoscape.Core, params: Options) {
     this.cy = cy
-    let defaults = {
-      stackOrder: -1,
-      gridSpacing: 35,
-      strokeStyle: '#CCCCCC',
-      lineWidth: 1.0,
-      lineDash: [ 5, 8 ],
-      zoomDash: true,
-      panGrid: true,
-      snapToGrid: true,
-      drawGrid: true
-    }
+
     this._options = utils.extend(true, {}, defaults, params)
     this._init()
     this._initEvents()
   }
 
-  _init () {
+  _init() {
     this._container = this.cy.container()
     this.canvas = document.createElement('canvas')
     this.ctx = this.canvas.getContext('2d')
     this._container.append(this.canvas)
   }
 
-  _initEvents () {
+  _initEvents() {
     window.addEventListener('resize', () => this._resizeCanvas())
 
     this.cy.ready(() => {
@@ -40,19 +50,19 @@ class SnapToGrid {
       }
       this.cy.on('zoom', () => this._drawGrid())
       this.cy.on('pan', () => this._drawGrid())
-      this.cy.on('free', (e) => this._nodeFreed(e))
-      this.cy.on('add', (e) => this._nodeAdded(e))
+      this.cy.on('free', (e: cytoscape.EventObject) => this._nodeFreed(e))
+      this.cy.on('add', (e: cytoscape.EventObject) => this._nodeAdded(e))
     })
   }
 
-  _resizeCanvas () {
+  _resizeCanvas() {
     let rect = this._container.getBoundingClientRect()
     this.canvas.height = rect.height
     this.canvas.width = rect.width
     this.canvas.style.position = 'absolute'
     this.canvas.style.top = 0
     this.canvas.style.left = 0
-    this.canvas.style.zIndex = this._options.stackOrder
+    this.canvas.style.zIndex = -1
 
     setTimeout(() => {
       let canvasBb = utils.offset(this.canvas)
@@ -63,7 +73,7 @@ class SnapToGrid {
     }, 0)
   }
 
-  _drawGrid () {
+  _drawGrid() {
     this.clear()
 
     if (!this._options.drawGrid) {
@@ -86,7 +96,7 @@ class SnapToGrid {
       let zoomedDash = this._options.lineDash.slice()
 
       for (let i = 0; i < zoomedDash.length; i++) {
-        zoomedDash[ i ] = this._options.lineDash[ i ] * zoom
+        zoomedDash[i] = this._options.lineDash[i] * zoom
       }
       this.ctx.setLineDash(zoomedDash)
     } else {
@@ -120,18 +130,18 @@ class SnapToGrid {
     }
   }
 
-  _nodeFreed (ev) {
+  _nodeFreed(ev: cytoscape.EventObject) {
     if (this._options.snapToGrid) {
       this.snapNode(ev.target)
     }
   }
 
-  _nodeAdded (ev) {
+  _nodeAdded(ev: cytoscape.EventObject) {
     if (this._options.snapToGrid) {
       this.snapNode(ev.target)
     }
   }
-  snapNode (node) {
+  snapNode(node: any) {
     let pos = node.position()
 
     let cellX = Math.floor(pos.x / this._options.gridSpacing)
@@ -143,40 +153,40 @@ class SnapToGrid {
     })
   }
 
-  snapAll () {
-    this.cy.nodes().each((node) => {
+  snapAll() {
+    this.cy.nodes().each((node: any) => {
       this.snapNode(node)
     })
   }
 
-  refresh () {
+  refresh() {
     this._resizeCanvas()
   }
 
-  snapOn () {
+  snapOn() {
     this._options.snapToGrid = true
     this.snapAll()
     this.cy.trigger('cyeditor.snapgridon')
   }
 
-  snapOff () {
+  snapOff() {
     this._options.snapToGrid = false
     this.cy.trigger('cyeditor.snapgridoff')
   }
 
-  gridOn () {
+  gridOn() {
     this._options.drawGrid = true
     this._drawGrid()
     this.cy.trigger('cyeditor.gridon')
   }
 
-  gridOff () {
+  gridOff() {
     this._options.drawGrid = false
     this._drawGrid()
     this.cy.trigger('cyeditor.gridoff')
   }
 
-  clear () {
+  clear() {
     let rect = this._container.getBoundingClientRect()
     let width = rect.width
     let height = rect.height
@@ -185,10 +195,10 @@ class SnapToGrid {
   }
 }
 
-export default (cytoscape) => {
-  if (!cytoscape) { return }
+export default (cy?: any) => {
+  if (!cy) { return }
 
-  cytoscape('core', 'snapToGrid', function (options) {
+  cy('core', 'snapToGrid', function (this: cytoscape.Core, options: Options = defaults) {
     return new SnapToGrid(this, options)
   })
 }
