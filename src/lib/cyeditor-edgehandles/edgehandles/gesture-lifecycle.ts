@@ -5,7 +5,7 @@ function canStartOn(this: any, node: any) {
   const { options, previewEles, ghostEles, handleNode } = this
   const isPreview = (el: any) => previewEles.anySame(el)
   const isGhost = (el: any) => ghostEles.anySame(el)
-  const userFilter = (el: { filter: (arg0: any) => { (): any; new(): any; length: number } }) => el.filter(options.handleNodes).length > 0
+  const userFilter = (el: any) => el.filter(options.handleNodes).length > 0
   const isHandle = (el: any) => handleNode.same(el)
   const isTemp = (el: any) => isPreview(el) || isHandle(el) || isGhost(el)
 
@@ -85,7 +85,7 @@ function snap(this: any) {
   let mousePos = this.mp()
   let sqDist = (p1: { x: number; y: number }, p2: { x: number; y: number }) => (p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y)
   let getRadius = (n: { outerWidth: () => any; outerHeight: () => any }) => (n.outerWidth() + n.outerHeight()) / 4
-  let nodeSqDist = memoize(n => sqDist(n.position(), mousePos), n => n.id())
+  let nodeSqDist = memoize((n) => sqDist(n.position(), mousePos), (n) => n.id())
   let isWithinTheshold = (n: any) => nodeSqDist(n) <= sqThreshold(n)
   let cmpSqDist = (n1: any, n2: any) => nodeSqDist(n1) - nodeSqDist(n2)
   let allowHoverDelay = false

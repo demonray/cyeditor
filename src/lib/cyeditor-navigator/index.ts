@@ -48,8 +48,8 @@ class Navigator {
 
   _addCyListener(events: cytoscape.EventNames, handler: cytoscape.EventHandler) {
     this._cyListeners.push({
-      events: events,
-      handler: handler
+      events,
+      handler
     })
 
     this.cy.on(events, handler)
@@ -125,14 +125,14 @@ class Navigator {
   // Otherwise just update the thumbnail
   _checkThumbnailSizesAndUpdate() {
     // Cache previous values
-    let _zoom = this.thumbnailZoom
-    let _panX = this.thumbnailPan.x
-    let _panY = this.thumbnailPan.y
+    let zoom = this.thumbnailZoom
+    let panX = this.thumbnailPan.x
+    let panY = this.thumbnailPan.y
 
     this._setupThumbnailSizes()
 
     this._updateThumbnailImage()
-    if (_zoom !== this.thumbnailZoom || _panX !== this.thumbnailPan.x || _panY !== this.thumbnailPan.y) {
+    if (zoom !== this.thumbnailZoom || panX !== this.thumbnailPan.x || panY !== this.thumbnailPan.y) {
       this._setupView()
     }
   }
@@ -310,10 +310,10 @@ class Navigator {
     })
 
     this._removeEventsHandling = () => {
-      eventsGlobal.forEach(item => {
+      eventsGlobal.forEach((item) => {
         window.removeEventListener(item, globalListener)
       })
-      eventsLocal.forEach(item => {
+      eventsLocal.forEach((item) => {
         this.$overlay.addEventListener(item, overlayListener)
       })
     }

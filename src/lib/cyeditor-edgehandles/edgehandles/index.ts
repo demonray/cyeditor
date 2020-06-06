@@ -31,17 +31,19 @@ class Edgehandles {
     this.addListeners()
     let snapFrequency = options.snapFrequency || defaults.snapFrequency
     this.throttledSnap = throttle(this.snap.bind(this), 1000 / snapFrequency)
-    this.preventDefault = (e:any) => e.preventDefault()
+    this.preventDefault = (e: any) => e.preventDefault()
     let supportsPassive = false
     try {
       let opts = Object.defineProperty({}, 'passive', {
-        get: function () {
+        get () {
           supportsPassive = true
         }
       })
       // @ts-ignore
       window.addEventListener('test', null, opts)
-    } catch (err) {}
+    } catch (err) {
+      //
+    }
     if (supportsPassive) {
       this.windowListenerOptions = {
         capture: true,
@@ -88,7 +90,7 @@ class Edgehandles {
     this.emit('disable')
     return this
   }
-  toggleDrawMode (bool:any) {
+  toggleDrawMode (bool: any) {
     let {
       cy,
       options

@@ -6,5 +6,5 @@ import App from './App.vue'
 import '../public/main.css'
 
 new Vue({
-  render: h => h(App)
+  render: (h) => h(App)
 }).$mount('#app')

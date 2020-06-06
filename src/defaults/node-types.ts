@@ -12,7 +12,7 @@ import diamond from '../assets/node-svgs/diamond.svg'
 import tag from '../assets/node-svgs/tag.svg'
 import polygon from '../assets/node-svgs/polygon.svg'
 
-export type NodeType = {
+export interface NodeType {
   _id?: string,
   type: string,
   name?: string,
@@ -151,7 +151,7 @@ const defaultNodeStyles: cytoscape.Stylesheet[] = [{
   'style': {
     'background-opacity': 0,
     'background-fit': 'cover',
-    'background-image': (e) => { return e.data('image') || { value: '' } }
+    'background-image': (e) =>  (e.data('image') || { value: '' })
   }
 }, {
   'selector': 'node[bg]',

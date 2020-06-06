@@ -251,7 +251,8 @@ function updateEdge(this: any) {
   } = this
   let x = mx
   let y = my
-  let ghostEdge, ghostEles
+  let ghostEdge
+  let ghostEles
 
   // can't draw a line without having the starting node
   if (!sourceNode) {

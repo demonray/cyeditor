@@ -3,11 +3,12 @@
  */
 import utils from '../../utils'
 
+type emptyFn = (...args: any[]) => any
 interface Options {
-  beforeCopy?: Function,
-  afterCopy?: Function,
-  beforePaste?: Function,
-  afterPaste?: Function
+  beforeCopy?: emptyFn,
+  afterCopy?: emptyFn,
+  beforePaste?: emptyFn,
+  afterPaste?: emptyFn
 }
 
 class Clipboard {
@@ -30,8 +31,8 @@ class Clipboard {
       let clipboard = {}
 
       scratchPad.instance = {
-        copy: (eles: any, _id: any) => {
-          let id = _id || this._getItemId(false)
+        copy: (eles: any, cid: any) => {
+          let id = cid || this._getItemId(false)
           eles.unselect()
           let descs = eles.nodes().descendants()
           let nodes = eles.nodes().union(descs).filter(':visible')
@@ -47,8 +48,8 @@ class Clipboard {
           this._targetPos = nodes[0] ? nodes[0].position() : { x: 0, y: 0 }
           return id
         },
-        paste: (_id: any) => {
-          let id = _id || this._getItemId(true)
+        paste: (cid: any) => {
+          let id = cid || this._getItemId(true)
           let res = this.cy.collection()
           if (this._options.beforePaste) {
             this._options.beforePaste(clipboard[id])

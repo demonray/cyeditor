@@ -1,7 +1,5 @@
-/**
- * Created by DemonRay on 2019/3/24.
- */
-
+/* tslint:disable */
+// @ts-ignore
 const class2type = {}
 
 const getProto = Object.getPrototypeOf

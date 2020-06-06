@@ -4,7 +4,7 @@
 import utils from '../../utils'
 import { EventObject } from 'cytoscape'
 
-type CommandItem = {
+interface CommandItem {
   command: string,
   icon: string,
   disabled: boolean,
@@ -123,7 +123,7 @@ class Toolbar {
     let opt = Object.assign(cmdItem, options)
     if (opt) {
       let iconEls = utils.query(`i[data-command=${cmd}]`)
-      iconEls.forEach(item => {
+      iconEls.forEach((item) => {
         if (item.parentNode === this._panel) {
           if (opt.icon) {
             item.className = `iconfont command ${opt.icon}`

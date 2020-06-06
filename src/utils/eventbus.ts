@@ -3,10 +3,6 @@ export class EventBus {
 
   private events: object = {}
 
-  constructor () {
-
-  }
-
   /**
    * Adds listener to EventBus
    * @param {string} type The name of the event to listen for
@@ -14,7 +10,7 @@ export class EventBus {
    * @param {object} scope The scope in which the callback shall be executed
    * @param  {...any} args Any number of args to be passed to the callback
    */
-  on (type: string | number, callback: any, scope: any, ...args: any[]) {
+  on (type: string, callback: any, scope?: any, ...args: any[]) {
     if (typeof this.events[type] === 'undefined') { // Check if there is already event of this type registered
       this.events[type] = [] // If not, create array for it
     }
@@ -31,7 +27,7 @@ export class EventBus {
    * @param {function} callback Callback of the event to remove
    * @param {object} scope The scope of the to be removed event
    */
-  off (type: string | number, callback: any, scope: any) {
+  off (type: string, callback: any, scope?: any) {
     if (typeof this.events[type] === 'undefined') { // Check if event of this type exists
       return // If not just return
     }
@@ -47,7 +43,7 @@ export class EventBus {
    * @param {callback} callback Callback of the to be checked event
    * @param {object} scope Scope of the to be checked event
    */
-  has (type: string | number, callback: undefined, scope: undefined) {
+  has (type: string, callback: undefined, scope?: undefined) {
     if (typeof this.events[type] === 'undefined') { // Check if the passed type even exists
       return false // If not, quit method
     }

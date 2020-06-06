@@ -1,0 +1,30 @@
+{
+  "extends": [
+    "tslint:recommended"
+  ],
+  "linterOptions": {
+    "exclude": [
+      "node_modules/**",
+      "src/assets/json/*.json"
+    ]
+  },
+  "rules": {
+    "curly": false,
+    "quotemark": [true, "single"],
+    "indent": [true, "spaces", 2],
+    "interface-name": false,
+    "ordered-imports": false,
+    "object-literal-sort-keys": false,
+    "no-consecutive-blank-lines": false,
+    "semicolon": [true, "never"],
+    "member-access": false,
+    "no-console": false,
+    "max-line-length": [ false ],
+    "trailing-comma": false,
+    "prefer-const": false,
+    "prefer-for-of": false,
+    "object-literal-key-quotes": false,
+    "space-before-function-paren": false,
+    "only-arrow-functions": false
+  }
+}

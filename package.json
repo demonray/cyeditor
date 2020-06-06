@@ -16,7 +16,8 @@
   "main": "dist/cyeditor.umd.ts",
   "dependencies": {
     "cytoscape": "^3.8.7",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "vue-eslint-parser": "^7.1.0"
   },
   "devDependencies": {
     "@types/cytoscape": "^3.8.7",

@@ -28,10 +28,10 @@ let defaults = {
   lines: 3,
   padding: 5,
 
-  start: function () {
+  start () {
     // fired when noderesize interaction starts (drag on handle)
   },
-  stop: function () {
+  stop () {
     // fired when noderesize interaction is stopped (either complete with added edges or incomplete)
   }
 }
@@ -308,8 +308,8 @@ class NodeResize {
     }
   }
 
-  _startHandler(e: any) {
-    let node = e.target
+  _startHandler(event: any) {
+    let node = event.target
 
     if (this._options.disabledd || this._drawMode || this._mdownOnHandle || this._grabbingNode || node.isParent()) {
       return // don't override existing handle that's being dragged also don't trigger when grabbing a node etc
@@ -357,7 +357,7 @@ class NodeResize {
       let x2 = rp.x + w / 2
       let y2 = rp.y + h / 2 - ts
 
-      let p = { x: x, y: y }
+      let p = { x, y }
       let p0 = { x: x1, y: y1 }
       let p1 = { x: x2, y: y2 }
       let p2 = { x: rp.x + w / 2, y: rp.y + h / 2 }
@@ -405,8 +405,8 @@ class NodeResize {
         )
       }
 
-      ['mouseup', 'touchend', 'touchcancel', 'blur'].forEach(function (e) {
-        utils.once(window, e, doneMoving)
+      ['mouseup', 'touchend', 'touchcancel', 'blur'].forEach(function (evt) {
+        utils.once(window, evt, doneMoving)
       })
       window.addEventListener('mousemove', moveHandler)
       window.addEventListener('touchmove', moveHandler)

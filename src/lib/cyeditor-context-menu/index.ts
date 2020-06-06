@@ -1,6 +1,6 @@
 import utils from '../../utils'
 
-type MenuItem = {
+interface MenuItem {
   id: string,
   content: string,
   disabled: boolean,
@@ -26,8 +26,8 @@ const defaults = {
       disabled: false
     }
   ],
-  beforeShow: () => { return true },
-  beforeClose: () => { return true }
+  beforeShow() { return true },
+  beforeClose() { return true }
 }
 
 class ContextMenu {
@@ -89,7 +89,7 @@ class ContextMenu {
 
   disable(id: string, disabled = true) {
     const items = utils.query(`.cy-editor-ctx-menu [data-menu-item=${id}]`)
-    items.forEach(menuItem => {
+    items.forEach((menuItem) => {
       if (disabled) {
         utils.addClass(menuItem, 'ctx-menu-item-disabled')
       } else {

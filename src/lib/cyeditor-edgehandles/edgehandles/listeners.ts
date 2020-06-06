@@ -19,7 +19,7 @@ function getListener(this: any, target: any, event: any, selector: any, callback
     selector = null
   }
 
-  if (options == null) {
+  if ( options == null ) {
     options = false
   }
 
@@ -86,7 +86,7 @@ function emit(this: any, type: string, position: any, ...args: any[]) {
 
   let handler = options[type]
 
-  if (handler != null) {
+  if ( handler != null ) {
     handler(...args)
   }
 

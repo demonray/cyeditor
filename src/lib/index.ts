@@ -6,28 +6,28 @@ import { CyEditorOptions, LineTypes } from '../defaults/index'
 import cytoscape from 'cytoscape'
 import utils from '../utils'
 import EventBus from '../utils/eventbus'
-import toolbar from './cyeditor-toolbar'
-import snapGrid from './cyeditor-snap-grid'
-import undoRedo from './cyeditor-undo-redo'
-import clipboard from './cyeditor-clipboard'
-import cynavigator from './cyeditor-navigator'
-import edgehandles from './cyeditor-edgehandles'
-import noderesize from './cyeditor-node-resize'
-import editElements from './cyeditor-edit-elements'
-import dragAddNodes from './cyeditor-drag-add-nodes'
-import contextMenu from './cyeditor-context-menu'
+import Toolbar from './cyeditor-toolbar'
+import SnapGrid from './cyeditor-snap-grid'
+import UndoRedo from './cyeditor-undo-redo'
+import Clipboard from './cyeditor-clipboard'
+import Cynavigator from './cyeditor-navigator'
+import Edgehandles from './cyeditor-edgehandles'
+import Noderesize from './cyeditor-node-resize'
+import EditElements from './cyeditor-edit-elements'
+import DragAddNodes from './cyeditor-drag-add-nodes'
+import ContextMenu from './cyeditor-context-menu'
 import { defaultConfData, defaultEditorConfig, defaultNodeTypes } from '../defaults'
 
-cytoscape.use(edgehandles)
-cytoscape.use(cynavigator)
-cytoscape.use(snapGrid)
-cytoscape.use(noderesize)
-cytoscape.use(dragAddNodes)
-cytoscape.use(editElements)
-cytoscape.use(toolbar)
-cytoscape.use(clipboard)
-cytoscape.use(undoRedo)
-cytoscape.use(contextMenu)
+cytoscape.use(Edgehandles)
+cytoscape.use(Cynavigator)
+cytoscape.use(SnapGrid)
+cytoscape.use(Noderesize)
+cytoscape.use(DragAddNodes)
+cytoscape.use(EditElements)
+cytoscape.use(Toolbar)
+cytoscape.use(Clipboard)
+cytoscape.use(UndoRedo)
+cytoscape.use(ContextMenu)
 
 class CyEditor extends EventBus {
 
@@ -507,12 +507,12 @@ class CyEditor extends EventBus {
    * @param {*} opt params for cy.json(opt)
    * @param {*} keys JSON Object keys
    */
-  json(opt: boolean = false, keys: any) {
+  json(opt: boolean | object = false, keys?: string[]) {
     keys = keys || ['boxSelectionEnabled', 'elements', 'pan', 'panningEnabled', 'userPanningEnabled', 'userZoomingEnabled', 'zoom', 'zoomingEnabled']
     // export
     let json = {}
     if (typeof opt === 'boolean') {
-      let cyjson = this.cy.json()
+      let cyjson = this.cy.json(opt)
       keys.forEach((key: string) => { json[key] = cyjson[key] })
       return json
     }

@@ -1,31 +1,32 @@
+type emptyFn = (...args: any[]) => any
 export interface Options {
   preview?: boolean,
   hoverDelay?: number,
-  handleNodes?: string | Function
+  handleNodes?: string | emptyFn
   snap?: boolean,
   snapThreshold?: number,
   snapFrequency?: number,
   noEdgeEventsInDraw?: boolean
   disableBrowserGestures?: boolean,
-  handlePosition?: Function,
+  handlePosition?: emptyFn,
   handleInDrawMode?: boolean,
-  edgeType?: Function
+  edgeType?: emptyFn
   nodeLoopOffset?: number,
-  nodeParams?: Function,
-  edgeParams?: Function
-  ghostEdgeParams?: Function,
-  show?: Function,
-  hide?: Function,
-  start?: Function,
-  complete?: Function,
-  stop?: Function,
-  cancel?: Function,
-  hoverover?: Function,
-  hoverout?: Function,
-  previewon?: Function,
-  previewoff?: Function,
-  drawon?: Function,
-  drawoff?: Function,
+  nodeParams?: emptyFn,
+  edgeParams?: emptyFn
+  ghostEdgeParams?: emptyFn,
+  show?: emptyFn,
+  hide?: emptyFn,
+  start?: emptyFn,
+  complete?: emptyFn,
+  stop?: emptyFn,
+  cancel?: emptyFn,
+  hoverover?: emptyFn,
+  hoverout?: emptyFn,
+  previewon?: emptyFn,
+  previewoff?: emptyFn,
+  drawon?: emptyFn,
+  drawoff?: emptyFn,
 }
 
 export default {
@@ -37,70 +38,70 @@ export default {
   snapFrequency: 15, // the number of times per second (Hz) that snap checks done (lower is less expensive)
   noEdgeEventsInDraw: false, // set events:no to edges during draws, prevents mouseouts on compounds
   disableBrowserGestures: true, // during an edge drawing gesture, disable browser gestures such as two-finger trackpad swipe and pinch-to-zoom
-  handlePosition: function (node: any) {
+  handlePosition(node: any) {
     return 'middle top' // sets the position of the handle in the format of "X-AXIS Y-AXIS" such as "left top", "middle top"
   },
   handleInDrawMode: false, // whether to show the handle in draw mode
-  edgeType: function (sourceNode: any, targetNode: any) {
+  edgeType(sourceNode: any, targetNode: any) {
     // can return 'flat' for flat edges between nodes or 'node' for intermediate node between them
     // returning null/undefined means an edge can't be added between the two nodes
     return 'flat'
   },
-  loopAllowed: function (node: any) {
+  loopAllowed(node: any) {
     // for the specified node, return whether edges from itself to itself are allowed
     return false
   },
   nodeLoopOffset: -50, // offset for edgeType: 'node' loops
-  nodeParams: function (sourceNode: any, targetNode: any) {
+  nodeParams(sourceNode: any, targetNode: any) {
     // for edges between the specified source and target
     // return element object to be passed to cy.add() for intermediary node
     return {}
   },
-  edgeParams: function (sourceNode: any, targetNode: any, i: any) {
+  edgeParams(sourceNode: any, targetNode: any, i: any) {
     // for edges between the specified source and target
     // return element object to be passed to cy.add() for edge
     // NB: i indicates edge index in case of edgeType: 'node'
     return {}
   },
-  ghostEdgeParams: function () {
+  ghostEdgeParams() {
     // return element object to be passed to cy.add() for the ghost edge
     // (default classes are always added for you)
     return {}
   },
-  show: function (sourceNode: any) {
+  show(sourceNode: any) {
     // fired when handle is shown
   },
-  hide: function (sourceNode: any) {
+  hide(sourceNode: any) {
     // fired when the handle is hidden
   },
-  start: function (sourceNode: any) {
+  start(sourceNode: any) {
     // fired when edgehandles interaction starts (drag on handle)
   },
-  complete: function (sourceNode: any, targetNode: any, addedEles: any) {
+  complete(sourceNode: any, targetNode: any, addedEles: any) {
     // fired when edgehandles is done and elements are added
   },
-  stop: function (sourceNode: any) {
+  stop(sourceNode: any) {
     // fired when edgehandles interaction is stopped (either complete with added edges or incomplete)
   },
-  cancel: function (sourceNode: any, cancelledTargets: any) {
+  cancel(sourceNode: any, cancelledTargets: any) {
     // fired when edgehandles are cancelled (incomplete gesture)
   },
-  hoverover: function (sourceNode: any, targetNode: any) {
+  hoverover(sourceNode: any, targetNode: any) {
     // fired when a target is hovered
   },
-  hoverout: function (sourceNode: any, targetNode: any) {
+  hoverout(sourceNode: any, targetNode: any) {
     // fired when a target isn't hovered anymore
   },
-  previewon: function (sourceNode: any, targetNode: any, previewEles: any) {
+  previewon(sourceNode: any, targetNode: any, previewEles: any) {
     // fired when preview is shown
   },
-  previewoff: function (sourceNode: any, targetNode: any, previewEles: any) {
+  previewoff(sourceNode: any, targetNode: any, previewEles: any) {
     // fired when preview is hidden
   },
-  drawon: function () {
+  drawon() {
     // fired when draw mode enabled
   },
-  drawoff: function () {
+  drawoff() {
     // fired when draw mode disabled
   }
 }

@@ -20,16 +20,12 @@ export interface EditorOptions {
   beforeAdd: (el: Element) => boolean,
   afterAdd: (el: Element) => any
 }
-export interface CyOptions extends cytoscape.CytoscapeOptions {
 
-}
-
-
-const cy: CyOptions = {
+const cy: cytoscape.CytoscapeOptions = {
   layout: {
     name: 'concentric',
     fit: false,
-    concentric: function (n) { return 0 }
+    concentric (n) { return 0 }
   },
   styleEnabled: true,
   style: [
@@ -59,13 +55,13 @@ const editor: EditorOptions = {
   beforeAdd(el) {
     return true
   },
-  afterAdd(el) {
-
+  afterAdd() {
+    //
   }
 }
 
 export interface CyEditorOptions {
-  cy?: CyOptions,
+  cy?: cytoscape.CytoscapeOptions,
   editor: EditorOptions
 }
 
