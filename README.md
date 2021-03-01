@@ -48,4 +48,3 @@ $ npm run serve
 - [x] Support for custom right-click menu
 - [x] Support flow chart export to image, export json data
 - [ ] More edge type support, dotted line
-- [ ] Element information popper

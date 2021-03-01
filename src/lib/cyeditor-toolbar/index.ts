@@ -42,83 +42,12 @@ class Toolbar {
   constructor(cy: cytoscape.Core, params: Options) {
     this.cy = cy
     this._options = Object.assign({}, defaults, params)
-    this._init()
+    this.init()
     this._listeners = {}
-    this._initEvents()
+    this.initEvents()
   }
 
-  _init() {
-    this._initShapePanel()
-  }
-
-  _initEvents() {
-    this._listeners.command = (e: EventObject) => {
-      let command = e.target.getAttribute('data-command')
-      if (!command) { return }
-      let commandOpt = this._options.commands.find((it: any) => it.command === command)
-      if (['boxselect', 'gridon'].indexOf(command) > -1) {
-        this.rerender(command, { selected: !commandOpt.selected })
-      } else if (['line-straight', 'line-bezier', 'line-taxi'].indexOf(command) > -1) {
-        this.rerender('line-straight', { selected: command === 'line-straight' })
-        this.rerender('line-bezier', { selected: command === 'line-bezier' })
-        this.rerender('line-taxi', { selected: command === 'line-taxi' })
-      } else if (command === 'fit') {
-        this.rerender('fit', { icon: commandOpt.icon === 'icon-fullscreen' ? 'icon-fullscreen-exit' : 'icon-fullscreen' })
-      }
-      if (commandOpt) {
-        this.cy.trigger('cyeditor.toolbar-command', commandOpt)
-      }
-    }
-    this._panel.addEventListener('click', this._listeners.command)
-    this._listeners.select = this._selectChange.bind(this)
-    this.cy.on('select unselect', this._listeners.select)
-  }
-
-  _selectChange() {
-    let selected = this.cy.$(':selected')
-    if (selected && selected.length !== this._last_selected_length) {
-      let hasSelected = selected.length > 0
-      this._options.commands.forEach((item: any) => {
-        if (['delete', 'copy', 'leveldown', 'levelup'].indexOf(item.command) > -1) {
-          item.disabled = !hasSelected
-        }
-      })
-      this._panelHtml()
-    }
-    this._last_selected_length = selected
-  }
-
-  _initShapePanel() {
-    let { _options } = this
-    if (_options.container) {
-      if (typeof _options.container === 'string') {
-        this._panel = utils.query(_options.container)[0]
-      } else if (utils.isNode(_options.container)) {
-        this._panel = _options.container
-      }
-      if (!this._panel) {
-        console.error('There is no any element matching your container')
-        return
-      }
-    } else {
-      this._panel = document.createElement('div')
-      document.body.appendChild(this._panel)
-    }
-    this._panelHtml()
-  }
-
-  _panelHtml() {
-    let icons = ''
-    this._options.commands.forEach((item: CommandItem) => {
-      let { command, title, icon, disabled, selected, separator } = item
-      let cls = `${icon} ${disabled ? 'disable' : ''} ${selected === true ? 'selected' : ''}`
-      if (separator) icons += '<span class="separator"></span>'
-      icons += `<i data-command="${command}" class="iconfont command ${cls}" title="${title}"></i>`
-    })
-    this._panel.innerHTML = icons
-  }
-
-  rerender(cmd: string, options = {}) {
+  public rerender(cmd: string, options = {}) {
     let cmdItem = this._options.commands.find((it: any) => it.command === cmd)
     let opt = Object.assign(cmdItem, options)
     if (opt) {
@@ -141,6 +70,77 @@ class Toolbar {
         }
       })
     }
+  }
+
+  private init() {
+    this.initShapePanel()
+  }
+
+  private initEvents() {
+    this._listeners.command = (e: EventObject) => {
+      let command = e.target.getAttribute('data-command')
+      if (!command) { return }
+      let commandOpt = this._options.commands.find((it: any) => it.command === command)
+      if (['boxselect', 'gridon'].indexOf(command) > -1) {
+        this.rerender(command, { selected: !commandOpt.selected })
+      } else if (['line-straight', 'line-bezier', 'line-taxi'].indexOf(command) > -1) {
+        this.rerender('line-straight', { selected: command === 'line-straight' })
+        this.rerender('line-bezier', { selected: command === 'line-bezier' })
+        this.rerender('line-taxi', { selected: command === 'line-taxi' })
+      } else if (command === 'fit') {
+        this.rerender('fit', { icon: commandOpt.icon === 'icon-fullscreen' ? 'icon-fullscreen-exit' : 'icon-fullscreen' })
+      }
+      if (commandOpt) {
+        this.cy.trigger('cyeditor.toolbar-command', commandOpt)
+      }
+    }
+    this._panel.addEventListener('click', this._listeners.command)
+    this._listeners.select = this.selectChange.bind(this)
+    this.cy.on('select unselect', this._listeners.select)
+  }
+
+  private selectChange() {
+    let selected = this.cy.$(':selected')
+    if (selected && selected.length !== this._last_selected_length) {
+      let hasSelected = selected.length > 0
+      this._options.commands.forEach((item: any) => {
+        if (['delete', 'copy', 'leveldown', 'levelup'].indexOf(item.command) > -1) {
+          item.disabled = !hasSelected
+        }
+      })
+      this.panelHtml()
+    }
+    this._last_selected_length = selected
+  }
+
+  private initShapePanel() {
+    let { _options } = this
+    if (_options.container) {
+      if (typeof _options.container === 'string') {
+        this._panel = utils.query(_options.container)[0]
+      } else if (utils.isNode(_options.container)) {
+        this._panel = _options.container
+      }
+      if (!this._panel) {
+        console.error('There is no any element matching your container')
+        return
+      }
+    } else {
+      this._panel = document.createElement('div')
+      document.body.appendChild(this._panel)
+    }
+    this.panelHtml()
+  }
+
+  private panelHtml() {
+    let icons = ''
+    this._options.commands.forEach((item: CommandItem) => {
+      let { command, title, icon, disabled, selected, separator } = item
+      let cls = `${icon} ${disabled ? 'disable' : ''} ${selected === true ? 'selected' : ''}`
+      if (separator) icons += '<span class="separator"></span>'
+      icons += `<i data-command="${command}" class="iconfont command ${cls}" title="${title}"></i>`
+    })
+    this._panel.innerHTML = icons
   }
 }
 

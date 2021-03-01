@@ -4,7 +4,8 @@ interface MenuItem {
   id: string,
   content: string,
   disabled: boolean,
-  divider?: boolean
+  divider?: boolean,
+  onClick?: () => any
 }
 interface Options {
   menus: MenuItem[],
@@ -13,19 +14,7 @@ interface Options {
 }
 
 const defaults = {
-  menus: [
-    {
-      id: 'remove',
-      content: 'remove',
-      disabled: false,
-      divider: true
-    },
-    {
-      id: 'hide',
-      content: 'hide',
-      disabled: false
-    }
-  ],
+  menus: [],
   beforeShow() { return true },
   beforeClose() { return true }
 }
@@ -36,58 +25,15 @@ class ContextMenu {
     this.cy = cy
     this._options = Object.assign({}, params)
     this._listeners = {}
-    this._init()
+    this.init()
   }
-  _init() {
-    this._initContainer()
-    this._initDom()
-    this._initEvents()
-  }
-
-  _initContainer() {
-    this._container = this.cy.container()
-    this.ctxmenu = document.createElement('div')
-    this.ctxmenu.className = 'cy-editor-ctx-menu'
-    this._container.append(this.ctxmenu)
+  init() {
+    this.initContainer()
+    this.initDom()
+    this.initEvents()
   }
 
-  _initDom() {
-    let domItem = ''
-    this._options.menus.forEach((item: MenuItem) => {
-      domItem += `<div class="ctx-menu-item ${item.disabled ? 'ctx-menu-item-disabled' : ''}" data-menu-item="${item.id}">${item.content}</div>`
-      if (item.divider) {
-        domItem += '<div class="ctx-menu-divider" ></div>'
-      }
-    })
-    this.ctxmenu.innerHTML = domItem
-  }
-
-  _initEvents() {
-    this._listeners.eventCyTap = (event: cytoscape.EventObject) => {
-      let renderedPos = event.renderedPosition
-      let left = renderedPos.x
-      let top = renderedPos.y
-      utils.css(this.ctxmenu, {
-        top: top + 'px',
-        left: left + 'px'
-      })
-      this.show(event)
-    }
-    this._listeners.eventTapstart = (e: cytoscape.EventObject) => {
-      this.close(e)
-    }
-    this._listeners.click = (e: cytoscape.EventObject) => {
-      const id = e.target.getAttribute('data-menu-item')
-      const menuItem = this._options.menus.find((item: MenuItem) => item.id === id)
-      this.cy.trigger('cyeditor.ctxmenu', menuItem)
-    }
-
-    this.ctxmenu.addEventListener('mousedown', this._listeners.click)
-    this.cy.on('cxttap', this._listeners.eventCyTap)
-    this.cy.on('tapstart', this._listeners.eventTapstart)
-  }
-
-  disable(id: string, disabled = true) {
+  public disable(id: string, disabled = true) {
     const items = utils.query(`.cy-editor-ctx-menu [data-menu-item=${id}]`)
     items.forEach((menuItem) => {
       if (disabled) {
@@ -98,12 +44,12 @@ class ContextMenu {
     })
   }
 
-  changeMenus(menus: MenuItem[]) {
+  public changeMenus(menus: MenuItem[]) {
     this._options.menus = menus
-    this._initDom()
+    this.initDom()
   }
 
-  show(e: cytoscape.EventObject) {
+  public show(e: cytoscape.EventObject) {
     if (!this.isShow) {
       const show = this._options.beforeShow(e, this._options.menus.slice(0))
       if (!show) return
@@ -128,7 +74,7 @@ class ContextMenu {
     }
   }
 
-  close(e: cytoscape.EventObject) {
+  public close(e: cytoscape.EventObject) {
     if (this.isShow) {
       const close = this._options.beforeClose(e)
       if (close === true) {
@@ -147,10 +93,65 @@ class ContextMenu {
     }
   }
 
-  destroyCxtMenu() {
+  public destroy() {
     this.ctxmenu.removeEventListener('mousedown', this._listeners.click)
     this.cy.off('tapstart', this._listeners.eventTapstart)
     this.cy.off('cxttap', this._listeners.eventCyTap)
+  }
+
+  private initContainer() {
+    this._container = this.cy.container()
+    this.ctxmenu = document.createElement('div')
+    this.ctxmenu.className = 'cy-editor-ctx-menu'
+    this._container.append(this.ctxmenu)
+  }
+
+  private initDom() {
+    let domItem = ''
+    this._options.menus.forEach((item: MenuItem) => {
+      domItem += `<div class="ctx-menu-item ${item.disabled ? 'ctx-menu-item-disabled' : ''}" data-menu-item="${item.id}">${item.content}</div>`
+      if (item.divider) {
+        domItem += '<div class="ctx-menu-divider" ></div>'
+      }
+    })
+    this.ctxmenu.innerHTML = domItem
+  }
+
+  private initEvents() {
+    this._listeners.eventCyTap = (event: cytoscape.EventObject) => {
+      let renderedPos = event.renderedPosition
+      let left = renderedPos.x
+      let top = renderedPos.y
+      utils.css(this.ctxmenu, {
+        top: top + 'px',
+        left: left + 'px'
+      })
+      this.clickTarget = event.target
+      this.show(event)
+    }
+    this._listeners.eventTapstart = (e: cytoscape.EventObject) => {
+      this.close(e)
+    }
+    this._listeners.click = (e: cytoscape.EventObject) => {
+      let tapNodeData
+      if (this.clickTarget) {
+        tapNodeData = {
+          isNode: this.clickTarget.isNode(),
+          isEdge: this.clickTarget.isEdge(),
+          data: this.clickTarget.data()
+        }
+      }
+      const id = e.target.getAttribute('data-menu-item')
+      const menuItem = this._options.menus.find((item: MenuItem) => item.id === id)
+      if (menuItem && menuItem.onClick) {
+        menuItem.onClick(tapNodeData)
+      }
+      this.cy.trigger('cyeditor.ctxmenu', menuItem, tapNodeData)
+    }
+
+    this.ctxmenu.addEventListener('mousedown', this._listeners.click)
+    this.cy.on('cxttap', 'node,edge', this._listeners.eventCyTap)
+    this.cy.on('tapstart', this._listeners.eventTapstart)
   }
 }
 
@@ -159,7 +160,7 @@ export default (cy?: any) => {
     return
   }
 
-  cy('core', 'contextMenu', function (this: cytoscape.Core, options: Options = defaults) {
-    return new ContextMenu(this, options)
+  cy('core', 'contextMenu', function (this: cytoscape.Core, options: Options) {
+    return new ContextMenu(this, Object.assign({...defaults}, options))
   })
 }

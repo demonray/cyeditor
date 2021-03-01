@@ -37,22 +37,207 @@ class CyEditor extends EventBus {
     super()
     this._plugins = {}
     this._listeners = {}
-    this._init(params)
+    this.init(params)
   }
 
-  _init(params: CyEditorOptions) {
-    this._initOptions(params)
-    this._initDom()
-    this._initPlugin()
-    this._initEvents()
+  /**
+   * change editor option, support snapGrid, lineType
+   * @param {string|object} key
+   * @param {*} value
+   */
+  public setOption(key: string | object, value?: any) {
+    if (typeof key === 'string') {
+      this.editorOptions[key] = value
+      if (typeof this._handleOptonsChange[key] === 'function') {
+        this._handleOptonsChange[key].call(this, value)
+      }
+    } else if (typeof key === 'object') {
+      Object.assign(this.editorOptions, key)
+    }
   }
 
-  _initOptions(params = defaultEditorConfig) {
+  public undo() {
+    if (this._plugins.undoRedo) {
+      let stack = this._plugins.undoRedo.getRedoStack()
+      if (stack.length) {
+        this._doAction = stack[stack.length - 1].action
+      }
+      this._plugins.undoRedo.undo()
+    } else {
+      console.warn('Can not `undo`, please check the initialize option `editor.toolbar`')
+    }
+  }
+
+  public redo() {
+    if (this._plugins.undoRedo) {
+      let stack = this._plugins.undoRedo.getUndoStack()
+      if (stack.length) {
+        this._doAction = stack[stack.length - 1].action
+      }
+      this._plugins.undoRedo.redo()
+    } else {
+      console.warn('Can not `redo`, please check the initialize option `editor.toolbar`')
+    }
+  }
+
+  public copy() {
+    if (this._plugins.clipboard) {
+      let selected = this.cy.$(':selected')
+      if (selected.length) {
+        this._cpids = this._plugins.clipboard.copy(selected)
+        if (this._cpids && this._plugins.toolbar) {
+          this._plugins.toolbar.rerender('paste', { disabled: false })
+        }
+      }
+    } else {
+      console.warn('Can not `copy`, please check the initialize option `editor.toolbar`')
+    }
+  }
+
+  public paste() {
+    if (this._plugins.clipboard) {
+      if (this._cpids) {
+        this._plugins.clipboard.paste(this._cpids)
+      }
+    } else {
+      console.warn('Can not `paste`, please check the initialize option `editor.toolbar`')
+    }
+  }
+
+  public changeLevel(type = 0) {
+    let selected = this.cy.$(':selected')
+    if (selected.length) {
+      selected.forEach((el: any) => {
+        let pre = el.style()
+        el.style('z-index', pre.zIndex - 0 + type > -1 ? pre.zIndex - 0 + type : 0)
+      })
+    }
+  }
+
+  public deleteSelected(selector = ':selected') {
+    let selected = this.cy.$(selector)
+    if (selected.length) {
+      if (this._plugins.undoRedo) {
+        this.undoRedoAction('remove', selected)
+      }
+      this.cy.remove(selected)
+    }
+  }
+
+  public async save() {
+    try {
+      let blob = await this.cy.png({ output: 'blob-promise' })
+      if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob(blob, `chart-${Date.now()}.png`)
+      } else {
+        let a = document.createElement('a')
+        a.download = `chart-${Date.now()}.png`
+        a.href = window.URL.createObjectURL(blob)
+        a.click()
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public fit() {
+    if (!this._fit_status) {
+      this._fit_status = { pan: this.cy.pan(), zoom: this.cy.zoom() }
+      this.cy.fit()
+    } else {
+      this.cy.viewport({
+        zoom: this._fit_status.zoom,
+        pan: this._fit_status.pan
+      })
+      this._fit_status = null
+    }
+  }
+
+  public zoom(type = 1, level = this.editorOptions.zoomRate) {
+    let w = this.cy.width()
+    let h = this.cy.height()
+    let zoom = this.cy.zoom() + level * type
+    let pan = this.cy.pan()
+    pan.x = pan.x + -1 * w * level * type / 2
+    pan.y = pan.y + -1 * h * level * type / 2
+    this.cy.viewport({
+      zoom,
+      pan
+    })
+  }
+
+  public toggleGrid() {
+    if (this._plugins.cySnapToGrid) {
+      this.setOption('snapGrid', !this.editorOptions.snapGrid)
+    } else {
+      console.warn('Can not `toggleGrid`, please check the initialize option')
+    }
+  }
+
+  public jpg(opt = {}) {
+    return this.cy.png(opt)
+  }
+
+  public png(opt: any) {
+    return this.cy.png(opt)
+  }
+  /**
+   * Export the graph as JSON or Import the graph as JSON
+   * @param {*} opt params for cy.json(opt)
+   * @param {*} keys JSON Object keys
+   */
+  public json(opt: boolean | object = false, keys?: string[]) {
+    keys = keys || ['boxSelectionEnabled', 'elements', 'pan', 'panningEnabled', 'userPanningEnabled', 'userZoomingEnabled', 'zoom', 'zoomingEnabled']
+    // export
+    let json = {}
+    if (typeof opt === 'boolean') {
+      let cyjson = this.cy.json(opt)
+      keys.forEach((key: string) => { json[key] = cyjson[key] })
+      return json
+    }
+    // import
+    if (typeof opt === 'object') {
+      json = {}
+      keys.forEach((key: string) => { json[key] = opt[key] })
+    }
+    return this.cy.json(json)
+  }
+
+  /**
+   * get or set data
+   * @param {string|object} name
+   * @param {*} value
+   */
+  public data(name: string | object, value?: any) {
+    return this.cy.data(name, value)
+  }
+
+  /**
+   *  remove data
+   * @param {string} names  split by space
+   */
+  public removeData(names: string) {
+    this.cy.removeData(names)
+  }
+
+  public destroy() {
+    this.cy.removeAllListeners()
+    this.cy.destroy()
+  }
+
+  private init(params: CyEditorOptions) {
+    this.initOptions(params)
+    this.initDom()
+    this.initPlugin()
+    this.initEvents()
+  }
+
+  private initOptions(params = defaultEditorConfig) {
     this.editorOptions = Object.assign({}, defaultEditorConfig.editor, params.editor)
     const { useDefaultNodeTypes, zoomRate } = this.editorOptions
     this._handleOptonsChange = {
-      snapGrid: this._snapGridChange,
-      lineType: this._lineTypeChange
+      snapGrid: this.snapGridChange,
+      lineType: this.lineTypeChange
     }
     if (params.editor && params.editor.nodeTypes && useDefaultNodeTypes) {
       this.setOption('nodeTypes', defaultNodeTypes.concat(params.editor.nodeTypes))
@@ -76,7 +261,7 @@ class CyEditor extends EventBus {
     }
   }
 
-  _initDom() {
+  private initDom() {
     let { dragAddNodes, navigator, elementsInfo, toolbar, container } = this.editorOptions
     let left = dragAddNodes ? `<div class="left"></div>` : ''
     let navigatorDom = navigator ? `<div class="panel-title">导航器</div><div id="thumb"></div>` : ''
@@ -115,7 +300,7 @@ class CyEditor extends EventBus {
     this.cy = cytoscape(this.cyOptions)
   }
 
-  _initEvents() {
+  private initEvents() {
     const { editElements, edgehandles, noderesize, undoRedo } = this._plugins
 
     this._listeners.showElementInfo = () => {
@@ -124,7 +309,7 @@ class CyEditor extends EventBus {
       }
     }
 
-    this._listeners.handleCommand = this._handleCommand.bind(this)
+    this._listeners.handleCommand = this.handleCommand.bind(this)
 
     this._listeners.hoverout = (e: any) => {
       if (edgehandles) {
@@ -139,7 +324,7 @@ class CyEditor extends EventBus {
     this._listeners.select = (e: { target: any }) => {
       if (this._doAction === 'select') return
       if (undoRedo) {
-        this._undoRedoAction('select', e.target)
+        this.undoRedoAction('select', e.target)
       }
     }
 
@@ -151,28 +336,33 @@ class CyEditor extends EventBus {
         el.position = { x, y }
       }
       el.firstTime = true
-      if (!this._hook('beforeAdd', el, true)) return
+      if (!this.hook('beforeAdd', el, true)) return
       if (undoRedo) {
-        this._undoRedoAction('add', el)
+        this.undoRedoAction('add', el)
       } else {
         this.cy.add(el)
       }
-      this._hook('afterAdd', el)
+      this.hook('afterAdd', el)
       this.emit('change', el, this)
     }
 
-    this._listeners._changeUndoRedo = this._changeUndoRedo.bind(this)
+    this._listeners.changeUndoRedo = this.changeUndoRedo.bind(this)
+
+    this._listeners.onctxmenu = () => {
+      // console.log(arguments)
+    }
 
     this.cy.on('cyeditor.noderesize-resized cyeditor.noderesize-resizing', this._listeners.showElementInfo)
       .on('cyeditor.toolbar-command', this._listeners.handleCommand)
       .on('click', this._listeners.hoverout)
       .on('select', this._listeners.select)
       .on('cyeditor.addnode', this._listeners.addEles)
-      .on('cyeditor.afterDo cyeditor.afterRedo cyeditor.afterUndo', this._listeners._changeUndoRedo)
+      .on('cyeditor.ctxmenu', this._listeners.onctxmenu)
+      .on('cyeditor.afterDo cyeditor.afterRedo cyeditor.afterUndo', this._listeners.changeUndoRedo)
     this.emit('ready')
   }
 
-  _initPlugin() {
+  private initPlugin() {
     const { dragAddNodes, elementsInfo, toolbar,
       contextMenu, snapGrid, navigator, noderesize } = this.editorOptions
     // edge
@@ -181,7 +371,7 @@ class CyEditor extends EventBus {
       handlePosition() {
         return 'middle middle'
       },
-      edgeParams: this._edgeParams.bind(this)
+      edgeParams: this.edgeParams.bind(this)
     })
 
     // drag node add to cy
@@ -201,6 +391,7 @@ class CyEditor extends EventBus {
 
     // toolbar
     if (Array.isArray(toolbar) || toolbar === true) {
+      // todo support custom items
       this._plugins.toolbar = this.cy.toolbar({
         container: '#toolbar'
       })
@@ -248,11 +439,15 @@ class CyEditor extends EventBus {
 
     // context-menu
     if (contextMenu) {
-      this._plugins.contextMenu = this.cy.contextMenu()
+      if (contextMenu) {
+        this._plugins.contextMenu = this.cy.contextMenu(contextMenu)
+      } else {
+        this._plugins.contextMenu = this.cy.contextMenu()
+      }
     }
   }
 
-  _snapGridChange() {
+  private snapGridChange() {
     if (!this._plugins.cySnapToGrid) return
     if (this.editorOptions.snapGrid) {
       this._plugins.cySnapToGrid.gridOn()
@@ -263,13 +458,13 @@ class CyEditor extends EventBus {
     }
   }
 
-  _edgeParams() {
+  private edgeParams() {
     return {
       data: { lineType: this.editorOptions.lineType }
     }
   }
 
-  _lineTypeChange(value: LineTypes) {
+  private lineTypeChange(value: LineTypes) {
     let selected = this.cy.$('edge:selected')
     if (selected.length < 1) {
       selected = this.cy.$('edge')
@@ -281,7 +476,7 @@ class CyEditor extends EventBus {
     })
   }
 
-  _handleCommand(evt: any, item: any) {
+  private handleCommand(evt: any, item: any) {
     switch (item.command) {
       case 'undo':
         this.undo()
@@ -337,7 +532,7 @@ class CyEditor extends EventBus {
     }
   }
 
-  _changeUndoRedo() {
+  private changeUndoRedo() {
     if (!this._plugins.undoRedo || !this._plugins.toolbar) return
     let canRedo = this._plugins.undoRedo.isRedoStackEmpty()
     let canUndo = this._plugins.undoRedo.isUndoStackEmpty()
@@ -349,201 +544,16 @@ class CyEditor extends EventBus {
     this.lastCanUndo = canUndo
   }
 
-  _undoRedoAction(cmd: string, options: any) {
+  private undoRedoAction(cmd: string, options: any) {
     this._doAction = cmd
     this._plugins.undoRedo.do(cmd, options)
   }
 
-  _hook(hook: string, params: any, result = false) {
+  private hook(hook: string, params: any, result = false) {
     if (typeof this.editorOptions[hook] === 'function') {
       const res = this.editorOptions[hook](params)
       return result ? res : true
     }
-  }
-
-  /**
-   * change editor option, support snapGrid, lineType
-   * @param {string|object} key
-   * @param {*} value
-   */
-  setOption(key: string | object, value?: any) {
-    if (typeof key === 'string') {
-      this.editorOptions[key] = value
-      if (typeof this._handleOptonsChange[key] === 'function') {
-        this._handleOptonsChange[key].call(this, value)
-      }
-    } else if (typeof key === 'object') {
-      Object.assign(this.editorOptions, key)
-    }
-  }
-
-  undo() {
-    if (this._plugins.undoRedo) {
-      let stack = this._plugins.undoRedo.getRedoStack()
-      if (stack.length) {
-        this._doAction = stack[stack.length - 1].action
-      }
-      this._plugins.undoRedo.undo()
-    } else {
-      console.warn('Can not `undo`, please check the initialize option `editor.toolbar`')
-    }
-  }
-
-  redo() {
-    if (this._plugins.undoRedo) {
-      let stack = this._plugins.undoRedo.getUndoStack()
-      if (stack.length) {
-        this._doAction = stack[stack.length - 1].action
-      }
-      this._plugins.undoRedo.redo()
-    } else {
-      console.warn('Can not `redo`, please check the initialize option `editor.toolbar`')
-    }
-  }
-
-  copy() {
-    if (this._plugins.clipboard) {
-      let selected = this.cy.$(':selected')
-      if (selected.length) {
-        this._cpids = this._plugins.clipboard.copy(selected)
-        if (this._cpids && this._plugins.toolbar) {
-          this._plugins.toolbar.rerender('paste', { disabled: false })
-        }
-      }
-    } else {
-      console.warn('Can not `copy`, please check the initialize option `editor.toolbar`')
-    }
-  }
-
-  paste() {
-    if (this._plugins.clipboard) {
-      if (this._cpids) {
-        this._plugins.clipboard.paste(this._cpids)
-      }
-    } else {
-      console.warn('Can not `paste`, please check the initialize option `editor.toolbar`')
-    }
-  }
-
-  changeLevel(type = 0) {
-    let selected = this.cy.$(':selected')
-    if (selected.length) {
-      selected.forEach((el: any) => {
-        let pre = el.style()
-        el.style('z-index', pre.zIndex - 0 + type > -1 ? pre.zIndex - 0 + type : 0)
-      })
-    }
-  }
-
-  deleteSelected() {
-    let selected = this.cy.$(':selected')
-    if (selected.length) {
-      if (this._plugins.undoRedo) {
-        this._undoRedoAction('remove', selected)
-      }
-      this.cy.remove(selected)
-    }
-  }
-
-  async save() {
-    try {
-      let blob = await this.cy.png({ output: 'blob-promise' })
-      if (window.navigator.msSaveBlob) {
-        window.navigator.msSaveBlob(blob, `chart-${Date.now()}.png`)
-      } else {
-        let a = document.createElement('a')
-        a.download = `chart-${Date.now()}.png`
-        a.href = window.URL.createObjectURL(blob)
-        a.click()
-      }
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-  fit() {
-    if (!this._fit_status) {
-      this._fit_status = { pan: this.cy.pan(), zoom: this.cy.zoom() }
-      this.cy.fit()
-    } else {
-      this.cy.viewport({
-        zoom: this._fit_status.zoom,
-        pan: this._fit_status.pan
-      })
-      this._fit_status = null
-    }
-  }
-
-  zoom(type = 1, level = this.editorOptions.zoomRate) {
-    let w = this.cy.width()
-    let h = this.cy.height()
-    let zoom = this.cy.zoom() + level * type
-    let pan = this.cy.pan()
-    pan.x = pan.x + -1 * w * level * type / 2
-    pan.y = pan.y + -1 * h * level * type / 2
-    this.cy.viewport({
-      zoom,
-      pan
-    })
-  }
-
-  toggleGrid() {
-    if (this._plugins.cySnapToGrid) {
-      this.setOption('snapGrid', !this.editorOptions.snapGrid)
-    } else {
-      console.warn('Can not `toggleGrid`, please check the initialize option')
-    }
-  }
-
-  jpg(opt = {}) {
-    return this.cy.png(opt)
-  }
-
-  png(opt: any) {
-    return this.cy.png(opt)
-  }
-  /**
-   * Export the graph as JSON or Import the graph as JSON
-   * @param {*} opt params for cy.json(opt)
-   * @param {*} keys JSON Object keys
-   */
-  json(opt: boolean | object = false, keys?: string[]) {
-    keys = keys || ['boxSelectionEnabled', 'elements', 'pan', 'panningEnabled', 'userPanningEnabled', 'userZoomingEnabled', 'zoom', 'zoomingEnabled']
-    // export
-    let json = {}
-    if (typeof opt === 'boolean') {
-      let cyjson = this.cy.json(opt)
-      keys.forEach((key: string) => { json[key] = cyjson[key] })
-      return json
-    }
-    // import
-    if (typeof opt === 'object') {
-      json = {}
-      keys.forEach((key: string) => { json[key] = opt[key] })
-    }
-    return this.cy.json(json)
-  }
-
-  /**
-   * get or set data
-   * @param {string|object} name
-   * @param {*} value
-   */
-  data(name: string | object, value?: any) {
-    return this.cy.data(name, value)
-  }
-
-  /**
-   *  remove data
-   * @param {string} names  split by space
-   */
-  removeData(names: string) {
-    this.cy.removeData(names)
-  }
-
-  destroy() {
-    this.cy.removeAllListeners()
-    this.cy.destroy()
   }
 }
 

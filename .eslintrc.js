@@ -25,6 +25,7 @@ module.exports = {
           'SwitchCase': 1
       }
     ],
-    '@typescript-eslint/member-delimiter-style': 0
+    '@typescript-eslint/member-delimiter-style': 0,
+    '@typescript-eslint/no-explicit-any': 0
   }
 }

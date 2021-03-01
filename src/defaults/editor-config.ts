@@ -5,20 +5,20 @@ import pluginStyles from './plugin-style'
 export type LineTypes  = 'taxi' | 'bezier'
 export interface EditorOptions {
   container: string,
-  zoomRate: number,
-  lineType: LineTypes,
-  noderesize: boolean,
-  dragAddNodes: boolean,
-  elementsInfo: boolean,
-  toolbar: boolean, // boolean or array: ['undo', 'redo', 'copy', 'paste', 'delete', 'zoomin', 'zoomout', 'fit', 'leveldown', 'levelup', 'gridon', 'boxselect', 'line-straight', 'line-taxi', 'line-bezier', 'save']
-  snapGrid: boolean,
-  contextMenu: boolean,
-  navigator: boolean,
+  zoomRate?: number,
+  lineType?: LineTypes,
+  noderesize?: boolean,
+  dragAddNodes?: boolean,
+  elementsInfo?: boolean,
+  toolbar?: boolean, // todo custom item, boolean or array?: ['undo', 'redo', 'copy', 'paste', 'delete', 'zoomin', 'zoomout', 'fit', 'leveldown', 'levelup', 'gridon', 'boxselect', 'line-straight', 'line-taxi', 'line-bezier', 'save']
+  snapGrid?: boolean,
+  contextMenu?: boolean, // todo custom array
+  navigator?: boolean,
   useDefaultNodeTypes?: boolean // whether nodeTypes should concat with defaultNodeTypes
-  nodeTypes: any,
-  autoSave: boolean,
-  beforeAdd: (el: Element) => boolean,
-  afterAdd: (el: Element) => any
+  nodeTypes?: any,
+  autoSave?: boolean,
+  beforeAdd?: (el: Element) => boolean,
+  afterAdd?: (el: Element) => any
 }
 
 const cy: cytoscape.CytoscapeOptions = {
@@ -52,10 +52,10 @@ const editor: EditorOptions = {
   useDefaultNodeTypes: true, // whether nodeTypes should concat with defaultNodeTypes
   nodeTypes: defaultNodeTypes,
   autoSave: true, // Todo
-  beforeAdd(el) {
+  beforeAdd(el): boolean {
     return true
   },
-  afterAdd() {
+  afterAdd(): void {
     //
   }
 }

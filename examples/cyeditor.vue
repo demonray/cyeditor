@@ -1,5 +1,13 @@
+<template>
+  <div id="cy-editor-el" />
+</template>
 <script lang="ts">
+import { VNode } from 'vue'
 import CyEditor from '../src/index'
+import { Component, Prop, Vue } from 'vue-property-decorator'
+import { CyEditorOptions } from '../src/defaults/editor-config'
+
+
 const defaultValue = {
   boxSelectionEnabled: true,
   elements: null ,
@@ -13,46 +21,40 @@ const defaultValue = {
   zoom: 1,
   zoomingEnabled: true
 }
-export default {
-  name: 'CyEditor',
-  props: {
-    value: {
-      type: Object,
-      default: () => {
-        return defaultValue
-      }
-    },
-    cyConfig: {
-      type: Object,
-      default: () => ({})
-    },
-    editorConfig: {
-      type: Object,
-      default: () => ({})
-    }
-  },
+
+interface AnyObj {
+  [propname: string]: any
+}
+
+@Component({
+  name: 'CyEditor'
+})
+export default class extends Vue {
+  @Prop({ default: defaultValue }) private value?: AnyObj
+  @Prop({ default: {} }) private cyConfig?: AnyObj
+  @Prop({ default: {} }) private editorConfig?: AnyObj
+
   mounted() {
-    const container = this.$el
-    const config = {
+    const config: CyEditorOptions = {
       cy: {
         ...this.cyConfig
       },
       editor: {
-        container,
+        container: '#cy-editor-el',
         ...this.editorConfig
       }
     }
-    const cyEditor = new CyEditor(config)
+    this.editorInst = new CyEditor(config)
     const value = Object.assign({}, defaultValue, this.value)
-    cyEditor.json(value)
-    cyEditor.on('change', (scope, editor) => {
+    this.editorInst.json(value)
+    this.editorInst.on('change', (scope, editor) => {
       const json = cyEditor.json()
       console.log(scope, editor, json)
     })
-  },
-  render(createElement) {
+  }
+
+  render(createElement): VNode {
     return createElement('div')
   }
 }
-
 </script>

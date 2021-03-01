@@ -336,7 +336,7 @@ function defaultActions(cy: cytoscape.Core) {
   // allows to apply any quantity of registered action in one go
   // the whole batch can be undone/redone with one key press
   function batch(actionList: any, doOrUndo: any) {
-    let tempStack = [] // corresponds to the results of every action queued in actionList
+    let tempStack: any[] =  [] // corresponds to the results of every action queued in actionList
     let instance = getScratch(cy, 'instance') // get extension instance through cy
     let actions = instance.actions
 

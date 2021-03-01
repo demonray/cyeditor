@@ -10,7 +10,7 @@ interface Options {
   nodeTypes: NodeType[]
 }
 
-const defaults = {
+const defaultsOptions: Options =  {
   addWhenDrop: true,
   nodeTypes: []
 }
@@ -19,7 +19,7 @@ class DragAddNodes {
   [x: string]: any
   constructor(cy: cytoscape.Core, params: Options) {
     this.cy = cy
-    this._options = Object.assign({}, params)
+    this._options = Object.assign({...defaultsOptions}, params)
     this._options.nodeTypes.forEach((item: NodeType) => {
       item.width = item.width || 76
       item.height = item.height || 76
@@ -133,7 +133,7 @@ class DragAddNodes {
 export default (cy?: any) => {
   if (!cy) { return }
 
-  cy('core', 'dragAddNodes', function (this: cytoscape.Core, options: Options = defaults) {
+  cy('core', 'dragAddNodes', function (this: cytoscape.Core, options: Options = defaultsOptions) {
     return new DragAddNodes(this, options)
   })
 }

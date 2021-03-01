@@ -59,7 +59,7 @@ class NodeResize {
     this._drawMode = false
     this._drawsClear = true
     this._options = {}
-    this._init(params)
+    this.init(params)
   }
 
   destroy() {
@@ -99,18 +99,32 @@ class NodeResize {
     this.cy.trigger('cyeditor.noderesize-drawoff')
   }
 
-  _init(params: Options) {
+  public clearDraws() {
+    if (this._drawsClear) {
+      return
+    }
+
+    let containerRect = this._container.getBoundingClientRect()
+
+    let w = containerRect.width
+    let h = containerRect.height
+
+    this.canvas.getContext('2d').clearRect(0, 0, w, h)
+    this._drawsClear = true
+  }
+
+  private init(params: Options) {
     this._options = utils.extend(true, {}, defaults, params)
     this.canvas = document.createElement('canvas')
     this.ctx = this.canvas.getContext('2d')
     this._container.append(this.canvas)
-    this._listeners._sizeCanvas = debounce(this._sizeCanvas, 250).bind(this)
-    this._listeners._sizeCanvas()
+    this._listeners.sizeCanvas = debounce(this.sizeCanvas, 250).bind(this)
+    this._listeners.sizeCanvas()
 
-    this._initEvents()
+    this.initEvents()
   }
 
-  _sizeCanvas() {
+  private sizeCanvas() {
     let rect = this._container.getBoundingClientRect()
     this.canvas.width = rect.width
     this.canvas.height = rect.height
@@ -131,21 +145,7 @@ class NodeResize {
     }, 0)
   }
 
-  clearDraws() {
-    if (this._drawsClear) {
-      return
-    }
-
-    let containerRect = this._container.getBoundingClientRect()
-
-    let w = containerRect.width
-    let h = containerRect.height
-
-    this.canvas.getContext('2d').clearRect(0, 0, w, h)
-    this._drawsClear = true
-  }
-
-  _disableGestures() {
+  private disableGestures() {
     this._lastPanningEnabled = this.cy.panningEnabled()
     this._lastZoomingEnabled = this.cy.zoomingEnabled()
     this._lastBoxSelectionEnabled = this.cy.boxSelectionEnabled()
@@ -156,20 +156,20 @@ class NodeResize {
       .boxSelectionEnabled(false)
   }
 
-  _resetGestures() {
+  private resetGestures() {
     this.cy
       .zoomingEnabled(this._lastZoomingEnabled)
       .panningEnabled(this._lastPanningEnabled)
       .boxSelectionEnabled(this._lastBoxSelectionEnabled)
   }
 
-  _resetToDefaultState() {
+  private resetToDefaultState() {
     this.clearDraws()
     this.sourceNode = null
-    this._resetGestures()
+    this.resetGestures()
   }
 
-  _drawHandle(node: any) {
+  private drawHandle(node: any) {
     this.ctx.fillStyle = this._options.handleColor
     this.ctx.strokeStyle = this._options.handleColor
     let padding = this._options.padding * this.cy.zoom()
@@ -209,9 +209,9 @@ class NodeResize {
     this._drawsClear = false
   }
 
-  _initEvents() {
-    window.addEventListener('resize', this._listeners._sizeCanvas)
-    this.cy.on('cyeditor.noderesize-resize', this._listeners._sizeCanvas)
+  private initEvents() {
+    window.addEventListener('resize', this._listeners.sizeCanvas)
+    this.cy.on('cyeditor.noderesize-resize', this._listeners.sizeCanvas)
     this._grabbingNode = false
 
     let hoverTimeout
@@ -227,7 +227,7 @@ class NodeResize {
     this._listeners.transformHandler = () => {
       this.clearDraws()
     }
-    this._listeners._startHandler = this._startHandler.bind(this)
+    this._listeners.startHandler = this.startHandler.bind(this)
 
     this.cy.bind('zoom pan', this._listeners.transformHandler)
 
@@ -259,18 +259,17 @@ class NodeResize {
 
       if (id === this._lastActiveId) {
         setTimeout(() => {
-          this._resetToDefaultState()
+          this.resetToDefaultState()
         }, 16)
       }
     }
     let tapToStartHandler = (e: cytoscape.EventObject) => {
       let node = e.target
-
       if (!this.sourceNode) { // must not be active
         setTimeout(() => {
           this.clearDraws() // clear just in case
 
-          this._drawHandle(node)
+          this.drawHandle(node)
 
           node.trigger('cyeditor.noderesize-showhandle')
         }, 16)
@@ -283,7 +282,7 @@ class NodeResize {
       this.clearDraws()
     }
     let selector = this._options.selector
-    this.cy.on('mouseover tap', selector, this._listeners._startHandler)
+    this.cy.on('mouseover tap', selector, this._listeners.startHandler)
       .on('mouseover tapdragover', selector, hoverHandler)
       .on('mouseout tapdragout', selector, leaveHandler)
       .on('drag position', selector, dragNodeHandler)
@@ -294,8 +293,8 @@ class NodeResize {
       .on('tap', selector, tapToStartHandler)
 
     this._options.unbind = () => {
-      window.removeEventListener('resize', this._listeners._sizeCanvas)
-      this.cy.off('mouseover', selector, this._listeners._startHandler)
+      window.removeEventListener('resize', this._listeners.sizeCanvas)
+      this.cy.off('mouseover', selector, this._listeners.startHandler)
         .off('mouseover', selector, hoverHandler)
         .off('mouseout', selector, leaveHandler)
         .off('drag position', selector, dragNodeHandler)
@@ -308,7 +307,7 @@ class NodeResize {
     }
   }
 
-  _startHandler(event: any) {
+  private startHandler(event: any) {
     let node = event.target
 
     if (this._options.disabledd || this._drawMode || this._mdownOnHandle || this._grabbingNode || node.isParent()) {
@@ -326,7 +325,7 @@ class NodeResize {
     this.clearDraws()
 
     // add new handle
-    this._drawHandle(node)
+    this.drawHandle(node)
 
     node.trigger('cyeditor.noderesize-showhandle')
     let lastPosition: any = {}
@@ -389,7 +388,7 @@ class NodeResize {
         this._mdownOnHandle = false
         window.removeEventListener('mousemove', moveHandler)
         window.removeEventListener('touchmove', moveHandler)
-        this._resetToDefaultState()
+        this.resetToDefaultState()
 
         this._options.stop(node)
         node.trigger('cyeditor.noderesize-stop')
@@ -410,7 +409,7 @@ class NodeResize {
       })
       window.addEventListener('mousemove', moveHandler)
       window.addEventListener('touchmove', moveHandler)
-      this._disableGestures()
+      this.disableGestures()
       this._options.start(node)
 
       return false
@@ -451,7 +450,7 @@ class NodeResize {
       }])
 
       this.clearDraws()
-      this._drawHandle(node)
+      this.drawHandle(node)
 
       return false
     }
@@ -465,7 +464,7 @@ class NodeResize {
 export default (cy?: any) => {
   if (!cy) { return }
 
-  cy('core', 'noderesize', function (this: cytoscape.Core, options: Options = defaults) {
-    return new NodeResize(this, options)
+  cy('core', 'noderesize', function (this: cytoscape.Core, options: Options) {
+    return new NodeResize(this, Object.assign({...defaults}, options))
   })
 }
