@@ -127,11 +127,10 @@ export default class App extends Vue {
           id: 'remove',
           content: 'remove',
           disabled: false,
-          divider: true,
           onClick: (e) => {
             if (e.isNode) {
               this.$refs.cyeditor.editorInst.cy.remove(`node[id="${e.data.id}"]`)
-            } else {
+            } else if(e.isEdge) {
               this.$refs.cyeditor.editorInst.cy.remove(`edge[id="${e.data.id}"]`)
             }
           }
