@@ -335,10 +335,10 @@ class CyEditor extends EventBus {
         this.toggleGrid()
         break
       case 'zoomin' :
-        this.zoom(1)
+        this.zoom(-1)
         break
       case 'zoomout' :
-        this.zoom(-1)
+        this.zoom(1)
         break
       case 'levelup' :
         this.changeLevel(1)
