@@ -31,11 +31,11 @@
   content: "\e659";
 }
 
-.icon-zoom:before {
+.icon-zoomin:before {
   content: "\e662";
 }
 
-.icon-zoomin:before {
+.icon-zoom:before {
   content: "\e663";
 }
 
