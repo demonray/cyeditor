@@ -19,7 +19,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状',
+    category: 'Main',
     buildIn: true
   },
   {
@@ -29,7 +29,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 56,
-    category: '基础形状',
+    category: 'Main',
     buildIn: true
   },
   {
@@ -39,7 +39,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状',
+    category: 'Main',
     buildIn: true
   },
   {
@@ -49,7 +49,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状',
+    category: 'Main',
     buildIn: true
   },
   {
@@ -59,7 +59,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 70,
     height: 76,
-    category: '基础形状',
+    category: 'Main',
     buildIn: true
   },
   {
@@ -69,7 +69,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状',
+    category: 'Main',
     buildIn: true
   },
   {
@@ -79,7 +79,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 70,
-    category: '基础形状',
+    category: 'Main',
     buildIn: true
   },
   {
@@ -103,7 +103,7 @@ const defaultNodeTypes = [
       -1, -0.33,
       -0.33, -0.33
     ],
-    category: '基础形状',
+    category: 'Main',
     buildIn: true
   }
 ]

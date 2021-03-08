@@ -25,7 +25,7 @@ export default {
           nodes: [{
             'data': {
               'type': 'round-rectangle',
-              'name': '开始',
+              'name': 'Start',
               'resize': true,
               'bg': '#1890FF',
               'width': 76,
@@ -53,7 +53,7 @@ export default {
           }, {
             'data': {
               'type': 'diamond',
-              'name': '条件',
+              'name': 'Condition',
               'resize': true,
               'bg': '#5CDBD3',
               'width': 156,
