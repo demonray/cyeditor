@@ -10,6 +10,7 @@ import pentagon from '../assets/node-svgs/pentagon.svg'
 import diamond from '../assets/node-svgs/diamond.svg'
 import tag from '../assets/node-svgs/tag.svg'
 import polygon from '../assets/node-svgs/polygon.svg'
+import utils from '../utils'
 
 const defaultNodeTypes = [
   {
@@ -19,7 +20,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状',
+    category: utils.localize('node-types-base-shape'),
     buildIn: true
   },
   {
@@ -29,7 +30,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 56,
-    category: '基础形状',
+    category: utils.localize('node-types-base-shape'),
     buildIn: true
   },
   {
@@ -39,7 +40,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状',
+    category: utils.localize('node-types-base-shape'),
     buildIn: true
   },
   {
@@ -49,7 +50,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状',
+    category: utils.localize('node-types-base-shape'),
     buildIn: true
   },
   {
@@ -59,7 +60,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 70,
     height: 76,
-    category: '基础形状',
+    category: utils.localize('node-types-base-shape'),
     buildIn: true
   },
   {
@@ -69,7 +70,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 76,
-    category: '基础形状',
+    category: utils.localize('node-types-base-shape'),
     buildIn: true
   },
   {
@@ -79,7 +80,7 @@ const defaultNodeTypes = [
     resize: true,
     width: 76,
     height: 70,
-    category: '基础形状',
+    category: utils.localize('node-types-base-shape'),
     buildIn: true
   },
   {
@@ -103,7 +104,7 @@ const defaultNodeTypes = [
       -1, -0.33,
       -0.33, -0.33
     ],
-    category: '基础形状',
+    category: utils.localize('node-types-base-shape'),
     buildIn: true
   }
 ]

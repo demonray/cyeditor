@@ -109,7 +109,6 @@
 }
 
 #editor .right .info-item {
-    width: 150px;
     float: right;
 }
 
@@ -130,7 +129,10 @@
 }
 
 #info .info-item-wrap {
+    display: inline-grid;
     margin-bottom: 12px;
+    grid-column-gap: 10px;
+    grid-template-columns: auto auto;
     overflow: hidden;
     height: 32px;
     line-height: 32px;

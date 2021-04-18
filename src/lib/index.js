@@ -122,7 +122,7 @@ class CyEditor extends EventBus {
   _initDom () {
     let { dragAddNodes, navigator, elementsInfo, toolbar, container } = this.editorOptions
     let left = dragAddNodes ? `<div class="left"></div>` : ''
-    let navigatorDom = navigator ? `<div class="panel-title">导航器</div><div id="thumb"></div>` : ''
+    let navigatorDom = navigator ? `<div class="panel-title">${utils.localize('window-navigator')}</div><div id="thumb"></div>` : ''
     let infoDom = elementsInfo ? `<div id="info"></div>` : ''
     let domHtml = toolbar ? '<div id="toolbar"></div>' : ''
     let right = ''

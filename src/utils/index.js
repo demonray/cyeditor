@@ -5,6 +5,7 @@
 import memoize from './memorize'
 import debounce from './debounce'
 import throttle from './throttle'
+import localize from './localization'
 
 const class2type = {}
 
@@ -191,5 +192,6 @@ export default {
   throttle,
   RGBToHex,
   memoize,
-  guid
+  guid,
+  localize
 }
