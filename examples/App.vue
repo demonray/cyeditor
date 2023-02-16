@@ -11,6 +11,22 @@
 <script>
 import cyEditor from './cyeditor.js'
 
+const locale = 'en'
+const localizationData = {
+  en: {
+    'start': 'Start',
+    'decision': 'Decision'
+  },
+  cn: {
+    'start': '开始',
+    'decision': '条件'
+  }
+}
+
+function localized (key) {
+  return localizationData[locale][key]
+}
+
 export default {
   name: 'App',
   components: {
@@ -25,7 +41,7 @@ export default {
           nodes: [{
             'data': {
               'type': 'round-rectangle',
-              'name': '开始',
+              'name': localized('start'),
               'resize': true,
               'bg': '#1890FF',
               'width': 76,
@@ -53,7 +69,7 @@ export default {
           }, {
             'data': {
               'type': 'diamond',
-              'name': '条件',
+              'name': localized('decision'),
               'resize': true,
               'bg': '#5CDBD3',
               'width': 156,

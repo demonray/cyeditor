@@ -50,13 +50,13 @@ class EditElements {
     this._panel.style.display = 'none'
   }
 
-  _panelHtml (params = { showName: true, showBgColor: true, showColor: true, showRect: true, colorTitle: '文字' }) {
-    this._panel.innerHTML = `<div class="panel-title">元素${params.titile || ''}</div>
+  _panelHtml (params = { showName: true, showBgColor: true, showColor: true, showRect: true, colorTitle: utils.localize('elements-text') }) {
+    this._panel.innerHTML = `<div class="panel-title">${utils.localize('elements-title')}${params.title || ''}</div>
               <div class="panel-body" id="info-items">
-                <div class="info-item-wrap" style="${!params.showName ? 'display:none' : ''}">名称：
+                <div class="info-item-wrap" style="${!params.showName ? 'display:none' : ''}">${utils.localize('elements-label')}：
                     <input class="input info-item" name="name" type="text" value="">
                 </div>
-                <div class="info-item-wrap" style="${!params.showRect ? 'display:none' : ''}">尺寸：
+                <div class="info-item-wrap" style="${!params.showRect ? 'display:none' : ''}">${utils.localize('elements-wrap')}：
                     <div class="info-item">
                         <input class="input width" name="width" autocomplete="off" type="number" step="1" value="">
                         <input class="input height" name="height" autocomplete="off" type="number" step="1" value="">
@@ -67,7 +67,7 @@ class EditElements {
                         <input class="input color-input" name="color" autocomplete="off" type="color">
                     </div>
                 </div>
-                <div class="info-item-wrap" style="${!params.showBgColor ? 'display:none' : ''}">背景：
+                <div class="info-item-wrap" style="${!params.showBgColor ? 'display:none' : ''}">${utils.localize('elements-background-color')}：
                     <div class="info-item">
                         <input class="input color-input" name="background-color" autocomplete="off" type="color">
                     </div>
@@ -97,7 +97,7 @@ class EditElements {
     let selected = this.cy.$(':selected')
     this.selected = selected
     let allNode = selected.every(it => it.isNode())
-    let opt = { showName: allNode, showBgColor: allNode, showColor: true, showRect: allNode, colorTitle: allNode ? '文字' : '颜色' }
+    let opt = { showName: allNode, showBgColor: allNode, showColor: true, showRect: allNode, colorTitle: allNode ? utils.localize('elements-text-color') : utils.localize('elements-color') }
     if (selected.length > 1) {
       this._infos.name = ''
       this._panelHtml(opt)
